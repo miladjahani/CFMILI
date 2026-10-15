@@ -95,8 +95,19 @@ jobs:
             exit 1
           fi
           echo "☁️ در حال دپلوی پروژه Pages: $PROJECT"
+          set +e
           OUT=$(npx wrangler pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true 2>&1)
+          STATUS=$?
+          set -e
           printf '%s\n' "$OUT"
+          if [ "$STATUS" -ne 0 ]; then
+            if printf '%s' "$OUT" | grep -q 'has been blocked'; then
+              echo "::error::پروژه Pages «$PROJECT» توسط کلودفلر مسدود (blocked) شده است؛ تا رفع مسدودی هیچ دپلویی روی آن ممکن نیست. پیگیری: abusereply@cloudflare.com"
+            else
+              echo "::error::دپلوی Cloudflare Pages ناموفق بود (exit $STATUS)."
+            fi
+            exit "$STATUS"
+          fi
           DEPLOY_URL=$(printf '%s' "$OUT" | grep -oE "https://[a-z0-9]+\.${PROJECT}\.pages\.dev" | head -1)
           if [ -z "$DEPLOY_URL" ]; then
             DEPLOY_URL="https://${PROJECT}.pages.dev"
