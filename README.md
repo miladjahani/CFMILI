@@ -58,6 +58,32 @@
 
 ---
 
+## دپلوی خودکار روی Cloudflare با هر پوش (GitHub Actions)
+
+فایل `.github/workflows/deploy-cloudflare.yml` با هر پوش روی شاخه `main` این کارها را انجام می‌دهد:
+
+1. نصب ابزارها (`javascript-obfuscator`، `terser`، `wrangler`)
+2. `npm run build` (ساخت و مبهم‌سازی باندل از سورس جاری)
+3. `npm test` (تست‌های عملکردی؛ در صورت خطا دپلوی انجام نمی‌شود)
+4. `wrangler pages deploy dist --branch main` روی پروژه Cloudflare Pages
+
+این روش مستقل از «اتصال گیت» پنل کلودفلر است؛ پس اگر دپلوی خودکار داشبورد کلودفلر کار نکرد یا بلاک شد، دپلوی شما از سمت گیت‌هاب انجام می‌شود.
+
+### فعال‌سازی (یک‌بار)
+
+در مخزن به **Settings → Secrets and variables → Actions** بروید و این دو را اضافه کنید:
+
+| نوع | نام | مقدار |
+|---|---|---|
+| Secret | `CLOUDFLARE_API_TOKEN` | توکن API کلودفلر با دسترسی **Cloudflare Pages: Edit** (ساخت از `dash.cloudflare.com/profile/api-tokens`) |
+| Secret | `CLOUDFLARE_ACCOUNT_ID` | شناسه حساب کلودفلر (کنار نام حساب در داشبورد) |
+| Variable (اختیاری) | `CF_PAGES_PROJECT` | فقط اگر نام پروژه Pages شما `cfmli` نیست |
+
+تا وقتی این دو Secret تنظیم نشده باشند، ورک‌فلو با یک پیام خطای واضح متوقف می‌شود (دپلوی ناموفق نمی‌زند).
+برای اجرای دستی یا تعیین نام پروژه، از **Actions → Deploy to Cloudflare → Run workflow** استفاده کنید (ورودی `project_name` و در صورت نیاز `deploy_worker=yes` برای دپلوی هم زمان Worker).
+
+---
+
 ## ساختار ماژولار پروژه
 
 ```text

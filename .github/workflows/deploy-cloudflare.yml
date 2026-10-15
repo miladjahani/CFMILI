@@ -1,0 +1,94 @@
+# ============================================================================
+# miliconfig v3.1 - دپلوی خودکار روی Cloudflare با هر پوش روی main
+# ----------------------------------------------------------------------------
+# این ورک‌فلو مستقل از اتصال گیتِ پنل کلودفلر کار می‌کند و خروجی بیلد را
+# مستقیماً با wrangler روی پروژه Cloudflare Pages آپلود می‌کند، پس اگر
+# اتصال خودکار پنل کلودفلر کار نکند یا بلاک شده باشد، دپلوی شما انجام می‌شود.
+#
+# پیش‌نیاز (یک‌بار): در مخزن → Settings → Secrets and variables → Actions
+#   ۱) Secret به نام CLOUDFLARE_API_TOKEN  (توکن با دسترسی Cloudflare Pages: Edit)
+#   ۲) Secret به نام CLOUDFLARE_ACCOUNT_ID (شناسه حساب کلودفلر)
+# اختیاری: Variable به نام CF_PAGES_PROJECT اگر نام پروژه Pages شما «cfmili» نیست.
+# ============================================================================
+
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+    # ورک‌فلوی obfuscate.yml باندل مبهم‌سازی‌شده را خودش کامیت می‌کند؛
+    # آن کامیت‌ها دپلوی تکراری نسازند (خود دپلوی، باندل را از سورس می‌سازد).
+    paths-ignore:
+      - '_worker.js'
+      - 'public/_worker.js'
+      - 'dist/_worker.js'
+      - 'dist/worker.readable.js'
+      - '明文源吗'
+      - '少年你相信光吗'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'نام پروژه Cloudflare Pages'
+        required: false
+        default: 'cfmli'
+      deploy_worker:
+        description: 'دپلوی Worker هم انجام شود؟ (yes/no)'
+        required: false
+        default: 'no'
+
+concurrency:
+  group: cloudflare-deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install build & deploy tooling
+        run: npm install --no-save javascript-obfuscator terser wrangler
+
+      - name: Build & obfuscate bundles
+        run: npm run build
+
+      - name: Run verification test suite
+        run: npm test
+
+      - name: Check Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN و CLOUDFLARE_ACCOUNT_ID در Secrets مخزن تنظیم نشده‌اند."
+            echo "::error::مسیر: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PROJECT="${{ github.event.inputs.project_name || vars.CF_PAGES_PROJECT || 'cfmli' }}"
+          echo "☁️ در حال دپلوی پروژه Pages: $PROJECT"
+          npx wrangler pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true
+
+      - name: Deploy Worker (optional)
+        if: ${{ github.event.inputs.deploy_worker == 'yes' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
