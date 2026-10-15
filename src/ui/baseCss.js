@@ -48,8 +48,7 @@ export const BASE_UI_CSS = `
       overflow-wrap: anywhere;
     }
     .kv-val, .url-text, .uc-uuid, .uc-stats, .field-box { min-width: 0; }
-    /* Safe-Area آیفون برای نوار پایین موبایل و دکمه شناور */
-    .mobile-bottom-nav { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    /* Safe-Area آیفون برای دکمه شناور */
     .fab-refresh {
       bottom: calc(22px + env(safe-area-inset-bottom, 0px));
       left: calc(22px + env(safe-area-inset-left, 0px));
@@ -76,13 +75,11 @@ export const BASE_UI_CSS = `
         font-size: 16px;
       }
       /* هدف لمس استاندارد ۴۴ پیکسل */
-      .btn-neon, .btn-ghost, .copy-btn, .dl-btn, .top-pill, .sb-btn, .mob-nav-btn {
+      .btn-neon, .btn-ghost, .copy-btn, .dl-btn, .top-pill, .sb-btn, .menu-toggle, .sb-close {
         min-height: 44px;
       }
       .btn-neon, .btn-ghost { padding: 12px 16px; }
       .copy-btn { padding: 11px 14px; }
-      .mob-nav-btn { padding: 8px 2px; font-size: 0.68rem; }
-      .mobile-bottom-nav { padding: 8px 6px; }
       .toast-box, .toast { top: calc(12px + env(safe-area-inset-top, 0px)); max-width: calc(100% - 24px); }
       /* روی صفحه‌های لمسی نیازی به فاصله اضافه فوکوس نیست */
       *:focus-visible { outline-offset: 0; }

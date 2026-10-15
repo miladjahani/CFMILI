@@ -743,8 +743,7 @@ const BASE_UI_CSS = `
       overflow-wrap: anywhere;
     }
     .kv-val, .url-text, .uc-uuid, .uc-stats, .field-box { min-width: 0; }
-    /* Safe-Area آیفون برای نوار پایین موبایل و دکمه شناور */
-    .mobile-bottom-nav { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    /* Safe-Area آیفون برای دکمه شناور */
     .fab-refresh {
       bottom: calc(22px + env(safe-area-inset-bottom, 0px));
       left: calc(22px + env(safe-area-inset-left, 0px));
@@ -771,13 +770,11 @@ const BASE_UI_CSS = `
         font-size: 16px;
       }
       /* هدف لمس استاندارد ۴۴ پیکسل */
-      .btn-neon, .btn-ghost, .copy-btn, .dl-btn, .top-pill, .sb-btn, .mob-nav-btn {
+      .btn-neon, .btn-ghost, .copy-btn, .dl-btn, .top-pill, .sb-btn, .menu-toggle, .sb-close {
         min-height: 44px;
       }
       .btn-neon, .btn-ghost { padding: 12px 16px; }
       .copy-btn { padding: 11px 14px; }
-      .mob-nav-btn { padding: 8px 2px; font-size: 0.68rem; }
-      .mobile-bottom-nav { padding: 8px 6px; }
       .toast-box, .toast { top: calc(12px + env(safe-area-inset-top, 0px)); max-width: calc(100% - 24px); }
       /* روی صفحه‌های لمسی نیازی به فاصله اضافه فوکوس نیست */
       *:focus-visible { outline-offset: 0; }
@@ -6278,6 +6275,8 @@ function renderAdminDashboardHtml(initialData = {}) {
         var(--bg-0);
       color: var(--text);
       overflow-x: hidden;
+      /* clip (در مرورگرهای جدید) اسکرول‌کانتینر نمی‌سازد تا sticky نوار بالا کار کند */
+      overflow-x: clip;
       line-height: 1.55;
     }
     body::before {
@@ -6304,16 +6303,8 @@ function renderAdminDashboardHtml(initialData = {}) {
       min-height: 100dvh;
     }
     @media (max-width: 1024px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-        padding-bottom: 92px;
-      }
-      .sidebar {
-        display: none;
-      }
-      .mobile-bottom-nav {
-        display: flex !important;
-      }
+      /* در موبایل چیدمان تک‌ستونه می‌شود و ناوبری فقط از منوی کشویی است */
+      .app-shell { grid-template-columns: 1fr; }
     }
 
     /* سایدبار راست مطابق تصویر 1000050097.png */
@@ -6473,43 +6464,10 @@ function renderAdminDashboardHtml(initialData = {}) {
       color: var(--muted);
     }
 
-    /* نوار ناوبری پایین موبایل مطابق تصویر 1000050085.jpg */
-    .mobile-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      background: rgba(10, 18, 10, 0.96);
-      border: 1px solid var(--border-hi);
-      border-radius: 20px;
-      padding: 6px;
-      z-index: 90;
-      justify-content: space-around;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
-    }
-    .mob-nav-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      padding: 8px 4px;
-      border-radius: 14px;
-      font-family: inherit;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-    }
-    .mob-nav-btn.active {
-      background: rgba(163, 230, 53, 0.18);
-      color: var(--neon);
-      border: 1px solid var(--border-hi);
-    }
+    /*
+      ناوبری موبایل فقط از طریق منوی کشویی (Drawer) انجام می‌شود؛
+      تب/نوار پایین حذف شده است.
+    */
 
     /* محتوای اصلی */
     .main-area {
@@ -7100,47 +7058,68 @@ function renderAdminDashboardHtml(initialData = {}) {
       justify-content: flex-end;
       gap: 10px;
     }
-    /* منوی کشویی موبایل: دکمه همبرگری + پرده پشت منو */
+    /* دکمه کشویی موبایل (باز/بسته کردن منو) */
     .menu-toggle { display: none; }
-    .drawer-backdrop {
+    .sb-close {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(3, 7, 3, 0.72);
-      backdrop-filter: blur(4px);
-      z-index: 125;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      color: var(--danger);
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
     }
     @media (max-width: 1024px) {
       .app-shell {
         padding: 10px;
         gap: 12px;
-        padding-bottom: calc(106px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      }
+      /* نوار بالا چسبان است تا دکمه «☰ منو» همیشه در دسترس باشد */
+      .topbar {
+        position: sticky;
+        top: 8px;
+        z-index: 60;
+        background: rgba(11, 20, 11, 0.97);
       }
       .topbar-brand { display: none; }
       /*
-        این قاعده باید بعد از قاعده پایه .sidebar بیاید تا واقعاً اعمال شود؛
-        در غیر این صورت (ترتیب قدیمی فایل) سایدبار روی موبایل هیچ‌وقت بسته نمی‌شد
-        و مثل یک منوی فریزشده روی محتوا و تنظیمات می‌ماند.
-        حالا سایدبار فقط به شکل کشویی (Drawer) و با دکمه «☰ منو» باز و بسته می‌شود.
+        منوی کشویی «درون‌صفحه» است، نه لایه‌ی شناور روی کل صفحه:
+        با دکمه «☰ منو» باز می‌شود و محتوا را به پایین هل می‌دهد تا صفحه قابل استفاده بماند.
+        بستن آن: دکمه ✕ داخل منو، دکمه «✕ بستن منو» در نوار بالا، یا انتخاب هر آیتم منو.
+        نکته: این قاعده باید بعد از قاعده پایه .sidebar بیاید تا واقعاً اعمال شود.
       */
       .sidebar {
         display: none;
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: min(300px, 88vw);
-        height: 100dvh;
-        border-radius: 22px 0 0 22px;
-        padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        z-index: 130;
-        box-shadow: -18px 0 48px rgba(0, 0, 0, 0.7);
+        position: static;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        border-radius: 20px;
+        padding: 14px;
+        overflow: visible;
+        z-index: auto;
+        box-shadow: none;
+        justify-content: flex-start;
       }
       .sidebar.drawer-open { display: flex; }
-      .drawer-backdrop.open { display: block; }
-      .menu-toggle { display: inline-flex; }
+      .menu-toggle {
+        display: inline-flex;
+        background: rgba(163, 230, 53, 0.16);
+        border-color: var(--border-hi);
+        color: var(--neon);
+        font-weight: 800;
+      }
+      .sb-close { display: inline-flex; }
       .hero-card { padding: 18px 16px; }
       .hero-heading { font-size: 1.18rem; }
       .hero-sub { font-size: 0.82rem; }
@@ -7186,6 +7165,7 @@ ${BASE_UI_CSS}
             <div class="sb-brand-sub">CLOUDFLARE D1 CONTROL</div>
           </div>
           <div class="sb-logo">${SHIELD_LOGO_SVG}</div>
+          <button type="button" class="sb-close" onclick="closeSidebarDrawer()" aria-label="بستن منو">✕</button>
         </div>
 
         <div class="sb-group-title"><span>نمای کلی</span><span>۱</span></div>
@@ -7238,7 +7218,7 @@ ${BASE_UI_CSS}
       <!-- نوار بالا -->
       <header class="topbar">
         <div class="topbar-right">
-          <button type="button" class="top-pill menu-toggle" onclick="toggleSidebarDrawer()" aria-label="باز و بسته کردن منو">☰ منو</button>
+          <button type="button" class="top-pill menu-toggle" onclick="toggleSidebarDrawer()" aria-expanded="false" aria-label="باز و بسته کردن منو">☰ منو</button>
           <h1 class="page-title" id="topPageTitle">داشبورد</h1>
         </div>
         <div class="topbar-left">
@@ -7652,17 +7632,7 @@ ${BASE_UI_CSS}
     </main>
   </div>
 
-  <!-- نوار پایین موبایل -->
-  <nav class="mobile-bottom-nav">
-    <button type="button" class="mob-nav-btn active" data-mob="dashboard" onclick="switchView('dashboard')"><span>⊞</span><span>داشبورد</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="users" onclick="switchView('users')"><span>👥</span><span>کاربران</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="nodes" onclick="switchView('nodes')"><span>⚡</span><span>نودها</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="network" onclick="switchView('network')"><span>☁️</span><span>شبکه</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="panel" onclick="switchView('panel')"><span>✎</span><span>پنل</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="system" onclick="switchView('system')"><span>⚙️</span><span>سیستم</span></button>
-  </nav>
-
-  <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeSidebarDrawer()"></div>
+  <!-- ناوبری موبایل فقط با منوی کشویی (بدون تب پایین) -->
 
   <!-- ==================== مودال ساخت / ویرایش کاربر (شامل نام کاربر + تعداد نود در ساب + تمام ۳۱ تنظیم پیش‌فرض کد) ==================== -->
   <div id="userModalBackdrop" class="modal-backdrop">
@@ -7907,12 +7877,14 @@ ${BASE_UI_CSS}
 
     function toggleSidebarDrawer(force) {
       var sidebar = document.querySelector('.sidebar');
-      var backdrop = document.getElementById('drawerBackdrop');
-      if (!sidebar || !backdrop) return;
+      var toggle = document.querySelector('.menu-toggle');
+      if (!sidebar) return;
       var willOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('drawer-open');
       sidebar.classList.toggle('drawer-open', willOpen);
-      backdrop.classList.toggle('open', willOpen);
-      document.body.style.overflow = willOpen ? 'hidden' : '';
+      if (toggle) {
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        toggle.textContent = willOpen ? '✕ بستن منو' : '☰ منو';
+      }
     }
 
     function closeSidebarDrawer() {
@@ -7938,9 +7910,6 @@ ${BASE_UI_CSS}
       });
       document.querySelectorAll('.sb-item').forEach(function(b) {
         b.classList.toggle('active', b.getAttribute('data-view') === viewName);
-      });
-      document.querySelectorAll('.mob-nav-btn').forEach(function(b) {
-        b.classList.toggle('active', b.getAttribute('data-mob') === viewName);
       });
       closeSidebarDrawer();
     }
