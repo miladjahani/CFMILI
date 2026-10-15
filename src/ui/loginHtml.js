@@ -2,8 +2,15 @@
 // miliconfig v3.1 - صفحه درگاه ورود و ترمینال امنیتی (تم سبز نئونی miliconfig)
 // ============================================================================
 
-import { BRAND_NAME, BRAND_UPPER, VERSION } from '../config/defaults.js';
+import {
+  BRAND_NAME,
+  BRAND_UPPER,
+  SUPPORT_CHANNEL_LABEL,
+  SUPPORT_CHANNEL_URL,
+  VERSION
+} from '../config/defaults.js';
 import { CLOUD_LOGO_SVG, FAVICON_DATA_URI, SHIELD_LOGO_SVG } from './icons.js';
+import { BASE_UI_CSS, THEME_COLOR_META, VIEWPORT_META } from './baseCss.js';
 
 export function renderLoginGatewayHtml(options = {}) {
   const hasCustomPath = Boolean(options.customPath && String(options.customPath).trim());
@@ -11,7 +18,8 @@ export function renderLoginGatewayHtml(options = {}) {
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="${VIEWPORT_META}">
+  <meta name="theme-color" content="${THEME_COLOR_META}">
   <title>${BRAND_UPPER} ${VERSION} — مرکز کنترل و درگاه اشتراک</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
@@ -30,6 +38,7 @@ export function renderLoginGatewayHtml(options = {}) {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background:
         radial-gradient(circle at 18% 20%, rgba(163, 230, 53, 0.14) 0%, transparent 42%),
@@ -212,6 +221,43 @@ export function renderLoginGatewayHtml(options = {}) {
       line-height: 1.65;
     }
     .terminal-mini span { color: var(--neon); }
+
+    /* ==================
+       بهینه‌سازی رابط برای گوشی همراه و ویندوز
+       ================== */
+    /* چیدمان امن در ارتفاع‌های کم (کیبورد موبایل / پنجره کوچک ویندوز) */
+    body { align-items: flex-start; }
+    .gateway-card { margin: auto 0; }
+    .support-line {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 2;
+      overflow-wrap: anywhere;
+    }
+    .support-line a {
+      color: var(--neon);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .support-line a:hover { text-decoration: underline; }
+    @media (max-width: 480px) {
+      body { padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px)); }
+      .gateway-card { padding: 22px 16px; border-radius: 20px; }
+      .brand-title { font-size: 1.15rem; }
+      .btn-row { grid-template-columns: 1fr; }
+      .btn { min-height: 46px; padding: 13px 14px; }
+      .terminal-mini { font-size: 0.72rem; padding: 12px; }
+      .desc-text { font-size: 0.86rem; }
+    }
+    @media (max-width: 400px) {
+      .brand-row { flex-wrap: wrap; gap: 10px; }
+      .live-pill { font-size: 0.72rem; padding: 5px 10px; }
+    }
+${BASE_UI_CSS}
   </style>
 </head>
 <body>
@@ -236,7 +282,7 @@ export function renderLoginGatewayHtml(options = {}) {
 
     <div class="input-group">
       <label class="input-label" for="uuidInput">شناسه دسترسی (UUID مدیر / مسیر سفارشی / شناسه کاربر):</label>
-      <input type="text" id="uuidInput" class="token-input" placeholder="e.g. 351c9981-04b6-4103-aa4b-864aa9c91469" autofocus>
+      <input type="text" id="uuidInput" class="token-input" placeholder="e.g. 351c9981-04b6-4103-aa4b-864aa9c91469" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus>
     </div>
 
     <div class="btn-row">
@@ -254,6 +300,11 @@ export function renderLoginGatewayHtml(options = {}) {
       <div><span>root@${BRAND_NAME}:~$</span> status --engine=cloudflare-d1</div>
       <div><span>✓</span> Protocols: VLESS-WS / Trojan-WS / xhttp / ECH</div>
       <div><span>✓</span> Naming: <span>1+${BRAND_NAME}, 2+${BRAND_NAME} ...</span></div>
+    </div>
+
+    <div class="support-line">
+      ❓ راهنمایی نیاز دارید؟ به ${SUPPORT_CHANNEL_LABEL} سر بزنید:
+      <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
     </div>
   </div>
 

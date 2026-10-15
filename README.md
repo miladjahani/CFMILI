@@ -31,6 +31,14 @@
 
 ---
 
+## کانال پشتیبانی
+
+- **کانال رسمی پشتیبانی: [@miliconfig](https://t.me/miliconfig)**
+- همین لینک در پنل مدیریت، صفحه وضعیت کاربر و درگاه ورود نمایش داده می‌شود.
+- برای تغییر آن، فقط این دو ثابت را در `src/config/defaults.js` ویرایش کنید: `SUPPORT_CHANNEL_HANDLE` و `SUPPORT_CHANNEL_URL`.
+
+---
+
 ## راهنمای استقرار مستقیم از گیت‌هاب (Cloudflare Workers & Pages)
 
 ### روش اول: اتصال مستقیم گیت‌هاب به Cloudflare Workers

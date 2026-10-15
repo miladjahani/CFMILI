@@ -18,6 +18,7 @@ const MODULE_ORDER = [
   'src/config/presets.js',
   'src/core/utils.js',
   'src/ui/icons.js',
+  'src/ui/baseCss.js',
   'src/db/d1.js',
   'src/subscription/converters.js',
   'src/subscription/generator.js',

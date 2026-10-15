@@ -3,9 +3,10 @@
 // طراحی ۱۰۰٪ مطابق تصاویر 1000050224.jpg و 1000050225.jpg با برند miliconfig
 // ============================================================================
 
-import { BRAND_NAME, BRAND_UPPER, REGION_MAP } from '../config/defaults.js';
+import { BRAND_NAME, BRAND_UPPER, REGION_MAP, SUPPORT_CHANNEL_LABEL, SUPPORT_CHANNEL_URL } from '../config/defaults.js';
 import { CLOUD_LOGO_SVG, FAVICON_DATA_URI, SHIELD_LOGO_SVG } from './icons.js';
 import { formatBytes } from '../core/utils.js';
+import { BASE_UI_CSS, THEME_COLOR_META, VIEWPORT_META } from './baseCss.js';
 
 export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
   const urlObj = new URL(originUrl || 'https://miliconfig.workers.dev');
@@ -61,7 +62,8 @@ export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="${VIEWPORT_META}">
+  <meta name="theme-color" content="${THEME_COLOR_META}">
   <title>وضعیت اشتراک ${user.username} — ${BRAND_UPPER}</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
@@ -81,13 +83,14 @@ export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background:
         radial-gradient(circle at 20% 0%, rgba(132, 204, 22, 0.18) 0%, transparent 48%),
         radial-gradient(circle at 85% 90%, rgba(101, 163, 13, 0.14) 0%, transparent 45%),
         var(--bg-0);
       color: var(--text);
-      padding: 18px 14px 90px;
+      padding: 18px 14px calc(96px + env(safe-area-inset-bottom, 0px));
       line-height: 1.6;
     }
     body::before {
@@ -421,6 +424,53 @@ export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       display: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
     }
+
+    /* ==================
+       بهینه‌سازی رابط برای گوشی همراه و ویندوز
+       ================== */
+    .page-foot {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 18px auto 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px dashed var(--border-hi);
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 2;
+      overflow-wrap: anywhere;
+    }
+    .page-foot a {
+      color: var(--neon);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .page-foot a:hover { text-decoration: underline; }
+    @media (max-width: 620px) {
+      body { padding: 12px 10px calc(92px + env(safe-area-inset-bottom, 0px)); }
+      .status-hero { padding: 16px; border-radius: 18px; }
+      .hero-name { font-size: 1.05rem; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .acc-header { padding: 14px; }
+      .acc-body { padding: 0 14px 16px; }
+      .url-copy-box { flex-wrap: wrap; }
+      .url-text {
+        flex: 1 1 100%;
+        white-space: normal;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+        font-size: 0.74rem;
+      }
+      .url-copy-box .copy-btn { flex: 1 1 100%; justify-content: center; }
+      .client-top { align-items: flex-start; }
+      .node-row { flex-wrap: wrap; }
+      .node-row .copy-btn { flex: 1 1 100%; justify-content: center; }
+      .fab-refresh { width: 48px; height: 48px; font-size: 1.05rem; }
+    }
+${BASE_UI_CSS}
   </style>
 </head>
 <body>
@@ -874,6 +924,11 @@ export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
         <div id="nodesContainer"></div>
       </div>
     </div>
+  </div>
+
+  <div class="page-foot">
+    ❓ سؤال یا مشکلی دارید؟ پشتیبانی ${BRAND_NAME} در ${SUPPORT_CHANNEL_LABEL} پاسخگوی شماست:
+    <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
   </div>
 
   <button type="button" class="fab-refresh" onclick="window.location.reload()" title="بروزرسانی وضعیت">⇄</button>

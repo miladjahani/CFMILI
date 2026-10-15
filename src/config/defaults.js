@@ -7,6 +7,15 @@ export const BRAND_UPPER = 'MILICONFIG';
 export const VERSION = 'v3.1';
 export const DEFAULT_ADMIN_UUID = '351c9981-04b6-4103-aa4b-864aa9c91469';
 
+// ----------------------------------------------------------------------------
+// کانال پشتیبانی رسمی: تنها منبع حقیقت (Single Source of Truth) برای لینک پشتیبانی
+// در پنل مدیریت، صفحه وضعیت کاربر و صفحه ورود استفاده می‌شود.
+// برای تغییر، فقط همین دو مقدار را ویرایش کنید.
+// ----------------------------------------------------------------------------
+export const SUPPORT_CHANNEL_HANDLE = '@miliconfig';
+export const SUPPORT_CHANNEL_URL = 'https://t.me/miliconfig';
+export const SUPPORT_CHANNEL_LABEL = `کانال پشتیبانی ${SUPPORT_CHANNEL_HANDLE}`;
+
 // تمام ۳۱ تنظیم پیش‌فرض کد اصلی + تنظیمات پایه کاربر (تعداد نود در ساب و فرمت نام‌گذاری)
 export const CONFIG_DEFAULTS = {
   wk: '',

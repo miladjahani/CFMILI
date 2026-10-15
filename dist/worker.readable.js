@@ -10,6 +10,15 @@ const BRAND_UPPER = 'MILICONFIG';
 const VERSION = 'v3.1';
 const DEFAULT_ADMIN_UUID = '351c9981-04b6-4103-aa4b-864aa9c91469';
 
+// ----------------------------------------------------------------------------
+// کانال پشتیبانی رسمی: تنها منبع حقیقت (Single Source of Truth) برای لینک پشتیبانی
+// در پنل مدیریت، صفحه وضعیت کاربر و صفحه ورود استفاده می‌شود.
+// برای تغییر، فقط همین دو مقدار را ویرایش کنید.
+// ----------------------------------------------------------------------------
+const SUPPORT_CHANNEL_HANDLE = '@miliconfig';
+const SUPPORT_CHANNEL_URL = 'https://t.me/miliconfig';
+const SUPPORT_CHANNEL_LABEL = `کانال پشتیبانی ${SUPPORT_CHANNEL_HANDLE}`;
+
 // تمام ۳۱ تنظیم پیش‌فرض کد اصلی + تنظیمات پایه کاربر (تعداد نود در ساب و فرمت نام‌گذاری)
 const CONFIG_DEFAULTS = {
   wk: '',
@@ -681,6 +690,99 @@ const CLOUD_LOGO_SVG = `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w
 const FAVICON_DATA_URI = `data:image/svg+xml;utf8,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#0b140b" stroke="#a3e635" stroke-width="3"/><path d="M32 15L45 20.5V30.8C45 39.8 39.5 47.5 32 50.5C24.5 47.5 19 39.8 19 30.8V20.5L32 15Z" fill="none" stroke="#b5ff4d" stroke-width="4" stroke-linejoin="round"/></svg>`
 )}`;
+
+
+// --- MODULE: src/ui/baseCss.js ---
+// ============================================================================
+// miliconfig v3.1 - لایه پایه مشترک رابط کاربری (موبایل + ویندوز)
+// این ماژول در انتهای <style> هر سه صفحه تزریق می‌شود تا:
+//   ۱. کنترل‌های بومی مرورگر (select/scrollbar/checkbox) در ویندوز و اندروید تیره شوند.
+//   ۲. روی موبایل، فونت ورودی‌ها ۱۶px (ضد زوم خودکار iOS)، هدف لمس ۴۴px و
+//      Safe-Area آیفون (ناچ) رعایت شود.
+//   ۳. متن‌های طولانی (UUID و لینک ساب) در صفحات باریک سرریز نکنند.
+// ============================================================================
+
+const VIEWPORT_META = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+const THEME_COLOR_META = '#060b06';
+
+const BASE_UI_CSS = `
+    /* ================= miliconfig base: موبایل + ویندوز ================= */
+    html {
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      scrollbar-color: rgba(163, 230, 53, 0.35) rgba(4, 8, 4, 0.7);
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+    *:focus-visible {
+      outline: 2px solid var(--neon);
+      outline-offset: 2px;
+    }
+    /* اسکرول‌بار تیره در کروم/اج ویندوز */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(4, 8, 4, 0.7); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(163, 230, 53, 0.32);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(163, 230, 53, 0.5);
+      background-clip: padding-box;
+    }
+    /*
+      کنترل‌های بومی مرورگر (منوی کشویی select، اسکرول‌بار، پیکر تاریخ و ...)
+      با color-scheme تیره می‌شوند. رنگ/فونت خودِ option را دستی عوض نمی‌کنیم تا
+      منوی کشویی روی اندروید/iOS هم بومی و سالم باز شود و متن آن ناپدید نشود.
+    */
+    button, input, select, textarea, option { color-scheme: dark; }
+    input::placeholder, textarea::placeholder { color: rgba(143, 166, 134, 0.75); }
+    /* متن‌های طولانی (UUID / لینک ساب) نباید چیدمان را بشکنند */
+    .kv-val, .url-text, .uc-uuid, .node-tag, .hero-heading, .sb-brand-title, .clock-time {
+      overflow-wrap: anywhere;
+    }
+    .kv-val, .url-text, .uc-uuid, .uc-stats, .field-box { min-width: 0; }
+    /* Safe-Area آیفون برای نوار پایین موبایل و دکمه شناور */
+    .mobile-bottom-nav { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    .fab-refresh {
+      bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+      left: calc(22px + env(safe-area-inset-left, 0px));
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    @media (hover: none) {
+      /* جلوگیری از گیر کردن حالت hover بعد از لمس روی موبایل */
+      .btn-neon:hover, .btn-ghost:hover, .copy-btn:hover, .sb-btn:hover,
+      .dl-btn:hover, .fab-refresh:hover, .sb-item:hover {
+        transform: none;
+      }
+    }
+    /* ================= miliconfig mobile ================= */
+    @media (max-width: 900px) {
+      /* فونت ۱۶px ورودی‌ها => جلوگیری از زوم خودکار iOS */
+      .mili-input, .mili-select, .mili-textarea, .token-input,
+      input[type="text"], input[type="number"], input[type="search"], textarea, select {
+        font-size: 16px;
+      }
+      /* هدف لمس استاندارد ۴۴ پیکسل */
+      .btn-neon, .btn-ghost, .copy-btn, .dl-btn, .top-pill, .sb-btn, .mob-nav-btn {
+        min-height: 44px;
+      }
+      .btn-neon, .btn-ghost { padding: 12px 16px; }
+      .copy-btn { padding: 11px 14px; }
+      .mob-nav-btn { padding: 8px 2px; font-size: 0.68rem; }
+      .mobile-bottom-nav { padding: 8px 6px; }
+      .toast-box, .toast { top: calc(12px + env(safe-area-inset-top, 0px)); max-width: calc(100% - 24px); }
+      /* روی صفحه‌های لمسی نیازی به فاصله اضافه فوکوس نیست */
+      *:focus-visible { outline-offset: 0; }
+    }
+`;
 
 
 // --- MODULE: src/db/d1.js ---
@@ -4799,7 +4901,8 @@ function renderLoginGatewayHtml(options = {}) {
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="${VIEWPORT_META}">
+  <meta name="theme-color" content="${THEME_COLOR_META}">
   <title>${BRAND_UPPER} ${VERSION} — مرکز کنترل و درگاه اشتراک</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
@@ -4818,6 +4921,7 @@ function renderLoginGatewayHtml(options = {}) {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background:
         radial-gradient(circle at 18% 20%, rgba(163, 230, 53, 0.14) 0%, transparent 42%),
@@ -5000,6 +5104,43 @@ function renderLoginGatewayHtml(options = {}) {
       line-height: 1.65;
     }
     .terminal-mini span { color: var(--neon); }
+
+    /* ==================
+       بهینه‌سازی رابط برای گوشی همراه و ویندوز
+       ================== */
+    /* چیدمان امن در ارتفاع‌های کم (کیبورد موبایل / پنجره کوچک ویندوز) */
+    body { align-items: flex-start; }
+    .gateway-card { margin: auto 0; }
+    .support-line {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 2;
+      overflow-wrap: anywhere;
+    }
+    .support-line a {
+      color: var(--neon);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .support-line a:hover { text-decoration: underline; }
+    @media (max-width: 480px) {
+      body { padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px)); }
+      .gateway-card { padding: 22px 16px; border-radius: 20px; }
+      .brand-title { font-size: 1.15rem; }
+      .btn-row { grid-template-columns: 1fr; }
+      .btn { min-height: 46px; padding: 13px 14px; }
+      .terminal-mini { font-size: 0.72rem; padding: 12px; }
+      .desc-text { font-size: 0.86rem; }
+    }
+    @media (max-width: 400px) {
+      .brand-row { flex-wrap: wrap; gap: 10px; }
+      .live-pill { font-size: 0.72rem; padding: 5px 10px; }
+    }
+${BASE_UI_CSS}
   </style>
 </head>
 <body>
@@ -5024,7 +5165,7 @@ function renderLoginGatewayHtml(options = {}) {
 
     <div class="input-group">
       <label class="input-label" for="uuidInput">شناسه دسترسی (UUID مدیر / مسیر سفارشی / شناسه کاربر):</label>
-      <input type="text" id="uuidInput" class="token-input" placeholder="e.g. 351c9981-04b6-4103-aa4b-864aa9c91469" autofocus>
+      <input type="text" id="uuidInput" class="token-input" placeholder="e.g. 351c9981-04b6-4103-aa4b-864aa9c91469" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus>
     </div>
 
     <div class="btn-row">
@@ -5042,6 +5183,11 @@ function renderLoginGatewayHtml(options = {}) {
       <div><span>root@${BRAND_NAME}:~$</span> status --engine=cloudflare-d1</div>
       <div><span>✓</span> Protocols: VLESS-WS / Trojan-WS / xhttp / ECH</div>
       <div><span>✓</span> Naming: <span>1+${BRAND_NAME}, 2+${BRAND_NAME} ...</span></div>
+    </div>
+
+    <div class="support-line">
+      ❓ راهنمایی نیاز دارید؟ به ${SUPPORT_CHANNEL_LABEL} سر بزنید:
+      <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
     </div>
   </div>
 
@@ -5137,7 +5283,8 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="${VIEWPORT_META}">
+  <meta name="theme-color" content="${THEME_COLOR_META}">
   <title>وضعیت اشتراک ${user.username} — ${BRAND_UPPER}</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
@@ -5157,13 +5304,14 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background:
         radial-gradient(circle at 20% 0%, rgba(132, 204, 22, 0.18) 0%, transparent 48%),
         radial-gradient(circle at 85% 90%, rgba(101, 163, 13, 0.14) 0%, transparent 45%),
         var(--bg-0);
       color: var(--text);
-      padding: 18px 14px 90px;
+      padding: 18px 14px calc(96px + env(safe-area-inset-bottom, 0px));
       line-height: 1.6;
     }
     body::before {
@@ -5497,6 +5645,53 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       display: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
     }
+
+    /* ==================
+       بهینه‌سازی رابط برای گوشی همراه و ویندوز
+       ================== */
+    .page-foot {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 18px auto 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px dashed var(--border-hi);
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 2;
+      overflow-wrap: anywhere;
+    }
+    .page-foot a {
+      color: var(--neon);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .page-foot a:hover { text-decoration: underline; }
+    @media (max-width: 620px) {
+      body { padding: 12px 10px calc(92px + env(safe-area-inset-bottom, 0px)); }
+      .status-hero { padding: 16px; border-radius: 18px; }
+      .hero-name { font-size: 1.05rem; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .acc-header { padding: 14px; }
+      .acc-body { padding: 0 14px 16px; }
+      .url-copy-box { flex-wrap: wrap; }
+      .url-text {
+        flex: 1 1 100%;
+        white-space: normal;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+        font-size: 0.74rem;
+      }
+      .url-copy-box .copy-btn { flex: 1 1 100%; justify-content: center; }
+      .client-top { align-items: flex-start; }
+      .node-row { flex-wrap: wrap; }
+      .node-row .copy-btn { flex: 1 1 100%; justify-content: center; }
+      .fab-refresh { width: 48px; height: 48px; font-size: 1.05rem; }
+    }
+${BASE_UI_CSS}
   </style>
 </head>
 <body>
@@ -5952,6 +6147,11 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
     </div>
   </div>
 
+  <div class="page-foot">
+    ❓ سؤال یا مشکلی دارید؟ پشتیبانی ${BRAND_NAME} در ${SUPPORT_CHANNEL_LABEL} پاسخگوی شماست:
+    <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
+  </div>
+
   <button type="button" class="fab-refresh" onclick="window.location.reload()" title="بروزرسانی وضعیت">⇄</button>
 
   <script>
@@ -6046,7 +6246,8 @@ function renderAdminDashboardHtml(initialData = {}) {
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="${VIEWPORT_META}">
+  <meta name="theme-color" content="${THEME_COLOR_META}">
   <title>داشبورد مدیریت — ${BRAND_UPPER} CONTROL CENTER</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
@@ -6069,6 +6270,7 @@ function renderAdminDashboardHtml(initialData = {}) {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
       background:
         radial-gradient(circle at 12% 25%, rgba(132, 204, 22, 0.16) 0%, transparent 40%),
@@ -6099,6 +6301,7 @@ function renderAdminDashboardHtml(initialData = {}) {
       margin: 0 auto;
       padding: 14px;
       min-height: 100vh;
+      min-height: 100dvh;
     }
     @media (max-width: 1024px) {
       .app-shell {
@@ -6123,6 +6326,7 @@ function renderAdminDashboardHtml(initialData = {}) {
       flex-direction: column;
       justify-content: space-between;
       height: calc(100vh - 28px);
+      height: calc(100dvh - 28px);
       position: sticky;
       top: 14px;
       backdrop-filter: blur(16px);
@@ -6375,7 +6579,7 @@ function renderAdminDashboardHtml(initialData = {}) {
     }
     .hero-content {
       flex: 1;
-      min-width: 260px;
+      min-width: min(260px, 100%);
     }
     .hero-eyebrow {
       font-size: 0.72rem;
@@ -6687,7 +6891,7 @@ function renderAdminDashboardHtml(initialData = {}) {
     /* کارت‌های کاربران مطابق تصویر 1000050137.jpg */
     .users-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(288px, 100%), 1fr));
       gap: 14px;
       margin-top: 14px;
     }
@@ -6847,7 +7051,9 @@ function renderAdminDashboardHtml(initialData = {}) {
       width: 100%;
       max-width: 880px;
       max-height: 90vh;
+      max-height: 90dvh;
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 22px;
       box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85);
     }
@@ -6879,6 +7085,92 @@ function renderAdminDashboardHtml(initialData = {}) {
       display: none;
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
     }
+
+    /* ==================
+       بهینه‌سازی رابط برای گوشی همراه و ویندوز
+       ================== */
+    .topbar-brand {
+      font-size: 0.74rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+    .modal-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    /* منوی کشویی موبایل: دکمه همبرگری + پرده پشت منو */
+    .menu-toggle { display: none; }
+    .drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 3, 0.72);
+      backdrop-filter: blur(4px);
+      z-index: 125;
+    }
+    @media (max-width: 1024px) {
+      .app-shell {
+        padding: 10px;
+        gap: 12px;
+        padding-bottom: calc(106px + env(safe-area-inset-bottom, 0px));
+      }
+      .topbar-brand { display: none; }
+      /*
+        این قاعده باید بعد از قاعده پایه .sidebar بیاید تا واقعاً اعمال شود؛
+        در غیر این صورت (ترتیب قدیمی فایل) سایدبار روی موبایل هیچ‌وقت بسته نمی‌شد
+        و مثل یک منوی فریزشده روی محتوا و تنظیمات می‌ماند.
+        حالا سایدبار فقط به شکل کشویی (Drawer) و با دکمه «☰ منو» باز و بسته می‌شود.
+      */
+      .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 88vw);
+        height: 100dvh;
+        border-radius: 22px 0 0 22px;
+        padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        z-index: 130;
+        box-shadow: -18px 0 48px rgba(0, 0, 0, 0.7);
+      }
+      .sidebar.drawer-open { display: flex; }
+      .drawer-backdrop.open { display: block; }
+      .menu-toggle { display: inline-flex; }
+      .hero-card { padding: 18px 16px; }
+      .hero-heading { font-size: 1.18rem; }
+      .hero-sub { font-size: 0.82rem; }
+      .panel-card, .metric-card { padding: 14px; }
+      .modal-backdrop { padding: 10px; align-items: flex-start; }
+      .modal-box {
+        padding: 16px;
+        border-radius: 18px;
+        max-height: calc(100dvh - 20px);
+      }
+      .users-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric-card { min-height: 0; }
+      .metric-value { font-size: 1.2rem; }
+      .top-pill { font-size: 0.75rem; padding: 8px 11px; }
+      .hero-emblem { width: 56px; height: 56px; font-size: 1.35rem; }
+      .donut-ring { width: 118px; height: 118px; border-width: 12px; }
+      .kv-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+      }
+      .uc-body { gap: 10px; }
+      .check-grid { gap: 6px 14px; }
+      .modal-actions { flex-direction: column-reverse; }
+      .modal-actions > button { width: 100%; justify-content: center; }
+    }
+${BASE_UI_CSS}
   </style>
 </head>
 <body>
@@ -6936,7 +7228,7 @@ function renderAdminDashboardHtml(initialData = {}) {
           <span class="dot-online"></span>
           <span id="sbD1StatusText">سیستم آنلاین است</span>
         </div>
-        <a class="sb-btn" href="https://t.me/+ft-zI76oovgwNmRh" target="_blank" rel="noopener">🔗 کانال پشتیبانی</a>
+        <a class="sb-btn" href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">🔗 ${SUPPORT_CHANNEL_LABEL}</a>
         <button type="button" class="sb-btn sb-btn-logout" onclick="window.location.href='/'">خروج از حساب</button>
       </div>
     </aside>
@@ -6946,10 +7238,11 @@ function renderAdminDashboardHtml(initialData = {}) {
       <!-- نوار بالا -->
       <header class="topbar">
         <div class="topbar-right">
+          <button type="button" class="top-pill menu-toggle" onclick="toggleSidebarDrawer()" aria-label="باز و بسته کردن منو">☰ منو</button>
           <h1 class="page-title" id="topPageTitle">داشبورد</h1>
         </div>
         <div class="topbar-left">
-          <span style="font-size:0.74rem;color:var(--muted);letter-spacing:0.12em;">${BRAND_UPPER} CONTROL CENTER</span>
+          <span class="topbar-brand">${BRAND_UPPER} CONTROL CENTER</span>
           <span class="top-pill live"><span class="dot-online"></span> زنده</span>
           <button type="button" class="top-pill" onclick="switchView('users'); openUserModal(null);">+ کاربر جدید</button>
           <button type="button" class="top-pill" onclick="initD1Database()">🛡️ بررسی D1</button>
@@ -7094,6 +7387,9 @@ function renderAdminDashboardHtml(initialData = {}) {
               <button type="button" class="btn-ghost" style="width:100%;justify-content:center;" onclick="copyMainAdminSub()">
                 📋 کپی ساب‌لینک اصلی مدیر (1+${BRAND_NAME} ...)
               </button>
+              <a class="btn-ghost" style="width:100%;justify-content:center;" href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">
+                🔗 ${SUPPORT_CHANNEL_LABEL}
+              </a>
             </div>
           </div>
         </div>
@@ -7118,7 +7414,7 @@ function renderAdminDashboardHtml(initialData = {}) {
             </div>
 
             <div class="quick-bar">
-              <input type="text" id="quickUsername" class="mili-input" placeholder="نام کاربری (مثلاً ali یا خالی = خودکار)" style="flex:1;min-width:190px;">
+              <input type="text" id="quickUsername" class="mili-input" placeholder="نام کاربری (مثلاً ali یا خالی = خودکار)" style="flex:1 1 200px;min-width:0;" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
               <div style="display:flex;align-items:center;gap:6px;">
                 <label style="font-size:0.78rem;color:var(--muted);">تعداد نود در ساب:</label>
                 <input type="number" id="quickSubNodeCount" class="mili-input" value="50" min="0" max="500" style="width:88px;text-align:center;">
@@ -7140,7 +7436,7 @@ function renderAdminDashboardHtml(initialData = {}) {
               <button type="button" class="btn-ghost" onclick="setFilterStatus('active')">فعال</button>
               <button type="button" class="btn-ghost" onclick="setFilterStatus('disabled')">غیرفعال</button>
             </div>
-            <input type="text" id="userSearchInput" class="mili-input" placeholder="🔍 جستجوی نام کاربر یا UUID..." oninput="renderUsersGrid()" style="min-width:240px;">
+            <input type="text" id="userSearchInput" class="mili-input" placeholder="🔍 جستجوی نام کاربر یا UUID..." oninput="renderUsersGrid()" style="flex:1 1 220px;min-width:0;" autocomplete="off" autocapitalize="off" spellcheck="false">
           </div>
 
           <!-- لیست کارت‌های کاربران -->
@@ -7358,12 +7654,15 @@ function renderAdminDashboardHtml(initialData = {}) {
 
   <!-- نوار پایین موبایل -->
   <nav class="mobile-bottom-nav">
-    <button type="button" class="mob-nav-btn active" data-mob="dashboard" onclick="switchView('dashboard')"><span>⊞</span><span>نمای کلی</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="users" onclick="switchView('users')"><span>👥</span><span>کاربران و نودها</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="network" onclick="switchView('network')"><span>☁️</span><span>شبکه و لبه</span></button>
-    <button type="button" class="mob-nav-btn" data-mob="panel" onclick="switchView('panel')"><span>✎</span><span>پنل و ظاهر</span></button>
+    <button type="button" class="mob-nav-btn active" data-mob="dashboard" onclick="switchView('dashboard')"><span>⊞</span><span>داشبورد</span></button>
+    <button type="button" class="mob-nav-btn" data-mob="users" onclick="switchView('users')"><span>👥</span><span>کاربران</span></button>
+    <button type="button" class="mob-nav-btn" data-mob="nodes" onclick="switchView('nodes')"><span>⚡</span><span>نودها</span></button>
+    <button type="button" class="mob-nav-btn" data-mob="network" onclick="switchView('network')"><span>☁️</span><span>شبکه</span></button>
+    <button type="button" class="mob-nav-btn" data-mob="panel" onclick="switchView('panel')"><span>✎</span><span>پنل</span></button>
     <button type="button" class="mob-nav-btn" data-mob="system" onclick="switchView('system')"><span>⚙️</span><span>سیستم</span></button>
   </nav>
+
+  <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeSidebarDrawer()"></div>
 
   <!-- ==================== مودال ساخت / ویرایش کاربر (شامل نام کاربر + تعداد نود در ساب + تمام ۳۱ تنظیم پیش‌فرض کد) ==================== -->
   <div id="userModalBackdrop" class="modal-backdrop">
@@ -7392,7 +7691,7 @@ function renderAdminDashboardHtml(initialData = {}) {
         <div class="field-box">
           <label class="field-label">شناسه یکتا (UUID):</label>
           <div style="display:flex;gap:6px;">
-            <input type="text" id="um_uuid" class="mili-input" style="flex:1;direction:ltr;">
+            <input type="text" id="um_uuid" class="mili-input" style="flex:1;min-width:0;direction:ltr;" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
             <button type="button" class="btn-ghost" onclick="regenModalUuid()" title="تولید UUID جدید">🎲</button>
           </div>
         </div>
@@ -7561,7 +7860,7 @@ function renderAdminDashboardHtml(initialData = {}) {
         <label class="check-label"><input type="checkbox" id="um_ispTelecom" checked> <span>مخابرات (ispTelecom)</span></label>
       </div>
 
-      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px;">
+      <div class="modal-actions">
         <button type="button" class="btn-ghost" onclick="closeUserModal()">انصراف</button>
         <button type="button" class="btn-neon" onclick="submitUserModal()">✦ ذخیره کاربر در دیتابیس D1</button>
       </div>
@@ -7606,6 +7905,24 @@ function renderAdminDashboardHtml(initialData = {}) {
       });
     }
 
+    function toggleSidebarDrawer(force) {
+      var sidebar = document.querySelector('.sidebar');
+      var backdrop = document.getElementById('drawerBackdrop');
+      if (!sidebar || !backdrop) return;
+      var willOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('drawer-open');
+      sidebar.classList.toggle('drawer-open', willOpen);
+      backdrop.classList.toggle('open', willOpen);
+      document.body.style.overflow = willOpen ? 'hidden' : '';
+    }
+
+    function closeSidebarDrawer() {
+      toggleSidebarDrawer(false);
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeSidebarDrawer();
+    });
+
     function switchView(viewName) {
       var titles = {
         dashboard: 'داشبورد',
@@ -7625,6 +7942,7 @@ function renderAdminDashboardHtml(initialData = {}) {
       document.querySelectorAll('.mob-nav-btn').forEach(function(b) {
         b.classList.toggle('active', b.getAttribute('data-mob') === viewName);
       });
+      closeSidebarDrawer();
     }
 
     function renderPresets() {
