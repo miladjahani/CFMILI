@@ -160,6 +160,8 @@ async function runTests() {
     const adminHtml = await adminResp.text();
     assert.ok(adminHtml.includes('مرکز کنترل زیرساخت پروکسی miliconfig'), 'عنوان داشبورد miliconfig باید وجود داشته باشد');
     assert.ok(adminHtml.includes('um_subNodeCount'), 'فیلد تعداد نودها در ساب باید در مودال کاربر جدید وجود داشته باشد');
+    assert.ok(adminHtml.includes('https://t.me/miliconfig'), 'دکمه کانال پشتیبانی باید https://t.me/miliconfig را باز کند');
+    assert.ok(!/t\.me\/\+/.test(adminHtml), 'هیچ لینک دعوت منقضی (t.me/+...) نباید در پنل باشد');
     console.log('  ✓ تست ۲ (پنل مدیریت و ساخت خودکار جداول D1): موفق');
 
     // تست ۳: ایجاد کاربر جدید از طریق API همراه با نام کاربر، تعداد نود در ساب (مثلاً 8 نود) و تمام تنظیمات پیش‌فرض کد
