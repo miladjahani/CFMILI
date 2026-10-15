@@ -65,7 +65,8 @@
 1. نصب ابزارها (`javascript-obfuscator`، `terser`، `wrangler`)
 2. `npm run build` (ساخت و مبهم‌سازی باندل از سورس جاری)
 3. `npm test` (تست‌های عملکردی؛ در صورت خطا دپلوی انجام نمی‌شود)
-4. `wrangler pages deploy dist --branch main` روی پروژه Cloudflare Pages
+4. تشخیص خودکار نام پروژه Cloudflare Pages از حساب (قابل بازنویسی با Variable یا ورودی دستی) و سپس `wrangler pages deploy dist --branch main`
+5. بررسی خروجی واقعیِ دپلوی‌شده: وجود لینک کانال پشتیبانی `https://t.me/miliconfig` در صفحه‌ی ادمین همان دپلوی تازه
 
 این روش مستقل از «اتصال گیت» پنل کلودفلر است؛ پس اگر دپلوی خودکار داشبورد کلودفلر کار نکرد یا بلاک شد، دپلوی شما از سمت گیت‌هاب انجام می‌شود.
 
@@ -77,7 +78,7 @@
 |---|---|---|
 | Secret | `CLOUDFLARE_API_TOKEN` | توکن API کلودفلر با دسترسی **Cloudflare Pages: Edit** (ساخت از `dash.cloudflare.com/profile/api-tokens`) |
 | Secret | `CLOUDFLARE_ACCOUNT_ID` | شناسه حساب کلودفلر (کنار نام حساب در داشبورد) |
-| Variable (اختیاری) | `CF_PAGES_PROJECT` | فقط اگر نام پروژه Pages شما `cfmli` نیست |
+| Variable (اختیاری) | `CF_PAGES_PROJECT` | اگر چند پروژه Pages دارید و می‌خواهید هدف دستی تعیین شود (پیش‌فرض: تشخیص خودکار از حساب) |
 
 تا وقتی این دو Secret تنظیم نشده باشند، ورک‌فلو با یک پیام خطای واضح متوقف می‌شود (دپلوی ناموفق نمی‌زند).
 برای اجرای دستی یا تعیین نام پروژه، از **Actions → Deploy to Cloudflare → Run workflow** استفاده کنید (ورودی `project_name` و در صورت نیاز `deploy_worker=yes` برای دپلوی هم زمان Worker).

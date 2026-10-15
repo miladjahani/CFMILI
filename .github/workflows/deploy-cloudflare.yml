@@ -8,7 +8,8 @@
 # پیش‌نیاز (یک‌بار): در مخزن → Settings → Secrets and variables → Actions
 #   ۱) Secret به نام CLOUDFLARE_API_TOKEN  (توکن با دسترسی Cloudflare Pages: Edit)
 #   ۲) Secret به نام CLOUDFLARE_ACCOUNT_ID (شناسه حساب کلودفلر)
-# اختیاری: Variable به نام CF_PAGES_PROJECT اگر نام پروژه Pages شما «cfmili» نیست.
+# نام پروژه Pages به‌صورت خودکار از حساب کلودفلر تشخیص داده می‌شود.
+# اگر چند پروژه دارید، با Variable به نام CF_PAGES_PROJECT نام موردنظر را تعیین کنید.
 # ============================================================================
 
 name: Deploy to Cloudflare
@@ -30,9 +31,9 @@ on:
   workflow_dispatch:
     inputs:
       project_name:
-        description: 'نام پروژه Cloudflare Pages'
+        description: 'نام پروژه Cloudflare Pages (خالی = تشخیص خودکار)'
         required: false
-        default: 'cfmli'
+        default: ''
       deploy_worker:
         description: 'دپلوی Worker هم انجام شود؟ (yes/no)'
         required: false
@@ -78,13 +79,47 @@ jobs:
           fi
 
       - name: Deploy to Cloudflare Pages
+        id: deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          PROJECT="${{ github.event.inputs.project_name || vars.CF_PAGES_PROJECT || 'cfmli' }}"
+          PROJECT="${{ github.event.inputs.project_name || vars.CF_PAGES_PROJECT }}"
+          if [ -z "$PROJECT" ]; then
+            DOMAIN=$(npx wrangler pages project list 2>/dev/null | grep -oE '[a-z0-9][a-z0-9-]*\.pages\.dev' | head -1)
+            PROJECT="${DOMAIN%.pages.dev}"
+            echo "🔎 نام پروژه Pages به‌صورت خودکار تشخیص داده شد: ${PROJECT:-یافت نشد}"
+          fi
+          if [ -z "$PROJECT" ]; then
+            echo "::error::نام پروژه Cloudflare Pages پیدا نشد؛ Variable به نام CF_PAGES_PROJECT را با نام پروژه تنظیم کنید."
+            exit 1
+          fi
           echo "☁️ در حال دپلوی پروژه Pages: $PROJECT"
-          npx wrangler pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true
+          OUT=$(npx wrangler pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true 2>&1)
+          printf '%s\n' "$OUT"
+          DEPLOY_URL=$(printf '%s' "$OUT" | grep -oE "https://[a-z0-9]+\.${PROJECT}\.pages\.dev" | head -1)
+          if [ -z "$DEPLOY_URL" ]; then
+            DEPLOY_URL="https://${PROJECT}.pages.dev"
+          fi
+          echo "🔗 آدرس دپلوی تازه: $DEPLOY_URL"
+          echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+
+      # بررسی خروجی واقعیِ دپلوی‌شده: دکمه/لینک کانال پشتیبانی باید t.me/miliconfig باشد.
+      - name: Verify support channel link on the deployed site
+        run: |
+          URL="${{ steps.deploy.outputs.deploy_url }}"
+          ADMIN_UUID=$(grep -oE "DEFAULT_ADMIN_UUID = '[^']+'" src/config/defaults.js | head -1 | cut -d"'" -f2)
+          for i in 1 2 3 4 5 6; do
+            BODY=$(curl -s -m 25 "$URL/$ADMIN_UUID/" || true)
+            if printf '%s' "$BODY" | grep -q 't\.me/miliconfig'; then
+              echo "✅ لینک کانال پشتیبانی روی نسخه دپلوی‌شده درست است ($URL)."
+              exit 0
+            fi
+            echo "… تلاش $i: هنوز در دسترس/به‌روز نیست، ۱۰ ثانیه صبر…"
+            sleep 10
+          done
+          echo "::error::لینک کانال پشتیبانی (t.me/miliconfig) روی نسخه دپلوی‌شده پیدا نشد."
+          exit 1
 
       - name: Deploy Worker (optional)
         if: ${{ github.event.inputs.deploy_worker == 'yes' }}
