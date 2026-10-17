@@ -1,0 +1,809 @@
+{
+  "startedAt": "2026-10-17T16:23:21.036Z",
+  "category": "http",
+  "sources": [
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/vakhov/fresh-proxy-list/master/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 528,
+      "parsed": 524,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 303,
+      "parsed": 303,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 554,
+      "parsed": 554,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/zloi-user/hideip.me/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 272,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies_geolocation_anonymous/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 190,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/vakhov/fresh-proxy-list/master/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 6,
+      "parsed": 6,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/zloi-user/hideip.me/main/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 906,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies_geolocation/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 554,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 144,
+      "parsed": 140,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 153,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/generated/http_proxies.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 1947,
+      "parsed": 1473,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 101629,
+      "parsed": 100457,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Vadim287/free-proxy/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 5,
+      "parsed": 1,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies_anonymous/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 190,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 714,
+      "parsed": 714,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 107,
+      "parsed": 107,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://sunny9577.github.io/proxy-scraper/generated/http_proxies.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 1947,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Noctiro/getproxy/master/file/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2243,
+      "parsed": 12,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Noctiro/getproxy/master/file/https_with_protocol.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2243,
+      "parsed": 2227,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Noctiro/getproxy/master/file/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 4660,
+      "parsed": 1424,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Noctiro/getproxy/master/file/http_with_protocol.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 4660,
+      "parsed": 4299,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/DE/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 16,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/CN/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 14,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/NL/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 9,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/RU/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 12,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/US/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 29,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/SG/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 8,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/FI/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/CH/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 1,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/TH/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 24,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/KR/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 14,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2411,
+      "parsed": 1,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/UA/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 3,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/https/data.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 944,
+      "parsed": 944,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 5357,
+      "parsed": 2538,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ikimono-afk/proxy-api/main/proxies_anonymous/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 137,
+      "parsed": 83,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/BR/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 13,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ikimono-afk/proxy-api/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 583,
+      "parsed": 292,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ProxyScraper/ProxyScraper/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2411,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/jetkai/proxy-list/main/archive/txt/proxies-http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 17436,
+      "parsed": 14164,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/IN/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 22,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/VN/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 31,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 34,
+      "parsed": 34,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 517,
+      "parsed": 385,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/officialputuid/KangProxy/main/http/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 764,
+      "parsed": 590,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/jetkai/proxy-list/main/archive/txt/proxies-https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 22842,
+      "parsed": 10672,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/SK/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 0,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/trio666/proxy-checker/main/country/RS/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 3,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/master/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 181,
+      "parsed": 65,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/elliottophellia/yakumo/master/results/http/global/http_checked.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 342,
+      "parsed": 158,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ikimono-afk/proxy-api/main/proxies_geolocation/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 583,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/master/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 494,
+      "parsed": 164,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ikimono-afk/proxy-api/main/proxies_geolocation_anonymous/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 137,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Anonym0usWork1221/Free-Proxies/main/proxy_files/https_proxies.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 7,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/dpangestuw/Free-Proxy/main/http_proxies.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 4010,
+      "parsed": 404,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Anonym0usWork1221/Free-Proxies/main/proxy_files/http_proxies.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 6440,
+      "parsed": 2127,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/officialputuid/KangProxy/main/https/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 8754,
+      "parsed": 5097,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ErcinDedeoglu/proxies/main/proxies/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 3245,
+      "parsed": 1617,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Skillter/ProxyGather/master/proxies/working-proxies-http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 283,
+      "parsed": 165,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ALIILAPRO/Proxy/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 548,
+      "parsed": 76,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/r00tee/Proxy-List/main/Https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 5021,
+      "parsed": 1,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Vann-Dev/proxy-list/main/proxies/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 101,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Vann-Dev/proxy-list/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 1038,
+      "parsed": 60,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/SevenworksDev/proxy-list/main/proxies/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 6588,
+      "parsed": 1994,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/vmheaven/VMHeaven-Free-Proxy-Updated/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 6529,
+      "parsed": 2481,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/vmheaven/VMHeaven-Free-Proxy-Updated/main/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 3778,
+      "parsed": 598,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/TuanMinPay/live-proxy/master/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 9504,
+      "parsed": 3214,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/readloud/clauneck/main/PROXY-List/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 5008,
+      "parsed": 1944,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ItzRazvyy/ProxyList/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 1969,
+      "parsed": 893,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/i-am-unbekannt/BLITZPROXY/main/out-files/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 3037,
+      "parsed": 411,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ProxyListt/PROXY-list/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 2124,
+      "parsed": 1305,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/mzyui/proxy-list/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 64239,
+      "parsed": 27881,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/ErcinDedeoglu/proxies/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 65000,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/caedencode/proxy-list/main/http.txt",
+      "verified": true,
+      "ok": false,
+      "status": 404,
+      "lines": 0,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/yosephplex/proxy-updater/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 37297,
+      "parsed": 53,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Daniel3356/Proxy_Full-list/main/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 4870,
+      "parsed": 0,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Tsprnay/Proxy-lists/master/proxies/https.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 52789,
+      "parsed": 4843,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/Tsprnay/Proxy-lists/master/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 144178,
+      "parsed": 29455,
+      "error": ""
+    },
+    {
+      "category": "http",
+      "url": "https://raw.githubusercontent.com/SevenworksDev/proxy-list/main/proxies/http.txt",
+      "verified": true,
+      "ok": true,
+      "status": 200,
+      "lines": 163667,
+      "parsed": 184,
+      "error": ""
+    }
+  ],
+  "finishedAt": "2026-10-17T16:23:24.743Z",
+  "summary": {
+    "totalSources": 84,
+    "fetchedOk": 78,
+    "failed": 1,
+    "skippedUnverified": 5,
+    "uniqueProxies": {
+      "socks5": 215784,
+      "http": 7955,
+      "https": 3395,
+      "total": 227134
+    }
+  }
+}
