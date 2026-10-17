@@ -1282,6 +1282,11 @@ ${BASE_UI_CSS}
             <button type="button" class="btn-ghost" onclick="resolveYxDomains()">🌐 تبدیل دامنه‌های yx به آی‌پی ثابت</button>
           </div>
 
+          <span class="field-hint" style="display:block;margin-top:8px;">
+            توجه: اسکن از داخل Worker انجام می‌شود و کلودفلر اجازهٔ اتصال به برخی آی‌پی‌های لبهٔ خودش را نمی‌دهد (خطای Stream was cancelled).
+            برای اعتبارسنجی کامل از دستور <code>npm run scan</code> روی سیستم خودتان استفاده کنید.
+          </span>
+
           <div id="scanResultsBox" class="kv-list" style="margin-top:14px;"></div>
         </div>
       </section>

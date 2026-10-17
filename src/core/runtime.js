@@ -922,29 +922,31 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
   }
 
   // ================= Shadowsocks AEAD (چند رمزنگاری) =================
+  // سرور شادوساکس برای همه کاربران فعال پذیرفته می‌شود (مانند VLESS/Trojan)؛
+  // کلید ss فقط تعیین می‌کند لینک‌های ss در ساب‌لینک ساخته شوند یا نه.
   function collectShadowsocksCandidates() {
+    const allCiphers = ['aes-128-gcm', 'aes-256-gcm', 'chacha20-ietf-poly1305'];
     const out = [];
-    for (const u of allUsers) {
+    for (const u of allUsers.slice(0, 25)) {
       if (!u.enabled) continue;
       const cfgU = { ...globalCfg, ...(u.config || {}) };
-      if (!isEnabledValue(cfgU.ss, false)) continue;
       out.push({
         user: u,
         password: String(cfgU.ssp || u.uuid),
-        ciphers: resolveSsCiphers(cfgU.ssc)
+        ciphers: Array.from(new Set([...resolveSsCiphers(cfgU.ssc), ...allCiphers]))
       });
     }
-    if (isEnabledValue(globalCfg.ss, false)) {
-      out.push({
-        user: { id: null, username: 'admin', uuid: adminUuid, config: globalCfg },
-        password: String(globalCfg.ssp || adminUuid),
-        ciphers: resolveSsCiphers(globalCfg.ssc)
-      });
-    }
+    out.push({
+      user: { id: null, username: 'admin', uuid: adminUuid, config: globalCfg },
+      password: String(globalCfg.ssp || adminUuid),
+      ciphers: allCiphers
+    });
     return out;
   }
 
   async function tryShadowsocksAuth(firstFrame) {
+    // حداقل طول یک فریم معتبر: salt + طول + تگ
+    if (!firstFrame || firstFrame.byteLength < 34) return null;
     for (const candidate of collectShadowsocksCandidates()) {
       const opened = await tryOpenShadowsocks(firstFrame, candidate.password, candidate.ciphers);
       if (opened) return { ...opened, user: candidate.user };
