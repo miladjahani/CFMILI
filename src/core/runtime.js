@@ -5,7 +5,7 @@
 
 import { connect as cfConnect } from 'cloudflare:sockets';
 import { isEnabledValue } from '../config/defaults.js';
-import { createEncoder, resolveSsCiphers, tryOpenShadowsocks } from './shadowsocks.js';
+import { collectSsUploadPayloads, createEncoder, resolveSsCiphers, tryOpenShadowsocks } from './shadowsocks.js';
 import { isValidUuid, parseAddressAndPort, sha224Hex, sharedDecoder } from './utils.js';
 import { getXhttpPaddingMeta, selectFallbackProxyAddress } from '../subscription/generator.js';
 import { recordUserActivity } from '../db/d1.js';
@@ -981,8 +981,8 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
     const writer = remoteSock.writable.getWriter();
     ssState = { decoder: session.decoder, encoder, writer, closed: false };
 
-    for (const payload of payloads.slice(1)) {
-      if (!payload.byteLength) continue;
+    // ارسال فوری دادهٔ همراه آدرس (اولین chunk) + chunkهای بعدی همان بسته
+    for (const payload of collectSsUploadPayloads({ target, payloads })) {
       await writer.write(payload);
     }
 

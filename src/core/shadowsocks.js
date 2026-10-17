@@ -376,25 +376,38 @@ export async function createEncoder({ cipher, masterKey }) {
 }
 
 // ------------------------------------------------------------ address codec
+// انواع آدرس در Shadowsocks همان ATYP پروتکل SOCKS5 است:
+//   0x01 = IPv4، 0x03 = دامنه (len + name)، 0x04 = IPv6
+// (استفاده از ۲ برای دامنه یا ۳ برای IPv6 باعث می‌شود کلاینت‌های واقعی مقصد را اشتباه بخوانند.)
+export const SS_ATYP_IPV4 = 1;
+export const SS_ATYP_DOMAIN = 3;
+export const SS_ATYP_IPV6 = 4;
+
 export function encodeSsAddress(host, port, addressType = null) {
   const clean = String(host || '').trim().replace(/^\[|\]$/g, '');
   const portBuf = new Uint8Array([(port >> 8) & 0xff, port & 0xff]);
-  const type = addressType || (clean.includes(':') ? 3 : /^\d{1,3}(\.\d{1,3}){3}$/.test(clean) ? 1 : 2);
-  if (type === 1) {
+  const type = addressType || (
+    clean.includes(':')
+      ? SS_ATYP_IPV6
+      : /^\d{1,3}(\.\d{1,3}){3}$/.test(clean)
+        ? SS_ATYP_IPV4
+        : SS_ATYP_DOMAIN
+  );
+  if (type === SS_ATYP_IPV4) {
     const octets = clean.split('.').map(n => parseInt(n, 10) & 0xff);
-    return concatBytes(new Uint8Array([1, ...octets]), portBuf);
+    return concatBytes(new Uint8Array([SS_ATYP_IPV4, ...octets]), portBuf);
   }
-  if (type === 3) {
+  if (type === SS_ATYP_IPV6) {
     const groups = expandIpv6(clean);
     const bytes = new Uint8Array(16);
     groups.forEach((g, i) => {
       bytes[i * 2] = (g >> 8) & 0xff;
       bytes[i * 2 + 1] = g & 0xff;
     });
-    return concatBytes(new Uint8Array([3]), bytes, portBuf);
+    return concatBytes(new Uint8Array([SS_ATYP_IPV6]), bytes, portBuf);
   }
-  const name = utf8(clean);
-  return concatBytes(new Uint8Array([2, name.byteLength]), name, portBuf);
+  const name = utf8(clean).slice(0, 255);
+  return concatBytes(new Uint8Array([SS_ATYP_DOMAIN, name.byteLength]), name, portBuf);
 }
 
 function expandIpv6(ip) {
@@ -412,11 +425,11 @@ export function parseSsAddress(bytes) {
   const atyp = bytes[0];
   let offset = 1;
   let host = '';
-  if (atyp === 1) {
+  if (atyp === SS_ATYP_IPV4) {
     if (bytes.byteLength < offset + 4 + 2) return null;
     host = Array.from(bytes.slice(offset, offset + 4)).join('.');
     offset += 4;
-  } else if (atyp === 3) {
+  } else if (atyp === SS_ATYP_IPV6) {
     if (bytes.byteLength < offset + 16 + 2) return null;
     const groups = [];
     for (let i = 0; i < 8; i++) {
@@ -424,11 +437,11 @@ export function parseSsAddress(bytes) {
     }
     host = groups.join(':');
     offset += 16;
-  } else if (atyp === 2) {
+  } else if (atyp === SS_ATYP_DOMAIN) {
     if (bytes.byteLength < offset + 1) return null;
     const len = bytes[offset];
     offset += 1;
-    if (bytes.byteLength < offset + len + 2) return null;
+    if (!len || bytes.byteLength < offset + len + 2) return null;
     host = new TextDecoder().decode(bytes.slice(offset, offset + len));
     offset += len;
   } else {
@@ -440,7 +453,7 @@ export function parseSsAddress(bytes) {
   return {
     host,
     port,
-    addressType: atyp === 1 ? 1 : atyp === 2 ? 2 : 3,
+    addressType: atyp,
     headLength: offset,
     payload: bytes.slice(offset)
   };
@@ -469,6 +482,17 @@ export function resolveSsCiphers(value) {
 
 export function pickPrimarySsCipher(value) {
   return resolveSsCiphers(value)[0] || SS_DEFAULT_CIPHER;
+}
+
+// دیتای همراه آدرس در همان اولین chunk (مثلاً ClientHello در TLS) باید بلافاصله
+// به مقصد فرستاده شود؛ در غیر این صورت دست‌دهی کلاینت معطل می‌ماند.
+export function collectSsUploadPayloads({ target, payloads } = {}) {
+  const out = [];
+  if (target?.payload?.byteLength) out.push(target.payload);
+  for (const payload of (payloads || []).slice(1)) {
+    if (payload?.byteLength) out.push(payload);
+  }
+  return out;
 }
 
 // ------------------------------------------------------------- auth attempt

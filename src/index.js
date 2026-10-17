@@ -31,6 +31,16 @@ function normalizeCleanPath(p = '') {
   return String(p || '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
 }
 
+// مسیرهای دارای درصد ناقص (مثل /status/%E0) نباید URIError بدهند؛
+// در غیر این صورت درخواست با پاسخ ۲۰۰ «recovered» اشتباه برگردانده می‌شد.
+function decodePathToken(value) {
+  try {
+    return decodeURIComponent(String(value ?? ''));
+  } catch (_e) {
+    return String(value ?? '');
+  }
+}
+
 function isAdminAuthorizedPath(prefixPath, adminUuid, customPath) {
   const cleanPrefix = normalizeCleanPath(prefixPath);
   if (!cleanPrefix) return false;
@@ -70,7 +80,7 @@ export default {
 
         // API عمومی صفحه وضعیت کاربر
         if (apiSubPath.startsWith('status/')) {
-          const token = decodeURIComponent(apiSubPath.slice('status/'.length));
+          const token = decodePathToken(apiSubPath.slice('status/'.length));
           return await handlePublicUserStatusApi(request, env, token);
         }
 
@@ -174,7 +184,7 @@ export default {
           (pathParts[0] === 'status' && pathParts[1]) ||
           (pathParts.length === 2 && pathParts[1] === 'status')
         ) {
-          const token = decodeURIComponent(pathParts[0] === 'status' ? pathParts[1] : pathParts[0]);
+          const token = decodePathToken(pathParts[0] === 'status' ? pathParts[1] : pathParts[0]);
           let userObj = await getUserByIdOrToken(env, token);
           if (!userObj && isAdminAuthorizedPath(token, adminUuid, globalCfg.d)) {
             userObj = allUsers[0] || {
@@ -220,8 +230,8 @@ export default {
           (pathParts[0] === 'sub' && pathParts[1])
         ) {
           const token = pathParts[0] === 'sub'
-            ? decodeURIComponent(pathParts.slice(1).join('/'))
-            : decodeURIComponent(pathParts.slice(0, -1).join('/'));
+            ? decodePathToken(pathParts.slice(1).join('/'))
+            : decodePathToken(pathParts.slice(0, -1).join('/'));
 
           let targetUser = await getUserByIdOrToken(env, token);
           if (!targetUser && isAdminAuthorizedPath(token, adminUuid, globalCfg.d)) {

@@ -10,6 +10,7 @@ import { FX_RUNTIME_JS } from '../src/ui/fx.js';
 import {
   chacha20Poly1305Open,
   chacha20Poly1305Seal,
+  collectSsUploadPayloads,
   createDecoder,
   createEncoder,
   encodeSsAddress,
@@ -255,6 +256,20 @@ async function runTests() {
     assert.ok(statusHtml.includes('v2rayNG') && statusHtml.includes('Exclusive') && statusHtml.includes('Amnezia VPN'), 'صفحه وضعیت باید شامل تمام کلاینت‌های تصویر ارسالی باشد');
     assert.ok(statusHtml.includes('t.me/miliconfig'), 'صفحه وضعیت باید لینک کانال پشتیبانی miliconfig را داشته باشد');
     assert.ok(!/t\.me\/\+/.test(statusHtml), 'هیچ لینک دعوت منقضی در صفحه وضعیت نباید باشد');
+
+    // توکن دارای درصد ناقص نباید باعث URIError و پاسخ ۲۰۰ «recovered» شود
+    const badTokenResp = await worker.fetch(
+      new Request('https://mili.example.com/status/%E0%A4%A'),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(badTokenResp.status, 404, 'توکن با درصد ناقص باید 404 بدهد، نه 200 recovered');
+    const badSubResp = await worker.fetch(
+      new Request('https://mili.example.com/sub/%E0%A4%A'),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(badSubResp.status, 403, 'لینک ساب با توکن ناقص باید 403 بدهد، نه 200 recovered');
     console.log('  ✓ تست ۶ (صفحه وضعیت اختصاصی کاربر برای ارسال به مشتری): موفق');
 
     console.log('\n🎉 تمام تست‌های عملکردی، دیتابیس D1، رابط کاربری و مبهم‌سازی با موفقیت ۱۰۰٪ پاس شدند!');
@@ -594,15 +609,31 @@ async function runTests() {
     const ssPassword = 'mili-ss-password';
     const ssMaster = await evpBytesToKey(ssPassword, 32);
     const ssEncoder = await createEncoder({ cipher: 'chacha20-ietf-poly1305', masterKey: ssMaster });
-    const ssFirstFrame = await ssEncoder.encode(encodeSsAddress('example.com', 443));
+    // کلاینت واقعی آدرس مقصد و اولین دادهٔ خود (مثل ClientHello) را در یک chunk می‌فرستد
+    const ssAddress = encodeSsAddress('example.com', 443);
+    const ssHello = new TextEncoder().encode('CLIENT-HELLO-BYTES');
+    const ssFirstPayload = new Uint8Array(ssAddress.byteLength + ssHello.byteLength);
+    ssFirstPayload.set(ssAddress, 0);
+    ssFirstPayload.set(ssHello, ssAddress.byteLength);
+    const ssFirstFrame = await ssEncoder.encode(ssFirstPayload);
     const ssAuth = await tryOpenShadowsocks(ssFirstFrame, ssPassword, ['chacha20-ietf-poly1305']);
     assert.ok(ssAuth && ssAuth.target.host === 'example.com' && ssAuth.target.port === 443, 'احراز هویت Shadowsocks باید آدرس مقصد را باز کند');
+    assert.strictEqual(toHex(ssAuth.target.payload), toHex(ssHello), 'دادهٔ همراه آدرس باید در فریم اول باقی بماند');
+    const ssUpload = collectSsUploadPayloads(ssAuth);
+    assert.strictEqual(ssUpload.length, 1, 'فریم اول باید یک payload برای ارسال به مقصد داشته باشد');
+    assert.strictEqual(toHex(ssUpload[0]), toHex(ssHello), 'اولین دادهٔ کلاینت (ClientHello) نباید حذف شود');
     assert.strictEqual(await tryOpenShadowsocks(ssFirstFrame, 'wrong-password', ['chacha20-ietf-poly1305']), null, 'رمز اشتباه نباید احراز شود');
 
+    // ATYP باید مطابق SOCKS5 باشد: ۱ = IPv4، ۳ = دامنه، ۴ = IPv6
+    assert.strictEqual(encodeSsAddress('104.16.1.1', 443)[0], 1, 'ATYP آدرس IPv4 باید ۱ باشد');
+    assert.strictEqual(encodeSsAddress('example.com', 443)[0], 3, 'ATYP دامنه باید ۳ باشد');
+    assert.strictEqual(encodeSsAddress('2606:4700::6810:101', 443)[0], 4, 'ATYP آدرس IPv6 باید ۴ باشد');
     const ssAddr4 = parseSsAddress(encodeSsAddress('104.16.1.1', 443));
     const ssAddr6 = parseSsAddress(encodeSsAddress('2606:4700::6810:101', 443));
-    assert.deepStrictEqual([ssAddr4.host, ssAddr4.port], ['104.16.1.1', 443], 'آدرس IPv4 شادوساکس باید درست رمزگشایی شود');
-    assert.deepStrictEqual([ssAddr6.host, ssAddr6.port, ssAddr6.addressType], ['2606:4700:0:0:0:0:6810:101', 443, 3], 'آدرس IPv6 شادوساکس باید درست رمزگشایی شود');
+    const ssAddrDomain = parseSsAddress(ssAddress);
+    assert.deepStrictEqual([ssAddr4.host, ssAddr4.port, ssAddr4.addressType], ['104.16.1.1', 443, 1], 'آدرس IPv4 شادوساکس باید درست رمزگشایی شود');
+    assert.deepStrictEqual([ssAddr6.host, ssAddr6.port, ssAddr6.addressType], ['2606:4700:0:0:0:0:6810:101', 443, 4], 'آدرس IPv6 شادوساکس باید درست رمزگشایی شود');
+    assert.deepStrictEqual([ssAddrDomain.host, ssAddrDomain.port, ssAddrDomain.addressType], ['example.com', 443, 3], 'دامنه در Shadowsocks باید با ATYP=۳ خوانده شود');
     assert.deepStrictEqual(resolveSsCiphers('all'), ['aes-128-gcm', 'aes-256-gcm', 'chacha20-ietf-poly1305'], 'حالت all باید سه رمزنگاری را برگرداند');
     console.log('  ✓ تست ۱۶ (Shadowsocks: بردار RFC 8439 + سه رمزنگاری + فریم‌بندی + آدرس IPv4/IPv6): موفق');
 
