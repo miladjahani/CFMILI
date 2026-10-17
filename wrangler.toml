@@ -21,5 +21,5 @@ BRAND = "miliconfig"
 # جداول را در اولین درخواست به‌صورت ۱۰۰٪ خودکار می‌سازد.
 [[d1_databases]]
 binding = "DB"
-database_name = "miliconfig-db-v2"
-database_id = "26c44d06-a3e6-4606-85fa-447b3ee0a191"
+database_name = "miliconfig-db"
+database_id = "0bea7c3c-dcc8-4917-9ff1-b37d022f5d78"
