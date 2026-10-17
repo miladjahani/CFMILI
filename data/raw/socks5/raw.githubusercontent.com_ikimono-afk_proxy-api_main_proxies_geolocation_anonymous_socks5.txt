@@ -1,0 +1,12 @@
+5.133.219.4:44781::Sweden::None::None
+51.15.133.214:16379::Switzerland::Zurich::Zurich
+51.15.223.12:16379::United Kingdom::None::None
+51.83.190.248:19050::Germany::None::None
+62.109.28.195:30009::United States::None::None
+91.121.33.236:56749::France::None::None
+95.217.122.41:29288::Finland::Uusimaa::Helsinki
+178.251.111.118:24572::Ukraine::Chernihiv::Borzna
+185.129.250.235:49800::Spain::None::None
+202.149.89.69:7999::Indonesia::None::None
+212.90.103.59:3528::Canada::None::None
+218.92.231.165:1080::China::Hubei::Wuhan

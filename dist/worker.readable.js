@@ -1,5 +1,4 @@
 import { connect as cfConnect } from 'cloudflare:sockets';
-var _0xMDC=(function(){var _0xT=[0x4d,0x43,0x44,0x31,0x1f,0x5a];var _0xS=0x5eed;function _0xH(_0xA,_0xB){var _0xR=(_0xA^_0xB)>>>0;_0xR=(_0xR*0x1f+_0xS)>>>0;return _0xR;}function tap(_0xC){return (_0xH(_0xC,_0xS)^(_0xC+_0xS))&0x0;}return {tap:tap,h:_0xH,s:_0xS,t:_0xT,tag:"__milicfg_deadcode_v3_1__"};})();
 
 // --- MODULE: src/config/defaults.js ---
 // ============================================================================
@@ -196,7 +195,7 @@ const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 const ALLOWED_ALPN = ['', 'h3', 'h2', 'http/1.1', 'h3,h2', 'h2,http/1.1', 'h3,h2,http/1.1'];
 const REMOTE_CONFIG_URL = 'https://raw.githubusercontent.com/byJoey/test/refs/heads/main/tist.ini';
 
-function isEnabledValue(val, defaultEnabled = false) {if(_0xMDC.tap(0x5a)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+function isEnabledValue(val, defaultEnabled = false) {
   if (val === undefined || val === null || val === '') return defaultEnabled;
   if (val === true || val === false) return val;
   const text = String(val).trim().toLowerCase();
@@ -243,7 +242,7 @@ function normalizeEffectiveConfig(rawConfig = {}) {
   return snap;
 }
 
-function readEnvConfigValue(env, ...names) {if(_0xMDC.tap(0x49)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+function readEnvConfigValue(env, ...names) {
   if (!env) return undefined;
   for (const name of names) {
     if (env[name] !== undefined && env[name] !== null && env[name] !== '' && typeof env[name] !== 'object') {
@@ -394,7 +393,7 @@ function parseLocationFilter(value = '') {
   return picked;
 }
 
-function getSanctionFreeLocations() {if(_0xMDC.tap(0x38)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+function getSanctionFreeLocations() {
   return LOCATIONS.filter(l => SANCTION_FREE_CODES.includes(l.code));
 }
 
@@ -646,7 +645,7 @@ function encodeBase64Utf8(str) {
   }
 }
 
-function isValidUuid(str) {if(_0xMDC.tap(0x77)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+function isValidUuid(str) {
   if (!str || typeof str !== 'string') return false;
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
 }
@@ -694,7 +693,7 @@ function isValidDomain(domain) {
   return /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(domain.trim());
 }
 
-function normalizeNodeHost(host) {if(_0xMDC.tap(0x66)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+function normalizeNodeHost(host) {
   return String(host || '').trim().replace(/^\[([^\]]+)\]$/, '$1');
 }
 
@@ -741,7 +740,7 @@ function finalizeMiliSubscriptionLinks(links = [], subNodeCount = 0, brand = BRA
   const cleanBrand = String(brand || BRAND_NAME).trim() || BRAND_NAME;
   const limit = parseInt(subNodeCount, 10);
   const sliced = Number.isFinite(limit) && limit > 0 ? links.slice(0, limit) : links.slice();
-  return sliced.map((link, idx) => {if(_0xMDC.tap(0x55)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+  return sliced.map((link, idx) => {
     const hashIdx = link.indexOf('#');
     const base = hashIdx > -1 ? link.substring(0, hashIdx) : link;
     let tag = '';
@@ -926,7 +925,7 @@ async function sha224Hex(text) {
   return out.join('');
 }
 
-function formatBytes(bytes = 0) {if(_0xMDC.tap(0x44)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+function formatBytes(bytes = 0) {
   const b = Number(bytes) || 0;
   if (b <= 0) return '0 B';
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -1008,7 +1007,7 @@ function hexToBytes(hex = '') {
   return out;
 }
 
-function concatBytes(...arrays) {if(_0xMDC.tap(0x33)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+function concatBytes(...arrays) {
   let total = 0;
   for (const a of arrays) total += a?.byteLength || 0;
   const out = new Uint8Array(total);
@@ -1062,7 +1061,7 @@ async function hkdfSha1(masterKey, salt, keyLen = 32) {
   return new Uint8Array(bits);
 }
 
-async function deriveSubkey(masterKey, salt, keyLen) {if(_0xMDC.tap(0x72)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+async function deriveSubkey(masterKey, salt, keyLen) {
   return hkdfSha1(masterKey, salt, keyLen);
 }
 
@@ -1090,7 +1089,7 @@ function readU32LE(bytes, offset = 0) {
   return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
 }
 
-function writeU32LE(out, offset, value) {if(_0xMDC.tap(0x61)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+function writeU32LE(out, offset, value) {
   out[offset] = value & 0xff;
   out[offset + 1] = (value >>> 8) & 0xff;
   out[offset + 2] = (value >>> 16) & 0xff;
@@ -1156,7 +1155,7 @@ function bigIntToLeBytes(value, len) {
   return out;
 }
 
-function poly1305(msg, key32) {if(_0xMDC.tap(0x50)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+function poly1305(msg, key32) {
   const r = leBytesToBigInt(key32.slice(0, 16)) & 0x0ffffffc0ffffffc0ffffffc0fffffffn;
   const s = leBytesToBigInt(key32.slice(16, 32));
   const p = (1n << 130n) - 5n;
@@ -1214,7 +1213,7 @@ function chacha20Poly1305Open(key, nonce, sealed, aad = new Uint8Array(0)) {
 }
 
 // ------------------------------------------------------------- AEAD wrapper
-async function importAesKey(rawKey) {if(_0xMDC.tap(0x3f)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+async function importAesKey(rawKey) {
   return crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
 }
 
@@ -1438,7 +1437,7 @@ function resolveSsCiphers(value) {
   return list.length ? Array.from(new Set(list)) : [SS_DEFAULT_CIPHER];
 }
 
-function pickPrimarySsCipher(value) {if(_0xMDC.tap(0x2e)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+function pickPrimarySsCipher(value) {
   return resolveSsCiphers(value)[0] || SS_DEFAULT_CIPHER;
 }
 
@@ -1499,7 +1498,7 @@ function bigIntToIp(value) {
   return [24n, 16n, 8n, 0n].map(shift => Number((n >> shift) & 255n)).join('.');
 }
 
-function parseCidrV4(cidr) {if(_0xMDC.tap(0x6d)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+function parseCidrV4(cidr) {
   const [base, bitsRaw] = String(cidr || '').split('/');
   const bits = parseInt(bitsRaw, 10);
   const start = ipToBigInt(base);
@@ -1564,7 +1563,7 @@ function generateCandidateIps({ count = 20, ipv6 = false, seedIps = [], rand = M
   return out.slice(0, total);
 }
 
-function parseTrace(text) {if(_0xMDC.tap(0x5c)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+function parseTrace(text) {
   const info = { ip: '', colo: '', loc: '', tls: '', warp: '', http: '', sni: '' };
   for (const line of String(text || '').split('\n')) {
     const idx = line.indexOf('=');
@@ -1624,7 +1623,7 @@ function buildClientHello(hostname = DEFAULT_PROBE_SNI, rand = Math.random) {
 
 function withTimeout(promise, ms, message = 'timeout') {
   let timer = null;
-  const timeout = new Promise((_, reject) => {if(_0xMDC.tap(0x4b)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+  const timeout = new Promise((_, reject) => {
     timer = setTimeout(() => reject(new Error(message)), Math.max(300, Math.min(10000, ms)));
   });
   return Promise.race([promise, timeout]).finally(() => {
@@ -1712,7 +1711,7 @@ async function scanIpPool(ips = [], {
   return results;
 }
 
-function summarizeScanResults(results = []) {if(_0xMDC.tap(0x3a)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+function summarizeScanResults(results = []) {
   const list = Array.isArray(results) ? results : [];
   const healthy = list.filter(r => r && r.ok);
   const best = healthy.slice().sort((a, b) => (a.latency || 0) - (b.latency || 0));
@@ -2721,7 +2720,7 @@ const memoryStore = {
 };
 
 // ۱. تشخیص هوشمند اتصال دیتابیس D1 با هر نام متغیری (DB, D1, miliconfig_db و غیره)
-function detectD1Binding(env) {if(_0xMDC.tap(0x29)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+function detectD1Binding(env) {
   if (!env || typeof env !== 'object') return null;
   const priorityNames = ['DB', 'D1', 'db', 'd1', 'MILICONFIG_DB', 'miliconfig_db', 'DATABASE', 'database'];
   for (const name of priorityNames) {
@@ -2786,7 +2785,7 @@ function getAdminUuid(env = {}) {
 }
 
 // ۳. ساخت خودکار جداول D1 بدون استفاده از db.exec چندخطی (ضد خطای استقرار دستی D1)
-async function ensureD1Schema(env = {}, force = false) {if(_0xMDC.tap(0x68)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+async function ensureD1Schema(env = {}, force = false) {
   const detected = detectD1Binding(env);
   if (!detected) {
     ensureMemorySeeded(env);
@@ -3088,7 +3087,7 @@ async function saveGlobalConfig(env = {}, newValues = {}) {
   return await loadGlobalConfig(env, true);
 }
 
-async function resetGlobalConfig(env = {}) {if(_0xMDC.tap(0x57)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+async function resetGlobalConfig(env = {}) {
   await ensureD1Schema(env);
   const detectedD1 = detectD1Binding(env);
   const detectedKv = detectKvBinding(env);
@@ -3399,7 +3398,7 @@ async function updateUser(env = {}, userId, payload = {}, clientIp = '') {
   return updated;
 }
 
-async function resetUserStats(env = {}, userId, clientIp = '') {if(_0xMDC.tap(0x46)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+async function resetUserStats(env = {}, userId, clientIp = '') {
   const existing = await getUserByIdOrToken(env, userId);
   if (!existing) return null;
   const now = Date.now();
@@ -3543,7 +3542,7 @@ async function getAuditLogs(env = {}, limit = 15) {
   return memoryStore.auditLogs.slice(0, limit);
 }
 
-async function getStorageDiagnostics(env = {}) {if(_0xMDC.tap(0x35)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+async function getStorageDiagnostics(env = {}) {
   const d1State = await ensureD1Schema(env);
   const kvDetected = detectKvBinding(env);
   const users = await listUsers(env);
@@ -4025,7 +4024,7 @@ function generateSingboxConfig(links, options = {}) {
   const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan' || n.proto === 'ss'));
   const outboundTags = nodes.map(n => n.name);
 
-  function buildOutbound(n) {if(_0xMDC.tap(0x24)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+  function buildOutbound(n) {
     if (n.proto === 'ss') {
       return {
         type: 'shadowsocks',
@@ -4427,7 +4426,7 @@ function getJkDirective(text, name) {
   return m ? m[1].trim() : '';
 }
 
-function getJkInlineBlock(text, tag) {if(_0xMDC.tap(0x63)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+function getJkInlineBlock(text, tag) {
   const m = text.match(new RegExp('<' + tag + '>([\\s\\S]*?)<\\/' + tag + '>'));
   return m ? m[1].trim() : '';
 }
@@ -4524,7 +4523,7 @@ async function fetchJkNodes() {
   return parsed;
 }
 
-async function generateResidentialChainConfig(links, options = {}) {if(_0xMDC.tap(0x52)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+async function generateResidentialChainConfig(links, options = {}) {
   const customDNS = options.customDNS || 'https://223.5.5.5/dns-query';
   const customECHDomain = options.customECHDomain || 'cloudflare-ech.com';
   const subNodeCount = parseInt(options.subNodeCount ?? 50, 10) || 0;
@@ -4735,7 +4734,7 @@ async function selectFallbackProxyAddress(workerRegion = '', enableRegionMatch =
   return FALLBACK_PROXY_IPS[0];
 }
 
-function getXhttpPaddingMeta(uuidStr) {if(_0xMDC.tap(0x41)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+function getXhttpPaddingMeta(uuidStr) {
   const s = String(uuidStr || '');
   return {
     header: s.slice(1, 7) || 'x-mili',
@@ -4897,7 +4896,7 @@ async function fetchPreferredFromUrls(urlListStr = '', defaultPort = '443', time
   return parsed;
 }
 
-function buildVlessLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '') {if(_0xMDC.tap(0x30)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+function buildVlessLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '') {
   const disableNonTls = cfg.dkby === 'yes' || cfg.ech === 'yes';
   const defaultHttps = [443];
   const defaultHttp = disableNonTls ? [] : [80];
@@ -5129,7 +5128,7 @@ async function generateUserNodesList(userOrConfig, workerHost, queryOverrides = 
   const namer = createMiliNodeNamer(BRAND_NAME);
   const rawLinks = [];
 
-  function appendFromSource(sourceList) {if(_0xMDC.tap(0x1f)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+  function appendFromSource(sourceList) {
     if (!Array.isArray(sourceList) || sourceList.length === 0) return;
     if (evEnabled) rawLinks.push(...buildVlessLinks(sourceList, userUuid, workerHost, cfg, namer, wkOverride));
     if (etEnabled) rawLinks.push(...buildTrojanLinks(sourceList, userUuid, workerHost, cfg, namer, wkOverride));
@@ -5413,7 +5412,7 @@ function bytesToUuid(bytes, offset = 0) {
   return isValidUuid(s) ? s : '';
 }
 
-function toUint8Array(chunk) {if(_0xMDC.tap(0x5e)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+function toUint8Array(chunk) {
   if (chunk instanceof Uint8Array) return chunk;
   if (chunk instanceof ArrayBuffer) return new Uint8Array(chunk);
   if (ArrayBuffer.isView(chunk)) return new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
@@ -5487,7 +5486,7 @@ function parseOutboundProxyConfig(rawAddr) {
   return { username, password, hostname, socksPort, kind };
 }
 
-function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max(1, maxBytes >> 8)) {if(_0xMDC.tap(0x4d)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max(1, maxBytes >> 8)) {
   let queue = [];
   let head = 0;
   let queuedBytes = 0;
@@ -5518,7 +5517,7 @@ function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max
       head = 0;
       queuedBytes = 0;
     },
-    sow(data) {if(_0xMDC.tap(0x3c)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+    sow(data) {
       const len = data?.byteLength || 0;
       if (!len) return true;
       if (queuedBytes + len > maxBytes || queue.length - head >= maxItems) return false;
@@ -5585,7 +5584,7 @@ function createDownloadCoalescer(ws, onBytesSent = null) {
     if (timer || microScheduled) return;
     microScheduled = true;
     snapSeq = pushSeq;
-    queueMicrotask(() => {if(_0xMDC.tap(0x2b)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+    queueMicrotask(() => {
       microScheduled = false;
       if (!offset || timer) return;
       if (maxPacket - offset < tail) return flush();
@@ -5653,7 +5652,7 @@ async function openVerifiedSocket(address, port, fetcher = null) {
   }
 }
 
-async function connectRacedSocket(address, port, fetcher = null, raceCount = 1) {if(_0xMDC.tap(0x1a)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+async function connectRacedSocket(address, port, fetcher = null, raceCount = 1) {
   const count = Math.max(1, raceCount | 0);
   if (count <= 1) return openVerifiedSocket(address, port, fetcher);
   const tasks = Array.from({ length: count }, () => openVerifiedSocket(address, port, fetcher));
@@ -5677,7 +5676,7 @@ function wrapResidualSocket(sock, residualData) {
       controller.enqueue(residualData);
       upstreamReader = sock.readable.getReader();
     },
-    async pull(controller) {if(_0xMDC.tap(0x59)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+    async pull(controller) {
       const { value, done } = await upstreamReader.read();
       if (done) {
         controller.close();
@@ -5973,7 +5972,7 @@ async function pipeRemoteToWebSocket(remoteSocket, ws, vlessHeader, retryCallbac
   let firstByteTimer = null;
 
   if (retryCallback) {
-    firstByteTimer = setTimeout(() => {if(_0xMDC.tap(0x48)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+    firstByteTimer = setTimeout(() => {
       if (!hasData && !retried) {
         retried = true;
         try { remoteSocket.close && remoteSocket.close(); } catch (_e) {}
@@ -6107,7 +6106,7 @@ async function establishOutboundAndPipe(
     return { remoteSock, writer };
   }
 
-  function detachIfCurrent(sock, writer) {if(_0xMDC.tap(0x37)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+  function detachIfCurrent(sock, writer) {
     if (remoteState.socket !== sock) return;
     try { writer?.releaseLock(); } catch (_e) {}
     remoteState.socket = null;
@@ -6261,7 +6260,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
   const uploadQueue = createChunkQueue(UPLOAD_PACKET_SIZE, UPLOAD_QUEUE_LIMIT, UPLOAD_QUEUE_LIMIT >> 8);
   const fetcher = request.fetcher;
 
-  function addTransferredBytes(n) {if(_0xMDC.tap(0x26)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+  function addTransferredBytes(n) {
     sessionBytes += Number(n) || 0;
   }
 
@@ -6407,7 +6406,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
     return true;
   }
 
-  async function drainUploadQueue() {if(_0xMDC.tap(0x15)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+  async function drainUploadQueue() {
     if (draining || closed || !remoteState.writer) return;
     draining = true;
     try {
@@ -6576,7 +6575,7 @@ function generateXhttpPaddingString(len) {
   return out;
 }
 
-function calcHuffmanByteLen(str) {if(_0xMDC.tap(0x54)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
+function calcHuffmanByteLen(str) {
   const bytes = new TextEncoder().encode(str);
   let bits = 0;
   for (let i = 0; i < bytes.length; i++) bits += XHTTP_HUFFMAN_LEN[bytes[i]];
@@ -6722,7 +6721,7 @@ async function handleXhttpPostRequest(request, env, ctx, globalCfg, allUsers, ad
   }
 
   let totalBytes = 0;
-  const upPromise = (async () => {if(_0xMDC.tap(0x43)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+  const upPromise = (async () => {
     const writer = remoteSocket.writable.getWriter();
     try {
       if (parsedHeader.data && parsedHeader.data.length) {
@@ -6839,7 +6838,7 @@ function parseYxArray(yxStr = '') {
   return res;
 }
 
-function serializeYxArray(arr = []) {if(_0xMDC.tap(0x32)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
+function serializeYxArray(arr = []) {
   if (!Array.isArray(arr) || arr.length === 0) return '';
   return arr.map(item => `${item.ip}:${item.port || 443}#${item.name || item.ip}`).join(',');
 }
@@ -7217,7 +7216,7 @@ async function handleScannerApi(request, env, bypassAeCheck = false) {
 }
 
 // ۴. وضعیت زنده داشبورد و دیتابیس D1 (/api/stats & /api/d1)
-async function handleDashboardStatsApi(request, env) {if(_0xMDC.tap(0x21)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
+async function handleDashboardStatsApi(request, env) {
   if (request.method === 'OPTIONS') return jsonResponse({ ok: true });
   const url = new URL(request.url);
 
@@ -11407,7 +11406,7 @@ ${FX_RUNTIME_JS}
 // ============================================================================
 
 
-function normalizeCleanPath(p = '') {if(_0xMDC.tap(0x10)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
+function normalizeCleanPath(p = '') {
   return String(p || '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
 }
 
