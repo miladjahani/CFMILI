@@ -16,9 +16,10 @@ compatibility_date = "2024-09-23"
 [vars]
 BRAND = "miliconfig"
 
-# در صورت تمایل به معرفی D1 از طریق فایل wrangler.toml (اختیاری)،
-# خطوط زیر را از حالت کامنت خارج کرده و database_id خود را جایگزین کنید:
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "miliconfig-db"
-# database_id = "YOUR-D1-DATABASE-UUID-HERE"
+# اتصال دیتابیس D1 (ایجادشده در حساب Cloudflare همین پروژه).
+# برنامه هر نام بایندینگ (DB, D1, miliconfig و ...) را تشخیص می‌دهد و
+# جداول را در اولین درخواست به‌صورت ۱۰۰٪ خودکار می‌سازد.
+[[d1_databases]]
+binding = "DB"
+database_name = "miliconfig-db-v2"
+database_id = "26c44d06-a3e6-4606-85fa-447b3ee0a191"

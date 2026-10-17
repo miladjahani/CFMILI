@@ -8,6 +8,7 @@
     "build": "node scripts/build.js",
     "obfuscate": "node scripts/build.js --obfuscate",
     "test": "node scripts/test-worker.js",
+    "db:migrate": "node scripts/d1-migrate.js",
     "deploy:worker": "wrangler deploy",
     "deploy:worker:bundle": "npm run build && wrangler deploy _worker.js --no-bundle",
     "deploy:pages": "npm run build && wrangler pages deploy dist",
