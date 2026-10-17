@@ -9,6 +9,7 @@
 // ============================================================================
 
 import { PROXY_POOL_JSON } from './proxyPoolData.js';
+import { countryFlag, countryName } from './countries.js';
 
 export const PROXY_POOL = (() => {
   try {
@@ -35,6 +36,49 @@ export function proxyPoolStats() {
   };
 }
 
+// رکورد خام "IP|PORT|k|ping" را به آبجکت قابل‌استفاده در پنل/ساب تبدیل می‌کند
+function parseProxyRecord(rec) {
+  const parts = String(rec || '').split('|');
+  if (parts.length < 3) return null;
+  const [host, portStr, kind] = parts;
+  const port = parseInt(portStr, 10);
+  if (!host || !Number.isFinite(port) || port <= 0 || port > 65535) return null;
+  const addr = host.includes(':') ? `[${host}]` : host;
+  return {
+    host,
+    port,
+    kind: kind === 'h' ? 'http' : 'socks5',
+    pingMs: parseInt(parts[3], 10) || 0,
+    s: `${kind === 'h' ? 'http' : 'socks5'}://${addr}:${port}`
+  };
+}
+
+// فهرست کشورهای استخر با نام/پرچم و تعداد پروکسی سالم (نزولی)
+export function proxyPoolCountries() {
+  const countries = PROXY_POOL.countries || {};
+  return Object.keys(countries)
+    .map(code => ({
+      code,
+      count: Array.isArray(countries[code]) ? countries[code].length : 0,
+      name: countryName(code),
+      flag: countryFlag(code)
+    }))
+    .filter(c => c.count > 0)
+    .sort((a, b) => b.count - a.count || a.code.localeCompare(b.code));
+}
+
+// بهترین پروکسی‌های یک کشور (کمترین تاخیر سلامت‌سنجی) برای نمایش در پنل
+export function listCountryProxies(code = '', limit = 40) {
+  const list = (PROXY_POOL.countries || {})[String(code).toUpperCase()];
+  if (!Array.isArray(list) || list.length === 0) return [];
+  const max = Math.max(1, Math.min(200, parseInt(limit, 10) || 40));
+  return list
+    .map(parseProxyRecord)
+    .filter(Boolean)
+    .sort((a, b) => (a.pingMs || 99999) - (b.pingMs || 99999))
+    .slice(0, max);
+}
+
 export function hasProxyForCountry(code = '') {
   const list = (PROXY_POOL.countries || {})[String(code).toUpperCase()];
   return Array.isArray(list) && list.length > 0;
@@ -46,24 +90,20 @@ export function pickProxiesForCountry(code = '', count = 1, seed = Math.random) 
   if (!Array.isArray(list) || list.length === 0) return [];
   const n = Math.max(0, Math.min(parseInt(count, 10) || 0, list.length));
   if (n === 0) return [];
-  const idxs = new Set();
   const rand = typeof seed === 'function' ? seed : Math.random;
-  // اگر لیست بزرگ‌تر از n است، نمونه‌گیری بدون تکرار
-  let guard = 0;
-  while (idxs.size < n && guard++ < n * 40) idxs.add(Math.floor(rand() * list.length));
+  // نمونه‌گیری بدون تکرار با Fisher-Yates جزئی (تعداد خروجی دقیقاً n است)
+  const idxs = Array.from({ length: list.length }, (_, i) => i);
+  for (let i = 0; i < n; i++) {
+    const j = i + Math.floor(rand() * (list.length - i));
+    const tmp = idxs[i];
+    idxs[i] = idxs[j];
+    idxs[j] = tmp;
+  }
   const out = [];
-  for (const i of idxs) {
-    const rec = String(list[i] || '');
-    const parts = rec.split('|');
-    if (parts.length < 3) continue;
-    const [host, portStr, kind] = parts;
-    const port = parseInt(portStr, 10);
-    if (!host || !Number.isFinite(port) || port <= 0 || port > 65535) continue;
-    const addr = host.includes(':') ? `[${host}]` : host;
-    out.push({
-      s: `${kind === 'h' ? 'http' : 'socks5'}://${addr}:${port}`,
-      pingMs: parseInt(parts[3], 10) || 0
-    });
+  for (let i = 0; i < n; i++) {
+    const parsed = parseProxyRecord(list[idxs[i]]);
+    if (!parsed) continue;
+    out.push({ s: parsed.s, host: parsed.host, port: parsed.port, kind: parsed.kind, pingMs: parsed.pingMs });
   }
   return out;
 }
@@ -74,17 +114,31 @@ export function pickProxiesAcrossCountries(codes = [], total = 50, seed = Math.r
     .filter(hasProxyForCountry);
   if (uniq.length === 0) return [];
   const rand = typeof seed === 'function' ? seed : Math.random;
+  const want = Math.max(1, parseInt(total, 10) || 0);
   const targets = new Map();
-  let remaining = Math.max(0, parseInt(total, 10) || 0);
-  for (const cc of uniq) targets.set(cc, 1);
-  remaining -= uniq.length;
-  let guard = 0;
-  while (remaining > 0 && guard++ < remaining * 20 + 100) {
-    const cc = uniq[Math.floor(rand() * uniq.length)];
-    const cap = (PROXY_POOL.countries[cc] || []).length;
-    if ((targets.get(cc) || 0) < cap) {
-      targets.set(cc, (targets.get(cc) || 0) + 1);
-      remaining--;
+
+  if (want <= uniq.length) {
+    // تعداد نود کمتر از تعداد کشورهاست: فقط want کشور تصادفی، هر کدام یک پروکسی
+    const shuffled = uniq.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      const tmp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = tmp;
+    }
+    for (const cc of shuffled.slice(0, want)) targets.set(cc, 1);
+  } else {
+    // حداقل یک نود برای هر کشور، باقی به‌صورت رندوم تا سقف ظرفیت هر کشور
+    for (const cc of uniq) targets.set(cc, 1);
+    let remaining = want - uniq.length;
+    let guard = 0;
+    while (remaining > 0 && guard++ < remaining * 20 + 100) {
+      const cc = uniq[Math.floor(rand() * uniq.length)];
+      const cap = (PROXY_POOL.countries[cc] || []).length;
+      if ((targets.get(cc) || 0) < cap) {
+        targets.set(cc, (targets.get(cc) || 0) + 1);
+        remaining--;
+      }
     }
   }
   const out = [];

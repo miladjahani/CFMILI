@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FX_RUNTIME_JS } from '../src/ui/fx.js';
+import { runProxyPoolTests } from './tests/proxyPool.tests.js';
 import {
   chacha20Poly1305Open,
   chacha20Poly1305Seal,
@@ -708,6 +709,11 @@ async function runTests() {
     assert.ok(adminHtml.includes('Shadowsocks'), 'عنوان Shadowsocks باید در پنل دیده شود');
     assert.ok(adminHtml.includes('همه سه روش'), 'گزینه همه رمزنگاری‌ها باید در پنل باشد');
     console.log('  ✓ تست ۱۸ (کنترل‌های Shadowsocks و انتخاب رمزنگاری در پنل): موفق');
+
+    // ========================================================================
+    // تست‌های ۱۹ تا ۲۲: استخر پروکسی کشوری، پینگ واقعی، نودهای مولتی‌لوکیشن و پنل
+    // ========================================================================
+    await runProxyPoolTests({ assert, worker, d1Env, adminUuid, adminHtml });
   } finally {
     if (fs.existsSync(tmpTestFile)) fs.unlinkSync(tmpTestFile);
   }

@@ -6,6 +6,7 @@
 import { connect as cfConnect } from 'cloudflare:sockets';
 import { isEnabledValue } from '../config/defaults.js';
 import { collectSsUploadPayloads, createEncoder, resolveSsCiphers, tryOpenShadowsocks } from './shadowsocks.js';
+import { buildSocks5ConnectRequest } from './proxyProbe.js';
 import { isValidUuid, parseAddressAndPort, sha224Hex, sharedDecoder } from './utils.js';
 import { getXhttpPaddingMeta, selectFallbackProxyAddress } from '../subscription/generator.js';
 import { recordUserActivity } from '../db/d1.js';
@@ -129,7 +130,8 @@ export function parseOutboundProxyConfig(rawAddr) {
     hostSegments.push(lastSeg);
     socksPort = kind === PROXY_KIND_HTTPS ? 443 : 80;
   }
-  hostname = hostSegments.join(':');
+  // آدرس IPv6 در URL با کروشه می‌آید ولی connect به کروشه نیاز ندارد
+  hostname = hostSegments.join(':').replace(/^\[|\]$/g, '');
   if (!hostname) throw new Error('Empty proxy hostname');
   return { username, password, hostname, socksPort, kind };
 }
@@ -439,9 +441,7 @@ export async function connectViaOutboundProxy(_addrType, targetHost, targetPort,
     if (head[0] !== 1 || head[1] !== 0) throw new Error('SOCKS5 auth failed');
     consume(2);
   }
-  const cleanHost = /^\[.*\]$/.test(String(targetHost)) ? String(targetHost).slice(1, -1) : String(targetHost);
-  const hostBytes = new TextEncoder().encode(cleanHost);
-  await writer.write(new Uint8Array([5, 1, 0, 3, hostBytes.length, ...hostBytes, targetPort >> 8, targetPort & 255]));
+  await writer.write(buildSocks5ConnectRequest(targetHost, targetPort));
   head = await readExact(4);
   if (head[1] !== 0) throw new Error('SOCKS5 connect failed');
   const bindType = head[3];
@@ -955,10 +955,21 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
   }
 
   async function resolveSsRemote(user, target) {
+    const cfgU = { ...globalCfg, ...(user?.config || {}), ...(queryS ? { s: queryS } : {}) };
+    // پروکسی خروجی (s) برای سشن Shadowsocks هم اعمال می‌شود
+    if (cfgU.s && String(cfgU.s).trim()) {
+      try {
+        const proxyCfg = parseOutboundProxyConfig(cfgU.s);
+        if (proxyCfg) {
+          return await connectViaOutboundProxy(3, target.host, target.port, proxyCfg, fetcher, null);
+        }
+      } catch (_proxyErr) {
+        // در صورت خرابی پروکسی، مسیر مستقیم ادامه می‌یابد
+      }
+    }
     try {
       return await connectRacedSocket(target.host, target.port, fetcher, CONNECT_RACE_COUNT);
     } catch (_e) {
-      const cfgU = { ...globalCfg, ...(user?.config || {}) };
       const parsed = parseAddressAndPort(String(cfgU.p || '').trim());
       let fbHost = parsed.address;
       let fbPort = parsed.port || target.port;

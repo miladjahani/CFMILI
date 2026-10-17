@@ -54,13 +54,16 @@ export const CONFIG_DEFAULTS = {
   ss: 'no',
   ssc: 'chacha20-ietf-poly1305',
   ssp: '',
+  cpx: 'no',
+  pcc: 'all',
+  cpn: 24,
   subNodeCount: 50,
   brand: BRAND_NAME
 };
 
 export const BOOLEAN_CONFIG_KEYS = [
   'ev', 'et', 'ex', 'ech', 'ena', 'epd', 'epi', 'egi',
-  'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'jk', 'ss'
+  'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'jk', 'ss', 'cpx'
 ];
 
 export const ENV_KEY_MAPPING = {
@@ -100,6 +103,9 @@ export const ENV_KEY_MAPPING = {
   ss: ['ss', 'SS'],
   ssc: ['ssc', 'SSC', 'SS_CIPHER'],
   ssp: ['ssp', 'SSP', 'SS_PASSWORD'],
+  cpx: ['cpx', 'CPX', 'COUNTRY_PROXY'],
+  pcc: ['pcc', 'PCC', 'PROXY_COUNTRIES'],
+  cpn: ['cpn', 'CPN', 'COUNTRY_PROXY_NODES'],
   subNodeCount: ['subNodeCount', 'SUB_NODE_COUNT', 'nodeCount', 'NODE_COUNT']
 };
 
@@ -233,6 +239,10 @@ export function normalizeEffectiveConfig(rawConfig = {}) {
     return isEnabledValue(raw, false) ? 'yes' : '';
   })();
   snap.locs = snap.locs === undefined || snap.locs === null ? 'all' : String(snap.locs).trim();
+  // نودهای پروکسی خروجی تفکیک‌شده بر اساس کشور (cpx/pcc/cpn)
+  snap.pcc = String(snap.pcc ?? 'all').trim() || 'all';
+  const countryNodeCount = parseInt(snap.cpn, 10);
+  snap.cpn = Number.isFinite(countryNodeCount) && countryNodeCount > 0 ? Math.min(200, countryNodeCount) : 24;
   const parsedCount = parseInt(snap.subNodeCount, 10);
   snap.subNodeCount = Number.isFinite(parsedCount) && parsedCount >= 0 ? parsedCount : 50;
   snap.brand = BRAND_NAME;

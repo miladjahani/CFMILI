@@ -20,8 +20,12 @@ const MODULE_ORDER = [
   'src/config/defaults.js',
   'src/config/locations.js',
   'src/config/presets.js',
+  'src/config/countries.js',
+  'src/config/proxyPoolData.js',
+  'src/config/proxyPool.js',
   'src/core/utils.js',
   'src/core/shadowsocks.js',
+  'src/core/proxyProbe.js',
   'src/core/scanner.js',
   'src/ui/icons.js',
   'src/ui/baseCss.js',
@@ -80,8 +84,32 @@ function sha256(text) {
   return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
+// هر ماژول محلی که import می‌شود باید در MODULE_ORDER باشد؛ در غیر این صورت
+// کد آن بی‌صدا از باندل حذف می‌شد و Worker با خطای زمان اجرا از کار می‌افتاد.
+function assertAllModulesListed() {
+  const missing = new Set();
+  for (const relPath of MODULE_ORDER) {
+    const fullPath = path.join(ROOT_DIR, relPath);
+    if (!fs.existsSync(fullPath)) {
+      throw new Error(`فایل ماژول یافت نشد: ${relPath}`);
+    }
+    const code = fs.readFileSync(fullPath, 'utf8');
+    const dir = path.dirname(fullPath);
+    const importRe = /from\s+['"](\.[^'"]+)['"]/g;
+    let match = null;
+    while ((match = importRe.exec(code))) {
+      const resolved = path.relative(ROOT_DIR, path.resolve(dir, match[1])).split(path.sep).join('/');
+      if (!MODULE_ORDER.includes(resolved)) missing.add(`${relPath} → ${resolved}`);
+    }
+  }
+  if (missing.size > 0) {
+    throw new Error(`این ماژول‌ها در MODULE_ORDER نیستند و از باندل حذف می‌شوند:\n  ${[...missing].join('\n  ')}`);
+  }
+}
+
 async function buildAll() {
   console.log('⚡ [miliconfig] در حال ساخت و باندل کردن ماژول‌های پروژه...');
+  assertAllModulesListed();
 
   const chunks = [`import { connect as cfConnect } from 'cloudflare:sockets';\n`];
 

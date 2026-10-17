@@ -504,6 +504,88 @@ export function renderAdminDashboardHtml(initialData = {}) {
       direction: ltr;
       text-align: left;
     }
+    /* ================= استخر پروکسی خروجی تفکیک‌شده کشور ================= */
+    .pool-picker {
+      background: rgba(6, 12, 6, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .pool-picker-head {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .pool-picker-select {
+      flex: 1 1 260px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pool-picker-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .pool-row {
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pool-url {
+      font-family: "JetBrains Mono", monospace;
+      direction: ltr;
+      text-align: left;
+      font-size: 0.76rem;
+      color: var(--text);
+      overflow-wrap: anywhere;
+      flex: 1 1 200px;
+      min-width: 0;
+    }
+    .pool-row-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .ping-badge {
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .ping-badge.ok {
+      color: #b5ff4d;
+      border-color: rgba(181, 255, 77, 0.45);
+      background: rgba(181, 255, 77, 0.1);
+    }
+    .ping-badge.bad {
+      color: #ff8080;
+      border-color: rgba(255, 128, 128, 0.4);
+      background: rgba(255, 128, 128, 0.08);
+    }
+    .ping-badge.wait {
+      color: var(--muted);
+    }
+    .pool-node-settings {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      border-top: 1px dashed var(--border);
+      padding-top: 12px;
+    }
+    @media (max-width: 640px) {
+      .pool-row-actions { width: 100%; justify-content: flex-start; }
+    }
     .donut-wrap {
       display: flex;
       flex-direction: column;
@@ -1426,6 +1508,38 @@ ${BASE_UI_CSS}
             </div>
           </div>
 
+          <div class="modal-sec-title">۲.۵ استخر پروکسی تفکیک‌شده کشور، پینگ واقعی و مولتی‌لوکیشن رندوم</div>
+          <div class="pool-picker">
+            <div class="pool-picker-head">
+              <div class="pool-picker-select">
+                <label class="field-label">کشور پروکسی خروجی (s):</label>
+                <select id="proxyCountrySelect" class="mili-select" onchange="onProxyCountryChange()">
+                  <option value="">— در حال بارگذاری استخر —</option>
+                </select>
+              </div>
+              <button type="button" class="btn-ghost" onclick="loadCountryProxies(false)">📡 نمایش لیست</button>
+              <button type="button" class="btn-neon" onclick="loadCountryProxies(true)">⚡ لیست + پینگ واقعی</button>
+              <button type="button" class="btn-ghost" onclick="autoRandomMultiLocation()">🎲 ساخت خودکار مولتی‌لوکیشن رندوم</button>
+            </div>
+            <div class="pool-picker-meta" id="proxyPoolMeta">استخر سالم پروکسی‌ها در حال بارگذاری است…</div>
+            <div class="kv-list" id="sProxyList"></div>
+            <div class="pool-node-settings">
+              <label class="check-label"><input type="checkbox" id="cfg_cpx"> <span>افزودن نودهای کشوری به ساب (cpx)</span></label>
+              <div class="field-box" style="flex:1 1 200px;min-width:0;">
+                <label class="field-label">کشورهای نودها (pcc):</label>
+                <input type="text" id="cfg_pcc" class="mili-input" placeholder="all یا DE,US,NL" style="direction:ltr;">
+              </div>
+              <div class="field-box">
+                <label class="field-label">تعداد نود کشوری (cpn):</label>
+                <input type="number" id="cfg_cpn" class="mili-input" value="24" min="1" max="200" style="width:110px;">
+              </div>
+            </div>
+            <div class="pool-picker-meta">
+              هر نود کشوری، آدرس لبه‌ی کلودفلر را با پروکسی خروجی همان کشور در مسیر ساب ترکیب می‌کند
+              (<code style="direction:ltr;">?s=socks5://ip:port</code>) تا مقاصدی که روی کلودفلر نیستند هم کار کنند.
+            </div>
+          </div>
+
           <div class="modal-sec-title">۳. منابع نود ترجیحی داخلی و فیلتر اپراتور</div>
           <div class="check-grid">
             <label class="check-label"><input type="checkbox" id="cfg_epd" checked> <span>فعال‌سازی دامنه ترجیحی (epd)</span></label>
@@ -1620,6 +1734,15 @@ ${BASE_UI_CSS}
         <div class="field-box">
           <label class="field-label">پروکسی SOCKS5/HTTP (s):</label>
           <input type="text" id="um_s" class="mili-input" style="direction:ltr;">
+        </div>
+        <div class="field-box">
+          <label class="field-label">انتخاب پروکسی از استخر کشوری:</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <select id="um_scc" class="mili-select" style="flex:1;min-width:0;">
+              <option value="">— انتخاب کشور —</option>
+            </select>
+            <button type="button" class="btn-ghost" onclick="applyUserCountryProxy()">انتخاب</button>
+          </div>
         </div>
         <div class="field-box">
           <label class="field-label">روش خروج (qj):</label>
@@ -1933,12 +2056,12 @@ ${FX_RUNTIME_JS}
 
     function applyConfigToForm(cfg) {
       if (!cfg) return;
-      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp'];
+      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp', 'pcc', 'cpn'];
       textFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el && cfg[k] !== undefined) el.value = cfg[k];
       });
-      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'cpx'];
       boolFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) el.checked = cfg[k] === 'yes' || cfg[k] === true;
@@ -1947,12 +2070,12 @@ ${FX_RUNTIME_JS}
 
     function collectFormConfig() {
       var out = {};
-      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp'];
+      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp', 'pcc', 'cpn'];
       textFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) out[k] = el.value;
       });
-      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'cpx'];
       boolFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) out[k] = el.checked ? 'yes' : 'no';
@@ -2110,6 +2233,8 @@ ${FX_RUNTIME_JS}
         if (el) el.checked = uCfg[k] === 'yes' || uCfg[k] === true;
       });
 
+      fillUserCountrySelect();
+      if (!PROXY_POOL_STATE.loaded) loadProxyPoolCountries();
       modal.classList.add('open');
       if (window.MiliFx) MiliFx.reveal(modal);
       var firstField = document.getElementById('um_username');
@@ -2369,6 +2494,183 @@ ${FX_RUNTIME_JS}
       }
     }
 
+    // ================= استخر پروکسی تفکیک‌شده کشور (s) =================
+    var PROXY_POOL_STATE = { loaded: false, countries: [], rows: [], meta: null, pinging: false };
+
+    function proxyPoolSetMeta(text) {
+      var el = document.getElementById('proxyPoolMeta');
+      if (el) el.textContent = text;
+    }
+
+    async function loadProxyPoolCountries(force) {
+      if (PROXY_POOL_STATE.loaded && !force) return PROXY_POOL_STATE.countries;
+      var sel = document.getElementById('proxyCountrySelect');
+      try {
+        var data = await apiRequest('/api/proxy-pool', { method: 'GET' });
+        var list = data.countries || [];
+        PROXY_POOL_STATE.countries = list;
+        PROXY_POOL_STATE.loaded = true;
+        PROXY_POOL_STATE.meta = { total: data.total || 0, generatedAt: data.generatedAt || '', countryCount: data.countryCount || list.length };
+        var previous = sel ? sel.value : '';
+        if (sel) {
+          sel.innerHTML = list.length
+            ? list.map(function(c) {
+                return '<option value="' + esc(c.code) + '">' + esc(c.flag) + ' ' + esc(c.name) + ' (' + esc(c.code) + ') · ' + c.count + ' پروکسی</option>';
+              }).join('')
+            : '<option value="">استخری موجود نیست</option>';
+          if (previous && list.some(function(c) { return c.code === previous; })) sel.value = previous;
+        }
+        proxyPoolSetMeta((data.total || 0) + ' پروکسی سالم در ' + (data.countryCount || list.length) + ' کشور · تاریخ سلامت‌سنجی: ' + (data.generatedAt || 'نامشخص'));
+        fillUserCountrySelect();
+        return list;
+      } catch (err) {
+        proxyPoolSetMeta('خطا در دریافت استخر پروکسی: ' + (err && err.message ? err.message : 'نامشخص'));
+        return [];
+      }
+    }
+
+    function onProxyCountryChange() {
+      PROXY_POOL_STATE.rows = [];
+      loadCountryProxies(false);
+    }
+
+    function renderProxyRows() {
+      var box = document.getElementById('sProxyList');
+      if (!box) return;
+      var rows = PROXY_POOL_STATE.rows || [];
+      if (!rows.length) {
+        box.innerHTML = '<div class="kv-row"><span class="kv-key">لیستی برای نمایش نیست — یک کشور انتخاب و «لیست + پینگ واقعی» را بزنید</span><span class="kv-val">—</span></div>';
+        return;
+      }
+      box.innerHTML = rows.map(function(r, idx) {
+        var badge = r.ok === true
+          ? '<span class="ping-badge ok">✓ ' + (r.ms || 0) + 'ms</span>'
+          : r.ok === false
+            ? '<span class="ping-badge bad">✗ ' + esc(r.error || 'ناموفق') + '</span>'
+            : '<span class="ping-badge wait">تست‌نشده</span>';
+        var health = r.pingMs ? '<span class="ping-badge wait">سلامت ' + r.pingMs + 'ms</span>' : '';
+        var country = r.country ? '<span class="ping-badge wait">' + esc(r.country) + '</span>' : '';
+        return '<div class="kv-row pool-row">' +
+          '<span class="pool-url">' + esc(r.s) + '</span>' +
+          '<span class="pool-row-actions">' + country + badge + health +
+            '<button type="button" class="btn-ghost" data-pick-proxy="' + idx + '">انتخاب</button>' +
+            '<button type="button" class="btn-ghost" data-ping-proxy="' + idx + '">تست</button>' +
+          '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    async function loadCountryProxies(withPing) {
+      var sel = document.getElementById('proxyCountrySelect');
+      var code = sel ? sel.value : '';
+      if (!code) { showToast('ابتدا یک کشور را انتخاب کنید'); return; }
+      var box = document.getElementById('sProxyList');
+      if (box) box.innerHTML = '<div class="kv-row"><span class="kv-key">در حال دریافت لیست پروکسی‌های کشور…</span><span class="kv-val">—</span></div>';
+      try {
+        var data = await apiRequest('/api/proxy-pool?country=' + encodeURIComponent(code) + '&limit=40', { method: 'GET' });
+        var list = data.proxies || [];
+        PROXY_POOL_STATE.rows = list.map(function(p) {
+          return { s: p.s, host: p.host, port: p.port, kind: p.kind, pingMs: p.pingMs || 0, ok: null, ms: null, error: '' };
+        });
+        renderProxyRows();
+        if (withPing) await pingProxyRows(PROXY_POOL_STATE.rows.slice(0, 8));
+      } catch (err) {
+        if (box) box.innerHTML = '<div class="kv-row"><span class="kv-key">خطا در دریافت لیست</span><span class="kv-val">' + esc(err && err.message ? err.message : 'نامشخص') + '</span></div>';
+      }
+    }
+
+    async function pingProxyRows(rows) {
+      if (!rows || !rows.length || PROXY_POOL_STATE.pinging) return;
+      PROXY_POOL_STATE.pinging = true;
+      rows.forEach(function(r) { r.ok = null; r.ms = null; r.error = ''; });
+      renderProxyRows();
+      try {
+        var data = await apiRequest('/api/proxy-pool', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'ping', proxies: rows.map(function(r) { return r.s; }), timeoutMs: 3000 })
+        });
+        var results = data.results || [];
+        results.forEach(function(res, idx) {
+          var target = rows[idx];
+          if (!target) return;
+          target.ok = !!res.ok;
+          target.ms = res.ms || 0;
+          target.error = res.error || '';
+          PROXY_POOL_STATE.rows.forEach(function(main) {
+            if (main.s === target.s) { main.ok = target.ok; main.ms = target.ms; main.error = target.error; }
+          });
+        });
+        renderProxyRows();
+        showToast((data.healthy || 0) + ' پروکسی سالم از ' + (data.total || results.length) + ' مورد سنجیده‌شده');
+      } catch (err) {
+        showToast('خطا در پینگ پروکسی: ' + (err && err.message ? err.message : 'نامشخص'));
+      } finally {
+        PROXY_POOL_STATE.pinging = false;
+      }
+    }
+
+    function pickProxyByIndex(idx) {
+      var row = (PROXY_POOL_STATE.rows || [])[idx];
+      if (!row) return;
+      var input = document.getElementById('cfg_s');
+      if (input) input.value = row.s;
+      showToast('پروکسی خروجی انتخاب شد؛ برای اعمال، «ذخیره تنظیمات شبکه» را بزنید');
+    }
+
+    async function autoRandomMultiLocation() {
+      try {
+        var data = await apiRequest('/api/proxy-pool', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'random', countries: 'all', count: 12 })
+        });
+        var picks = data.proxies || [];
+        var countries = data.countries || [];
+        var cpx = document.getElementById('cfg_cpx');
+        if (cpx) cpx.checked = true;
+        var pcc = document.getElementById('cfg_pcc');
+        if (pcc) pcc.value = countries.join(',') || 'all';
+        var cpn = document.getElementById('cfg_cpn');
+        if (cpn) cpn.value = String(Math.max(picks.length, 12));
+        PROXY_POOL_STATE.rows = picks.map(function(p) {
+          return { s: p.s, country: p.country, pingMs: p.pingMs || 0, ok: null, ms: null, error: '' };
+        });
+        renderProxyRows();
+        showToast('مولتی‌لوکیشن رندوم ساخته شد: ' + countries.length + ' کشور · در حال ذخیره…');
+        await savePanelSettings();
+      } catch (err) {
+        showToast('خطا در ساخت مولتی‌لوکیشن: ' + (err && err.message ? err.message : 'نامشخص'));
+      }
+    }
+
+    function fillUserCountrySelect() {
+      var sel = document.getElementById('um_scc');
+      if (!sel || !PROXY_POOL_STATE.countries.length) return;
+      var previous = sel.value;
+      sel.innerHTML = '<option value="">— انتخاب کشور —</option>' + PROXY_POOL_STATE.countries.map(function(c) {
+        return '<option value="' + esc(c.code) + '">' + esc(c.flag) + ' ' + esc(c.name) + ' (' + esc(c.code) + ') · ' + c.count + '</option>';
+      }).join('');
+      if (previous) sel.value = previous;
+    }
+
+    async function applyUserCountryProxy() {
+      var sel = document.getElementById('um_scc');
+      var code = sel ? sel.value : '';
+      if (!code) { showToast('کشور را انتخاب کنید'); return; }
+      try {
+        var data = await apiRequest('/api/proxy-pool?country=' + encodeURIComponent(code) + '&limit=25', { method: 'GET' });
+        var list = data.proxies || [];
+        if (!list.length) { showToast('برای این کشور پروکسی‌ای موجود نیست'); return; }
+        var chosen = list[Math.floor(Math.random() * Math.min(list.length, 8))];
+        var input = document.getElementById('um_s');
+        if (input) input.value = chosen.s;
+        showToast('پروکسی ' + code + ' انتخاب شد (سلامت ' + (chosen.pingMs || '?') + 'ms)');
+      } catch (err) {
+        showToast('خطا در انتخاب پروکسی کشور: ' + (err && err.message ? err.message : 'نامشخص'));
+      }
+    }
+
     function appendGeneratedIps(str) {
       var el = document.getElementById('cfg_yx');
       if (!el || !str) return;
@@ -2412,7 +2714,21 @@ ${FX_RUNTIME_JS}
 
     // افزودن IPهای تولیدشده با واگذاری رویداد (بدون inline onclick)
     document.addEventListener('click', function (event) {
-      var btn = event.target && event.target.closest ? event.target.closest('[data-add-ips]') : null;
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target) return;
+      var pickBtn = target.closest('[data-pick-proxy]');
+      if (pickBtn) {
+        pickProxyByIndex(parseInt(pickBtn.getAttribute('data-pick-proxy'), 10));
+        return;
+      }
+      var pingBtn = target.closest('[data-ping-proxy]');
+      if (pingBtn) {
+        var idx = parseInt(pingBtn.getAttribute('data-ping-proxy'), 10);
+        var row = (PROXY_POOL_STATE.rows || [])[idx];
+        if (row) pingProxyRows([row]);
+        return;
+      }
+      var btn = target.closest('[data-add-ips]');
       if (btn) appendGeneratedIps(btn.getAttribute('data-add-ips') || '');
     });
 
@@ -2429,6 +2745,8 @@ ${FX_RUNTIME_JS}
     applyConfigToForm(STATE.config);
     renderUsersGrid();
     updateDashboardWidgets();
+    renderProxyRows();
+    if (document.getElementById('proxyCountrySelect')) loadProxyPoolCountries();
 
     // جلوه‌های نرم روی کارت‌های پنل
     document.querySelectorAll('.metric-card, .panel-card, .hero-card, .stat-box, .kv-row').forEach(function (el, idx) {

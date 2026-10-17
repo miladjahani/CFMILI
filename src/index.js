@@ -19,6 +19,7 @@ import {
   handleConfigApi,
   handleDashboardStatsApi,
   handlePreferredIpsApi,
+  handleProxyPoolApi,
   handlePublicUserStatusApi,
   handleScannerApi,
   handleUsersApi
@@ -103,6 +104,9 @@ export default {
         }
         if (apiSubPath === 'scanner') {
           return await handleScannerApi(request, env, true);
+        }
+        if (apiSubPath === 'proxy-pool') {
+          return await handleProxyPoolApi(request, env, true);
         }
         if (apiSubPath === 'stats' || apiSubPath === 'd1-init') {
           return await handleDashboardStatsApi(request, env);

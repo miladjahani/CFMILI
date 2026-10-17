@@ -41,6 +41,14 @@ import {
 } from '../db/d1.js';
 import { generateUserNodesList } from '../subscription/generator.js';
 import { getSocketConnector } from '../core/runtime.js';
+import { probeProxyList } from '../core/proxyProbe.js';
+import {
+  PROXY_POOL,
+  listCountryProxies,
+  pickProxiesAcrossCountries,
+  proxyPoolCountries,
+  proxyPoolStats
+} from '../config/proxyPool.js';
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -458,6 +466,106 @@ export async function handleScannerApi(request, env, bypassAeCheck = false) {
   } catch (err) {
     return jsonResponse({ success: false, error: 'خطا در اجرای اسکنر', message: err?.message || String(err) }, 500);
   }
+}
+
+// ۳.۶ استخر پروکسی‌های سالم تفکیک‌شده بر اساس کشور (/api/proxy-pool)
+// GET  ?country=DE&limit=40  → لیست پروکسی‌های همان کشور (مرتب بر اساس تاخیر سلامت‌سنجی)
+// POST { action: 'ping', country|proxies } → تونل واقعی SOCKS5/HTTP + تاخیر و ✓/✗
+// POST { action: 'random', countries, count } → انتخاب رندوم چندکشوری برای نودها
+export async function handleProxyPoolApi(request, env, bypassAeCheck = false) {
+  if (request.method === 'OPTIONS') return jsonResponse({ ok: true });
+  const cfg = await loadGlobalConfig(env);
+  if (!bypassAeCheck && cfg.ae !== 'yes' && request.headers.get('X-Mili-Admin') !== '1') {
+    return jsonResponse({ success: false, error: 'API غیرفعال است' }, 403);
+  }
+
+  const url = new URL(request.url);
+  const stats = proxyPoolStats();
+
+  if (request.method === 'GET') {
+    const code = String(url.searchParams.get('country') || '').trim().toUpperCase();
+    if (!code) {
+      return jsonResponse({
+        success: true,
+        generatedAt: stats.generatedAt,
+        total: stats.totalAlive,
+        countryCount: stats.countryCount,
+        countries: proxyPoolCountries(),
+        limits: { maxPing: 12, maxList: 100 }
+      });
+    }
+    const limit = Math.max(1, Math.min(100, parseInt(url.searchParams.get('limit'), 10) || 40));
+    const proxies = listCountryProxies(code, limit);
+    return jsonResponse({
+      success: true,
+      country: code,
+      total: stats.perCountry[code] || 0,
+      count: proxies.length,
+      proxies
+    });
+  }
+
+  if (request.method !== 'POST') {
+    return jsonResponse({ success: false, error: 'Method not allowed' }, 405);
+  }
+
+  let body = {};
+  try {
+    body = await request.json();
+  } catch (_e) {
+    return jsonResponse({ success: false, error: 'بدنه درخواست JSON نامعتبر است' }, 400);
+  }
+
+  const action = String(body.action || 'ping').toLowerCase();
+
+  if (action === 'random') {
+    const raw = body.countries;
+    const requested = (Array.isArray(raw) ? raw : String(raw || 'all').split(/[,\s|]+/))
+      .map(c => String(c || '').trim().toUpperCase())
+      .filter(Boolean);
+    const codes = requested.length && requested[0] !== 'ALL'
+      ? requested
+      : Object.keys(PROXY_POOL.countries || {});
+    const total = Math.max(1, Math.min(60, parseInt(body.count, 10) || 12));
+    const picks = pickProxiesAcrossCountries(codes, total, Math.random);
+    return jsonResponse({
+      success: true,
+      count: picks.length,
+      countries: [...new Set(picks.map(p => p.country))],
+      proxies: picks
+    });
+  }
+
+  if (action === 'ping') {
+    const code = String(body.country || '').trim().toUpperCase();
+    const explicit = Array.isArray(body.proxies) ? body.proxies : [];
+    const maxProbe = stats.totalAlive > 0 ? 12 : 0;
+    let list = [];
+    if (explicit.length) {
+      list = explicit.slice(0, 12).map(p => (typeof p === 'string' ? p : (p?.s || p?.url || ''))).filter(Boolean);
+    } else if (code) {
+      list = listCountryProxies(code, Math.min(12, parseInt(body.limit, 10) || 8)).map(p => p.s);
+    }
+    if (!list.length) {
+      return jsonResponse({ success: false, error: 'پروکسی‌ای برای سنجش ارسال نشد' }, 400);
+    }
+    const timeoutMs = Math.max(800, Math.min(6000, parseInt(body.timeoutMs, 10) || 3000));
+    const results = await probeProxyList(list, {
+      limit: Math.min(maxProbe || 12, list.length),
+      timeoutMs,
+      concurrency: 3,
+      connector: getSocketConnector()
+    });
+    return jsonResponse({
+      success: true,
+      country: code || null,
+      total: results.length,
+      healthy: results.filter(r => r.ok).length,
+      results
+    });
+  }
+
+  return jsonResponse({ success: false, error: 'action نامعتبر است (ping | random)' }, 400);
 }
 
 // ۴. وضعیت زنده داشبورد و دیتابیس D1 (/api/stats & /api/d1)

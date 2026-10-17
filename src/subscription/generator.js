@@ -32,6 +32,7 @@ import {
   parseAddressAndPort
 } from '../core/utils.js';
 import { resolveSsCiphers } from '../core/shadowsocks.js';
+import { PROXY_POOL, pickProxiesAcrossCountries } from '../config/proxyPool.js';
 import {
   generateClashConfig,
   generateLoonConfig,
@@ -54,13 +55,51 @@ export function getOfficialDirectAddress() {
 
 // ساخت مسیر WebSocket نود؛ p/pm داخل path قرار می‌گیرد تا سرور همان نود را
 // با خروجی ثابت خودش اجرا کند (بدون نیاز به تنظیم دستی p در پنل).
-function buildNodePath({ wkOverride = '', proxyIp = '', forceProxy = false } = {}) {
+function buildNodePath({ wkOverride = '', proxyIp = '', forceProxy = false, outboundProxy = '' } = {}) {
   const params = new URLSearchParams();
   params.set('ed', '2048');
   if (wkOverride) params.set('wk', wkOverride);
   if (proxyIp) params.set('p', proxyIp);
   if (forceProxy) params.set('pm', '1');
+  // پروکسی خروجی مخصوص همین نود (انتخاب کشوری) — runtime با پارامتر s آن را اعمال می‌کند
+  if (outboundProxy) params.set('s', outboundProxy);
   return `/?${params.toString()}`;
+}
+
+// رندوم قابل‌تکرار (mulberry32) تا نودهای کشوری در یک روز ثابت بمانند
+function seededRandom(seedText = '') {
+  let h = 1779033703 ^ String(seedText).length;
+  for (let i = 0; i < String(seedText).length; i++) {
+    h = Math.imul(h ^ String(seedText).charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  let a = h >>> 0;
+  return function rand() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// نودهای مولتی‌لوکیشن بر پایهٔ استخر پروکسی سالم تفکیک‌شده کشورها: هر نود
+// آدرس لبه CF + پروکسی خروجی (s) کشور خودش را دارد تا مقاصد غیرکلودفلری هم کار کند.
+function buildCountryProxyItems(cfg = {}, rand = Math.random) {
+  if (!isEnabledValue(cfg.cpx, false)) return [];
+  const total = Math.max(1, Math.min(200, parseInt(cfg.cpn, 10) || 24));
+  const rawCodes = String(cfg.pcc ?? 'all').trim();
+  const codes = rawCodes && rawCodes.toLowerCase() !== 'all'
+    ? rawCodes.split(/[,\s|]+/).map(c => c.trim().toUpperCase()).filter(Boolean)
+    : Object.keys(PROXY_POOL.countries || {});
+  const picks = pickProxiesAcrossCountries(codes, total, rand);
+  return picks.map((pick, idx) => ({
+    ip: edgeIpForIndex(idx, false),
+    port: 443,
+    isp: pick.country,
+    loc: pick.country,
+    outboundProxy: pick.s
+  }));
 }
 
 // نودهای مولتی‌لوکیشن واقعی: آدرس = آی‌پی ثابت لبه کلودفلر، خروجی = آی‌پی ثابت لوکیشن
@@ -324,7 +363,8 @@ function buildVlessLinks(list, userUuid, workerHost, cfg, namer, wkOverride = ''
     const wsPath = buildNodePath({
       wkOverride,
       proxyIp: item.proxyIp || '',
-      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal,
+      outboundProxy: item.outboundProxy || ''
     });
 
     for (const { port, tls } of portsToGen) {
@@ -391,7 +431,8 @@ function buildTrojanLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '
     const wsPath = buildNodePath({
       wkOverride,
       proxyIp: item.proxyIp || '',
-      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal,
+      outboundProxy: item.outboundProxy || ''
     });
 
     for (const { port, tls } of portsToGen) {
@@ -438,7 +479,8 @@ function buildShadowsocksLinks(list, userUuid, workerHost, cfg, namer, wkOverrid
     const wsPath = buildNodePath({
       wkOverride,
       proxyIp: item.proxyIp || '',
-      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal,
+      outboundProxy: item.outboundProxy || ''
     });
     const plugin = `v2ray-plugin;tls;host=${workerHost};path=${wsPath}`;
 
@@ -474,7 +516,8 @@ function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
     const forceProxyGlobal = cfg.pm === 'yes' || cfg.pm === 'only';
     const xhttpQuery = [
       item.proxyIp ? `p=${encodeURIComponent(item.proxyIp)}` : '',
-      item.proxyIp || forceProxyGlobal ? 'pm=1' : ''
+      item.proxyIp || forceProxyGlobal ? 'pm=1' : '',
+      item.outboundProxy ? `s=${encodeURIComponent(item.outboundProxy)}` : ''
     ].filter(Boolean).join('&');
     const params = new URLSearchParams({
       encryption: 'none',
@@ -533,6 +576,16 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
 
   const disablePreferred = cfg.yxby === 'yes' || nodeScope === 'origin';
   const enableNative = cfg.ena === 'yes' || nodeScope === 'origin';
+
+  // ۰) نودهای مولتی‌لوکیشن کشورمحور از استخر پروکسی سالم (cpx): هر نود با s خودش
+  //    انتخاب‌ها بر اساس تاریخ تغییر می‌کنند (در طول یک روز پایدار می‌مانند).
+  const countryProxyItems = buildCountryProxyItems(
+    cfg,
+    seededRandom(`${userUuid}|${new Date().toISOString().slice(0, 10)}`)
+  );
+  if (countryProxyItems.length > 0) {
+    appendFromSource(countryProxyItems);
+  }
 
   if (enableNative && nodeScope !== 'edge') {
     appendFromSource([{ ip: workerHost, isp: 'Origin' }]);
