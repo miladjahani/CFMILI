@@ -91,6 +91,20 @@ npm run deploy:worker:bundle   # انتشار Worker از باندل مبهم‌
 npm run deploy:pages           # انتشار روی Cloudflare Pages (پوشه dist)
 ```
 
+### مایگریشن مرحله‌به‌مرحله D1 (پیشنهادی قبل از دپلوی)
+
+ابتدا یک دیتابیس D1 خالی بسازید، سپس اسکریپت مایگریشن را اجرا کنید؛ این اسکریپت
+فایل‌های `migrations/*.sql` را می‌خواند و هر دستور را **یکی‌یکی** اجرا و تأیید می‌کند
+و در اولین دستور خطادار متوقف می‌شود (به‌جای دیدن خطای مبهم `1101` داخل Worker):
+
+```bash
+npx wrangler d1 create miliconfig-db-v2        # دیتابیس خالی
+CLOUDFLARE_API_TOKEN=... npm run db:migrate -- --database miliconfig-db-v2
+```
+
+نام و UUID دیتابیس را در `wrangler.toml` (بخش `[[d1_databases]]`) و در بایندینگ
+`DB` پروژه Pages قرار دهید. کاربر اولیه سیستم در اولین درخواست به‌صورت خودکار ساخته می‌شود.
+
 ---
 
 ## دپلوی خودکار از گیت‌هاب (GitHub Actions) — اختیاری و بدون شکست قرمز
