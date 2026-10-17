@@ -9,7 +9,7 @@ import {
   getEnvConfigSnapshot,
   normalizeEffectiveConfig
 } from '../config/defaults.js';
-import { buildUserDefaultConfig } from '../config/presets.js';
+import { USER_PRESETS, buildUserDefaultConfig } from '../config/presets.js';
 import { generateShortId, generateUuidV4, isValidUuid } from '../core/utils.js';
 
 // حافظه کش داخلی هر Isolate جهت حداکثر سرعت و کارکرد بدون وقفه حتی بدون اتصال D1
@@ -504,6 +504,16 @@ export async function createUser(env = {}, payload = {}, clientIp = '') {
       subNodeCount
     }
   );
+
+  // پریست انتخابی باید نسبت به پیش‌فرض‌های پنل اولویت داشته باشد؛
+  // فقط فیلدهایی که مدیر صریحاً فرستاده باشد آن را بازنویسی می‌کنند.
+  const presetDef = USER_PRESETS[presetId];
+  if (presetDef && presetDef.configOverrides) {
+    for (const [key, value] of Object.entries(presetDef.configOverrides)) {
+      const explicitlySet = payload[key] !== undefined || payload.config?.[key] !== undefined;
+      if (!explicitlySet) mergedUserConfig[key] = value;
+    }
+  }
 
   const dataLimitGb = Math.max(0, Number(payload.dataLimitGb ?? 0) || 0);
   const expireDays = Math.max(0, parseInt(payload.expireDays ?? 0, 10) || 0);

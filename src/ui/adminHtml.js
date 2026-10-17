@@ -1240,8 +1240,8 @@ ${BASE_UI_CSS}
           <div class="form-grid-2">
             <div class="field-box">
               <label class="field-label">لیست IP / دامنه ترجیحی سفارشی (yx):</label>
-              <textarea id="cfg_yx" class="mili-textarea" rows="4" placeholder="1.1.1.1:443#Node1,162.158.228.87:443#Node2" style="direction:ltr;"></textarea>
-              <span class="field-hint">فرمت: IP:Port#Name با کاما جدا شوند. در خروجی ساب با فرمت number+${BRAND_NAME} شماره‌گذاری می‌شوند.</span>
+              <textarea id="cfg_yx" class="mili-textarea" rows="4" placeholder="104.16.1.1:443#Node1,188.114.98.10:443#Node2" style="direction:ltr;"></textarea>
+              <span class="field-hint">فرمت: IP:Port#Name با کاما جدا شوند. آدرس نودها همیشه آی‌پی واقعی است و در خروجی ساب با فرمت number+${BRAND_NAME} شماره‌گذاری می‌شوند.</span>
             </div>
             <div class="field-box">
               <label class="field-label">آدرس URL منبع IP ترجیحی (yxURL):</label>
@@ -1253,10 +1253,36 @@ ${BASE_UI_CSS}
 
           <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
             <button type="button" class="btn-neon" onclick="savePanelSettings()">▣ ذخیره تنظیمات نودها</button>
-            <button type="button" class="btn-ghost" onclick="generateRandomCfIps()">🎲 تولید ۱۰ آی‌پی تصادفی Cloudflare و تست پینگ</button>
           </div>
 
-          <div id="pingResultsBox" class="kv-list" style="margin-top:14px;"></div>
+          <div class="modal-sec-title" style="margin-top:18px;">اسکنر داخلی آی‌پی (معادل cfnew) — تست واقعی TCP بدون دامنه</div>
+          <div class="form-grid-3">
+            <div class="field-box">
+              <label class="field-label">حالت اسکن:</label>
+              <select id="scanMode" class="mili-select">
+                <option value="v4">IPv4 — لبه کلودفلر</option>
+                <option value="v6">IPv6 — همراه اول / ایرانسل</option>
+              </select>
+            </div>
+            <div class="field-box">
+              <label class="field-label">تعداد کاندید (حداکثر ۶۰):</label>
+              <input type="number" id="scanCount" class="mili-input" value="16" min="1" max="60">
+            </div>
+            <div class="field-box">
+              <label class="field-label">پورت و تایم‌اوت (ms):</label>
+              <div style="display:flex;gap:8px;">
+                <input type="number" id="scanPort" class="mili-input" value="443" min="1" max="65535">
+                <input type="number" id="scanTimeout" class="mili-input" value="2500" min="500" max="10000">
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="button" class="btn-neon" onclick="runIpScan(false)">🔍 اسکن واقعی آی‌پی‌ها</button>
+            <button type="button" class="btn-ghost" onclick="runIpScan(true)">💾 اسکن + ذخیره سالم‌ها در لیست ترجیحی</button>
+            <button type="button" class="btn-ghost" onclick="resolveYxDomains()">🌐 تبدیل دامنه‌های yx به آی‌پی ثابت</button>
+          </div>
+
+          <div id="scanResultsBox" class="kv-list" style="margin-top:14px;"></div>
         </div>
       </section>
 
@@ -1276,8 +1302,28 @@ ${BASE_UI_CSS}
             <label class="check-label"><input type="checkbox" id="cfg_ev" checked> <span>فعال‌سازی VLESS (ev)</span></label>
             <label class="check-label"><input type="checkbox" id="cfg_et"> <span>فعال‌سازی Trojan (et)</span></label>
             <label class="check-label"><input type="checkbox" id="cfg_ex"> <span>فعال‌سازی xhttp (ex)</span></label>
+            <label class="check-label"><input type="checkbox" id="cfg_ss"> <span>فعال‌سازی Shadowsocks (ss)</span></label>
             <label class="check-label"><input type="checkbox" id="cfg_ech"> <span>فعال‌سازی ECH (ech)</span></label>
             <label class="check-label"><input type="checkbox" id="cfg_jk"> <span>زنجیره اینترنت خانگی (jk)</span></label>
+          </div>
+
+          <div class="modal-sec-title">۱.۵ رمزنگاری Shadowsocks (AEAD)</div>
+          <div class="form-grid-3">
+            <div class="field-box">
+              <label class="field-label">روش رمزنگاری (ssc):</label>
+              <select id="cfg_ssc" class="mili-select">
+                <option value="chacha20-ietf-poly1305">chacha20-ietf-poly1305 (پیشنهادی)</option>
+                <option value="aes-256-gcm">aes-256-gcm</option>
+                <option value="aes-128-gcm">aes-128-gcm</option>
+                <option value="all">همه سه روش (سه نود برای هر آدرس)</option>
+              </select>
+              <span class="field-hint">می‌توانید چند روش را با کاما بنویسید: <code>aes-256-gcm,chacha20-ietf-poly1305</code></span>
+            </div>
+            <div class="field-box">
+              <label class="field-label">رمز عبور Shadowsocks (ssp):</label>
+              <input type="text" id="cfg_ssp" class="mili-input" placeholder="خالی = UUID همان کاربر" style="direction:ltr;">
+              <span class="field-hint">لینک‌ها با فرمت SIP002 و plugin=v2ray-plugin ساخته می‌شوند.</span>
+            </div>
           </div>
 
           <div class="modal-sec-title">۲. تنظیمات منطقه، ProxyIP و پروکسی خروجی (SOCKS5 / HTTP / HTTPS)</div>
@@ -1358,6 +1404,20 @@ ${BASE_UI_CSS}
                 <option value="">فعال (پیش‌فرض)</option>
                 <option value="yes">بستن همه ترجیحات (yes)</option>
               </select>
+            </div>
+            <div class="field-box">
+              <label class="field-label">لوکیشن‌های واقعی (locs):</label>
+              <input type="text" id="cfg_locs" class="mili-input" placeholder="all یا DE,NL,GB,FR" style="direction:ltr;">
+              <span class="field-hint">all = هر ۱۶ لوکیشن با آی‌پی ثابت · no = بدون نود لوکیشن</span>
+            </div>
+            <div class="field-box">
+              <label class="field-label">خروجی ثابت هر نود (pm):</label>
+              <select id="cfg_pm" class="mili-select">
+                <option value="">غیرفعال — مسیر مستقیم</option>
+                <option value="yes">فعال — ترافیک TLS از خروجی ثابت همان لوکیشن</option>
+                <option value="only">فقط خروجی ثابت (بدون بازگشت به مستقیم)</option>
+              </select>
+              <span class="field-hint">این خروجی برای مقاصد میزبانی‌شده روی کلودفلر (Discord و ...) تضمینی است. برای Gemini/OpenAI که روی کلودفلر نیستند باید پروکسی خروجی (s) مثل WARP را تنظیم و روش خروج را only کنید.</span>
             </div>
           </div>
 
@@ -1509,8 +1569,25 @@ ${BASE_UI_CSS}
         <label class="check-label"><input type="checkbox" id="um_ev" checked> <span>پروتکل VLESS (ev)</span></label>
         <label class="check-label"><input type="checkbox" id="um_et"> <span>پروتکل Trojan (et)</span></label>
         <label class="check-label"><input type="checkbox" id="um_ex"> <span>پروتکل xhttp (ex)</span></label>
+        <label class="check-label"><input type="checkbox" id="um_ss"> <span>پروتکل Shadowsocks (ss)</span></label>
         <label class="check-label"><input type="checkbox" id="um_ech"> <span>فعال‌سازی ECH (ech)</span></label>
         <label class="check-label"><input type="checkbox" id="um_jk"> <span>زنجیره اینترنت خانگی (jk)</span></label>
+      </div>
+
+      <div class="form-grid-3">
+        <div class="field-box">
+          <label class="field-label">رمزنگاری Shadowsocks (ssc):</label>
+          <select id="um_ssc" class="mili-select">
+            <option value="chacha20-ietf-poly1305">chacha20-ietf-poly1305</option>
+            <option value="aes-256-gcm">aes-256-gcm</option>
+            <option value="aes-128-gcm">aes-128-gcm</option>
+            <option value="all">همه سه روش</option>
+          </select>
+        </div>
+        <div class="field-box">
+          <label class="field-label">رمز Shadowsocks (ssp):</label>
+          <input type="text" id="um_ssp" class="mili-input" placeholder="خالی = UUID همین کاربر" style="direction:ltr;">
+        </div>
       </div>
 
       <div class="modal-sec-title">۳. تنظیمات شبکه، منطقه، پروکسی و ترجیحات کاربر (تمام متغیرهای کد پایه)</div>
@@ -1851,12 +1928,12 @@ ${FX_RUNTIME_JS}
 
     function applyConfigToForm(cfg) {
       if (!cfg) return;
-      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae'];
+      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp'];
       textFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el && cfg[k] !== undefined) el.value = cfg[k];
       });
-      var boolFields = ['ev', 'et', 'ex', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
       boolFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) el.checked = cfg[k] === 'yes' || cfg[k] === true;
@@ -1865,12 +1942,12 @@ ${FX_RUNTIME_JS}
 
     function collectFormConfig() {
       var out = {};
-      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae'];
+      var textFields = ['yx', 'yxURL', 'subNodeCount', 'wk', 'p', 's', 'qj', 'tp', 'alpn', 'customDNS', 'customECHDomain', 'dkby', 'rm', 'yxby', 'd', 'homepage', 'scu', 'ae', 'pm', 'locs', 'ssc', 'ssp'];
       textFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) out[k] = el.value;
       });
-      var boolFields = ['ev', 'et', 'ex', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolFields = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
       boolFields.forEach(function(k) {
         var el = document.getElementById('cfg_' + k);
         if (el) out[k] = el.checked ? 'yes' : 'no';
@@ -2017,12 +2094,12 @@ ${FX_RUNTIME_JS}
       document.getElementById('um_startOnFirstUse').checked = existing ? Boolean(existing.startOnFirstUse) : true;
 
       var uCfg = existing && existing.config ? Object.assign({}, baseCfg, existing.config) : baseCfg;
-      var textKeys = ['wk', 'p', 's', 'qj', 'tp', 'alpn', 'd', 'customDNS', 'customECHDomain', 'yx', 'yxURL', 'scu', 'dkby', 'rm', 'yxby', 'homepage', 'ae'];
+      var textKeys = ['wk', 'p', 's', 'qj', 'tp', 'alpn', 'd', 'customDNS', 'customECHDomain', 'yx', 'yxURL', 'scu', 'dkby', 'rm', 'yxby', 'homepage', 'ae', 'ssc', 'ssp'];
       textKeys.forEach(function(k) {
         var el = document.getElementById('um_' + k);
         if (el) el.value = uCfg[k] !== undefined ? uCfg[k] : '';
       });
-      var boolKeys = ['ev', 'et', 'ex', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolKeys = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
       boolKeys.forEach(function(k) {
         var el = document.getElementById('um_' + k);
         if (el) el.checked = uCfg[k] === 'yes' || uCfg[k] === true;
@@ -2054,12 +2131,12 @@ ${FX_RUNTIME_JS}
         startOnFirstUse: document.getElementById('um_startOnFirstUse').checked,
         config: {}
       };
-      var textKeys = ['wk', 'p', 's', 'qj', 'tp', 'alpn', 'd', 'customDNS', 'customECHDomain', 'yx', 'yxURL', 'scu', 'dkby', 'rm', 'yxby', 'homepage', 'ae'];
+      var textKeys = ['wk', 'p', 's', 'qj', 'tp', 'alpn', 'd', 'customDNS', 'customECHDomain', 'yx', 'yxURL', 'scu', 'dkby', 'rm', 'yxby', 'homepage', 'ae', 'ssc', 'ssp'];
       textKeys.forEach(function(k) {
         var el = document.getElementById('um_' + k);
         if (el) payload.config[k] = el.value;
       });
-      var boolKeys = ['ev', 'et', 'ex', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
+      var boolKeys = ['ev', 'et', 'ex', 'ss', 'ech', 'jk', 'epd', 'epi', 'egi', 'ena', 'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom'];
       boolKeys.forEach(function(k) {
         var el = document.getElementById('um_' + k);
         if (el) payload.config[k] = el.checked ? 'yes' : 'no';
@@ -2186,24 +2263,110 @@ ${FX_RUNTIME_JS}
       copyText(url, 'ساب‌لینک اصلی کپی شد');
     }
 
-    function generateRandomCfIps() {
-      var box = document.getElementById('pingResultsBox');
-      if (!box) return;
-      // رنج /20 هر شبکه کلودفلر واقعاً رعایت می‌شود (قبا IP خارج از رنج ساخته می‌شد)
-      var networks = ['104.16.0.0', '104.24.0.0', '172.67.0.0', '162.159.0.0'];
-      var generated = [];
-      for (var i = 0; i < 10; i++) {
-        var octets = networks[i % networks.length].split('.');
-        var third = (parseInt(octets[2], 10) + Math.floor(Math.random() * 16)) % 256;
-        var fourth = Math.floor(Math.random() * 254) + 1;
-        generated.push(octets[0] + '.' + octets[1] + '.' + third + '.' + fourth + ':443#CF-Fast-' + (i + 1));
+    var LAST_SCAN = { results: [], summary: null };
+
+    async function runIpScan(save) {
+      var box = document.getElementById('scanResultsBox');
+      if (box) {
+        box.innerHTML = '<div class="kv-row"><span class="kv-key">در حال اجرای اسکن واقعی TCP...</span><span class="kv-val">لطفاً صبر کنید</span></div>';
       }
-      box.innerHTML = '<div class="kv-row"><span class="kv-key">۱۰ آی‌پی پیشنهادی تولید شد</span><button type="button" class="btn-ghost" onclick="appendGeneratedIps(\\'' + generated.join(',') + '\\')">+ افزودن به لیست ترجیحی (yx)</button></div>';
+      try {
+        var data = await apiRequest('/api/scanner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'scan',
+            ipv6: document.getElementById('scanMode').value === 'v6',
+            count: parseInt(document.getElementById('scanCount').value, 10) || 16,
+            port: parseInt(document.getElementById('scanPort').value, 10) || 443,
+            timeoutMs: parseInt(document.getElementById('scanTimeout').value, 10) || 2500,
+            save: !!save
+          })
+        });
+        LAST_SCAN.results = data.results || [];
+        LAST_SCAN.summary = data.summary || null;
+        renderScanResults();
+        if (save) {
+          showToast('نتایج سالم در لیست ترجیحی ذخیره شد');
+          await refreshAllData();
+        }
+      } catch (err) {
+        if (box) {
+          box.innerHTML = '<div class="kv-row"><span class="kv-key">خطا در اسکن</span><span class="kv-val">' + esc(err && err.message ? err.message : 'نامشخص') + '</span></div>';
+        }
+      }
+    }
+
+    function renderScanResults() {
+      var box = document.getElementById('scanResultsBox');
+      if (!box) return;
+      var list = (LAST_SCAN.results || []).slice().sort(function(a, b) {
+        if (!!a.ok !== !!b.ok) return a.ok ? -1 : 1;
+        return (a.latency || 99999) - (b.latency || 99999);
+      });
+      if (!list.length) {
+        box.innerHTML = '<div class="kv-row"><span class="kv-key">نتیجه‌ای برای نمایش نیست</span><span class="kv-val">-</span></div>';
+        return;
+      }
+      var s = LAST_SCAN.summary || {};
+      var html = '<div class="kv-row"><span class="kv-key">خلاصه اسکن</span><span class="kv-val">' +
+        (s.healthy || 0) + ' سالم از ' + (s.total || list.length) + ' کاندید' +
+        (s.bestLatency !== null && s.bestLatency !== undefined ? (' · بهترین تأخیر ' + s.bestLatency + 'ms') : '') +
+        '</span></div>';
+      list.forEach(function(r) {
+        var parts = [];
+        if (r.colo) parts.push('colo ' + r.colo);
+        if (r.loc) parts.push(r.loc);
+        if (r.latency !== undefined) parts.push(r.latency + 'ms');
+        if (!r.ok) parts.push(esc(r.error || 'ناموفق'));
+        html += '<div class="kv-row"><span class="kv-key" style="direction:ltr;">' + (r.ok ? '✓' : '✕') + ' ' + esc(r.ip) + '</span><span class="kv-val">' + parts.join(' · ') + '</span></div>';
+      });
+      var healthy = list.filter(function(r) { return r.ok; }).map(function(r) { return r.ip + ':' + (r.port || 443) + '#CF-' + r.ip; });
+      if (healthy.length) {
+        html += '<div class="kv-row"><span class="kv-key">آی‌پی‌های سالم</span><span class="kv-val"><button type="button" class="btn-ghost" data-add-ips="' + esc(healthy.join(',')) + '">+ افزودن به لیست ترجیحی (yx)</button></span></div>';
+      }
+      box.innerHTML = html;
+    }
+
+    async function resolveYxDomains() {
+      var yx = (document.getElementById('cfg_yx') ? document.getElementById('cfg_yx').value : '') || '';
+      var hosts = yx.split(',').map(function(item) {
+        var hostPart = String(item || '').split('#')[0].trim();
+        var lastColon = hostPart.lastIndexOf(':');
+        if (lastColon > 0 && !isNaN(parseInt(hostPart.slice(lastColon + 1), 10))) {
+          hostPart = hostPart.slice(0, lastColon);
+        }
+        if (hostPart.charAt(0) === '[' && hostPart.charAt(hostPart.length - 1) === ']') {
+          hostPart = hostPart.slice(1, -1);
+        }
+        return hostPart;
+      }).filter(function(h) {
+        return h && h.indexOf(':') === -1 && /[a-zA-Z]/.test(h);
+      });
+      if (!hosts.length) {
+        showToast('دامنه‌ای در لیست ترجیحی (yx) برای تبدیل پیدا نشد');
+        return;
+      }
+      try {
+        var data = await apiRequest('/api/scanner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'resolve', hosts: hosts, save: true, port: 443 })
+        });
+        var rows = (data.resolved || []).map(function(r) {
+          return '<div class="kv-row"><span class="kv-key" style="direction:ltr;">' + esc(r.host) + '</span><span class="kv-val" style="direction:ltr;">' + (r.fixedIp ? esc(r.fixedIp) : 'حل نشد') + '</span></div>';
+        }).join('');
+        document.getElementById('scanResultsBox').innerHTML = rows || '<div class="kv-row"><span class="kv-key">نتیجه‌ای یافت نشد</span><span class="kv-val">-</span></div>';
+        showToast('دامنه‌ها به آی‌پی ثابت تبدیل و ذخیره شدند');
+        await refreshAllData();
+      } catch (err) {
+        showToast('خطا در تبدیل دامنه‌ها: ' + (err && err.message ? err.message : 'نامشخص'));
+      }
     }
 
     function appendGeneratedIps(str) {
       var el = document.getElementById('cfg_yx');
-      if (!el) return;
+      if (!el || !str) return;
       el.value = el.value.trim() ? (el.value.trim() + ',' + str) : str;
       savePanelSettings();
     }

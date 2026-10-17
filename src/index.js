@@ -20,6 +20,7 @@ import {
   handleDashboardStatsApi,
   handlePreferredIpsApi,
   handlePublicUserStatusApi,
+  handleScannerApi,
   handleUsersApi
 } from './api/handlers.js';
 import { renderLoginGatewayHtml } from './ui/loginHtml.js';
@@ -89,6 +90,9 @@ export default {
         }
         if (apiSubPath === 'preferred-ips') {
           return await handlePreferredIpsApi(request, env, true);
+        }
+        if (apiSubPath === 'scanner') {
+          return await handleScannerApi(request, env, true);
         }
         if (apiSubPath === 'stats' || apiSubPath === 'd1-init') {
           return await handleDashboardStatsApi(request, env);

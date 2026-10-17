@@ -127,9 +127,20 @@ export function finalizeMiliSubscriptionLinks(links = [], subNodeCount = 0, bran
   const limit = parseInt(subNodeCount, 10);
   const sliced = Number.isFinite(limit) && limit > 0 ? links.slice(0, limit) : links.slice();
   return sliced.map((link, idx) => {
-    const nodeName = `${idx + 1}+${cleanBrand}`;
     const hashIdx = link.indexOf('#');
     const base = hashIdx > -1 ? link.substring(0, hashIdx) : link;
+    let tag = '';
+    if (hashIdx > -1) {
+      try {
+        tag = decodeURIComponent(link.substring(hashIdx + 1));
+      } catch (_e) {
+        tag = link.substring(hashIdx + 1);
+      }
+    }
+    // نشانگر لوکیشن نود (مثلاً __loc_DE-FRA__) به نام نهایی اضافه می‌شود
+    const locMatch = tag.match(/__loc_([A-Za-z0-9-]+)__/);
+    const suffix = locMatch ? ` ${locMatch[1]}` : '';
+    const nodeName = `${idx + 1}+${cleanBrand}${suffix}`;
     return `${base}#${encodeURIComponent(nodeName)}`;
   });
 }

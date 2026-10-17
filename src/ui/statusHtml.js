@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { BRAND_NAME, BRAND_UPPER, REGION_MAP, SUPPORT_CHANNEL_LABEL, SUPPORT_CHANNEL_URL } from '../config/defaults.js';
+import { LOCATIONS } from '../config/locations.js';
 import { SHIELD_LOGO_SVG, FAVICON_DATA_URI } from './icons.js';
 import { escapeHtml, formatBytes, safeJsonForScript } from '../core/utils.js';
 import { BASE_UI_CSS, THEME_COLOR_META, VIEWPORT_META } from './baseCss.js';
@@ -44,13 +45,12 @@ export function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
     ? (user.startOnFirstUse && !user.firstConnectedAt ? 'شروع با اولین اتصال' : 'فعال و آنلاین')
     : 'غیرفعال';
 
-  const locationsList = Object.entries(REGION_MAP)
-    .filter(([code]) => ['CF', 'HK', 'US', 'SG', 'JP', 'KR', 'DE', 'SE', 'NL', 'FI', 'GB'].includes(code))
-    .map(([code, labels]) => ({
-      code,
-      title: labels[0],
-      url: `${baseSubUrl}?wk=${code}`
-    }));
+  // لوکیشن‌های واقعی: هر کارت یک ساب‌لینک با خروجی ثابت همان لوکیشن می‌سازد
+  const locationsList = LOCATIONS.map(loc => ({
+    code: loc.code,
+    title: `${loc.flag} ${loc.name}`,
+    url: `${baseSubUrl}?locs=${loc.code}`
+  }));
 
   const protoCombos = [
     { title: 'اتصال هوشمند (همه نودها × همه پروتکل‌ها)', badge: 'Base64', url: baseSubUrl },
@@ -624,7 +624,7 @@ ${BASE_UI_CSS}
         <span class="acc-arrow">⌄</span>
       </button>
       <div class="acc-body">
-        <p class="client-desc">مسیر خروجی روی همان منطقه تنظیم می‌شود (مناسب تست پینگ و انتخاب سریع‌ترین مسیر):</p>
+        <p class="client-desc">خروجی ثابت هر لوکیشن روی همان آی‌پی تأییدشده تنظیم می‌شود (مناسب انتخاب سریع‌ترین مسیر و عبور از تحریم):</p>
         <div class="loc-grid">
           ${locationsList
             .map(

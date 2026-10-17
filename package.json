@@ -1,6 +1,6 @@
 {
   "name": "miliconfig",
-  "version": "3.1.0",
+  "version": "3.3.0",
   "description": "miliconfig v3.1 - Multi-user Cloudflare Workers & Pages Proxy Control Center with D1 Database, Advanced Obfuscation & Dead Code Injection",
   "type": "module",
   "main": "src/index.js",
@@ -8,6 +8,7 @@
     "build": "node scripts/build.js",
     "obfuscate": "node scripts/build.js --obfuscate",
     "test": "node scripts/test-worker.js",
+    "scan": "node scripts/cf-scan.js",
     "db:migrate": "node scripts/d1-migrate.js",
     "deploy:worker": "wrangler deploy",
     "deploy:worker:bundle": "npm run build && wrangler deploy _worker.js --no-bundle",

@@ -18,8 +18,11 @@ const pkgVersion = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'
 // ترتیب دقیق ماژول‌ها برای باندلینگ یکپارچه بدون وابستگی به باندلر خارجی
 const MODULE_ORDER = [
   'src/config/defaults.js',
+  'src/config/locations.js',
   'src/config/presets.js',
   'src/core/utils.js',
+  'src/core/shadowsocks.js',
+  'src/core/scanner.js',
   'src/ui/icons.js',
   'src/ui/baseCss.js',
   'src/ui/fx.js',

@@ -7,6 +7,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FX_RUNTIME_JS } from '../src/ui/fx.js';
+import {
+  chacha20Poly1305Open,
+  chacha20Poly1305Seal,
+  createDecoder,
+  createEncoder,
+  encodeSsAddress,
+  evpBytesToKey,
+  parseSsAddress,
+  resolveSsCiphers,
+  tryOpenShadowsocks
+} from '../src/core/shadowsocks.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -205,10 +216,11 @@ async function runTests() {
     rawLines.forEach((line, idx) => {
       const expectedTag = `${idx + 1}+miliconfig`;
       const hashPart = decodeURIComponent(line.split('#')[1] || '');
-      assert.strictEqual(
-        hashPart,
-        expectedTag,
-        `نام نود شماره ${idx + 1} باید ${expectedTag} باشد ولی ${hashPart} بود`
+      // نام نود باید با شماره ترتیبی + برند شروع شود؛ برچسب لوکیشن اختیاری است
+      const isNumbered = hashPart === expectedTag || new RegExp(`^${idx + 1}\\+miliconfig [A-Z0-9-]+$`).test(hashPart);
+      assert.ok(
+        isNumbered,
+        `نام نود شماره ${idx + 1} باید ${expectedTag} (یا ${expectedTag} با برچسب لوکیشن) باشد ولی ${hashPart} بود`
       );
     });
     console.log('  ✓ تست ۴ (نام‌گذاری کانفیگ‌ها به فرمت دقیق 1+miliconfig تا 8+miliconfig و رعایت تعداد نود در ساب): موفق');
@@ -220,7 +232,7 @@ async function runTests() {
       {}
     );
     const clashYaml = await clashResp.text();
-    assert.ok(clashYaml.includes('"1+miliconfig"') && clashYaml.includes('"8+miliconfig"'), 'کانفیگ Clash باید شامل نودهای 1+miliconfig تا 8+miliconfig باشد');
+    assert.ok(clashYaml.includes('"1+miliconfig') && clashYaml.includes('"8+miliconfig'), 'کانفیگ Clash باید شامل نودهای 1+miliconfig تا 8+miliconfig باشد');
 
     const sbResp = await worker.fetch(
       new Request(`https://mili.example.com/${newUserUuid}/sub?target=singbox`),
@@ -228,7 +240,7 @@ async function runTests() {
       {}
     );
     const sbJson = JSON.parse(await sbResp.text());
-    assert.ok(sbJson.outbounds.some(o => o.tag === '1+miliconfig'), 'کانفیگ Sing-box باید شامل تگ 1+miliconfig باشد');
+    assert.ok(sbJson.outbounds.some(o => String(o.tag || '').startsWith('1+miliconfig')), 'کانفیگ Sing-box باید شامل تگ 1+miliconfig باشد');
     console.log('  ✓ تست ۵ (تبدیل اشتراک داخلی Clash YAML و Sing-box JSON با نام number+miliconfig): موفق');
 
     // تست ۶: بررسی صفحه وضعیت اختصاصی کاربر (/status/{id})
@@ -410,6 +422,261 @@ async function runTests() {
     assert.doesNotThrow(() => fxWindow.MiliFx.ring(makeFxElement(), 42), 'حلقه مصرف نباید خطا بدهد');
     assert.doesNotThrow(() => fxWindow.MiliFx.reveal(fxDocument), 'تابع نمایش نرم نباید خطا بدهد');
     console.log('  ✓ تست ۱۲ (اجرای واقعی موتور انیمیشن و پس‌زمینه زنده روی DOM شبیه‌سازی‌شده): موفق');
+
+    // ========================================================================
+    // تست ۱۳: اسکنر داخلی آی‌پی (معادل cfnew) — کاتالوگ، دسترسی و اجرای اسکن
+    // ========================================================================
+    const isValidIp = v => /^(\d{1,3}\.){3}\d{1,3}$/.test(v) || (v.includes(':') && /^[0-9a-f:]+$/i.test(v));
+
+    const scanDeniedResp = await worker.fetch(
+      new Request('https://mili.example.com/api/scanner', { method: 'GET' }),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(scanDeniedResp.status, 403, 'اسکنر بدون مسیر مدیریتی باید ۴۰۳ بدهد');
+
+    const scanCatalogResp = await worker.fetch(
+      new Request(`https://mili.example.com/${adminUuid}/api/scanner`, { method: 'GET' }),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(scanCatalogResp.status, 200, 'کتالوگ اسکنر باید ۲۰۰ بدهد');
+    const scanCatalog = await scanCatalogResp.json();
+    assert.ok(Array.isArray(scanCatalog.locations) && scanCatalog.locations.length >= 16, 'کتالوگ باید حداقل ۱۶ لوکیشن واقعی داشته باشد');
+    for (const loc of scanCatalog.locations) {
+      assert.ok(isValidIp(loc.egressIp), `آی‌پی خروجی لوکیشن ${loc.code} باید آی‌پی ثابت باشد نه دامنه (${loc.egressIp})`);
+      assert.ok(!/[a-zA-Z]/.test(loc.egressIp), `آی‌پی خروجی لوکیشن ${loc.code} نباید دامنه باشد (${loc.egressIp})`);
+    }
+    assert.ok(scanCatalog.edgeIps.ipv4.length > 0 && scanCatalog.edgeIps.ipv4.every(isValidIp), 'آی‌پی‌های لبه IPv4 باید معتبر باشند');
+    assert.ok(scanCatalog.edgeIps.ipv6.length > 0 && scanCatalog.edgeIps.ipv6.every(ip => ip.includes(':')), 'آی‌پی‌های لبه IPv6 باید معتبر باشند');
+
+    const scanRunResp = await worker.fetch(
+      new Request(`https://mili.example.com/${adminUuid}/api/scanner`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'scan', ips: ['104.16.1.1', '188.114.98.10'], port: 443, timeoutMs: 800 })
+      }),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(scanRunResp.status, 200, 'اجرای اسکن باید ۲۰۰ بدهد');
+    const scanRun = await scanRunResp.json();
+    assert.strictEqual(scanRun.success, true);
+    assert.strictEqual(scanRun.results.length, 2, 'اسکن باید برای هر آی‌پی ورودی یک نتیجه بدهد');
+    assert.ok(scanRun.results.every(r => isValidIp(r.ip)), 'نتیجه اسکن باید فقط آی‌پی باشد');
+    console.log('  ✓ تست ۱۳ (اسکنر داخلی: کاتالوگ ۱۶ لوکیشن، گارد دسترسی و اجرای اسکن): موفق');
+
+    // ========================================================================
+    // تست ۱۴: نودهای مولتی‌لوکیشن با آی‌پی ثابت + خروجی ثابت (p/pm) و IPv6 همراه اول
+    // ========================================================================
+    const createWithPreset = async (username, preset, subNodeCount) => {
+      const resp = await worker.fetch(
+        new Request(`https://mili.example.com/${adminUuid}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, preset, subNodeCount })
+        }),
+        d1Env,
+        {}
+      );
+      assert.strictEqual(resp.status, 200, `ساخت کاربر با پریست ${preset} باید ۲۰۰ بدهد`);
+      return (await resp.json()).user;
+    };
+
+    const sanctionUser = await createWithPreset('gemini-user', 'sanction-gemini', 40);
+    assert.strictEqual(sanctionUser.config.pm, 'yes', 'پریست تحریم‌شکن باید خروجی ثابت (pm) را فعال کند');
+    assert.strictEqual(sanctionUser.config.qj, 'only', 'پریست تحریم‌شکن باید روش خروج only داشته باشد تا از پروکسی s عبور کند');
+    const sanctionRaw = await (await worker.fetch(
+      new Request(`https://mili.example.com/${sanctionUser.uuid}/sub?target=raw`),
+      d1Env,
+      {}
+    )).text();
+    const sanctionLines = sanctionRaw.trim().split('\n').filter(Boolean);
+    assert.ok(sanctionLines.length > 0, 'ساب تحریم‌شکن نباید خالی باشد');
+    const locTags = new Set();
+    let proxyNodes = 0;
+    for (const line of sanctionLines) {
+      const m = line.match(/^(?:vless|trojan):\/\/[^@]+@(\[[^\]]+\]|[^:?]+):(\d+)/);
+      assert.ok(m, `هر نود باید آدرس معتبر داشته باشد: ${line.slice(0, 40)}`);
+      const addr = m[1].replace(/^\[|\]$/g, '');
+      assert.ok(isValidIp(addr), `آدرس نود باید آی‌پی باشد نه دامنه: ${m[1]}`);
+      const tag = decodeURIComponent(line.split('#')[1] || '');
+      assert.ok(/^\d+\+miliconfig( [A-Z0-9-]+)?$/.test(tag), `نام نود با قرارداد number+miliconfig هم‌خوان نیست: ${tag}`);
+      const nodeUrl = new URL(line.replace(/^vless:\/\//, 'http://'));
+      const nodePath = nodeUrl.searchParams.get('path') || '';
+      const pMatch = nodePath.match(/[?&]p=([^&]+)/);
+      if (pMatch) {
+        proxyNodes += 1;
+        const egress = decodeURIComponent(pMatch[1]).replace(/:\d+$/, '');
+        assert.ok(isValidIp(egress), `خروجی نود باید آی‌پی ثابت باشد: ${egress}`);
+        assert.ok(/[?&]pm=1/.test(nodePath), 'نود دارای خروجی ثابت باید pm=1 در مسیر داشته باشد');
+      }
+      const tagLoc = tag.match(/^\d+\+miliconfig ([A-Z]{2}-[A-Z]{3})$/);
+      if (tagLoc) locTags.add(tagLoc[1]);
+    }
+    assert.ok(proxyNodes >= 8, `حداقل ۸ نود با خروجی ثابت لوکیشن لازم است (${proxyNodes})`);
+    assert.ok(locTags.size >= 8, `ساب باید حداقل ۸ لوکیشن واقعی داشته باشد (${locTags.size})`);
+
+    const mciUser = await createWithPreset('mci-user', 'mci-ipv6', 20);
+    const mciRaw = await (await worker.fetch(
+      new Request(`https://mili.example.com/${mciUser.uuid}/sub?target=raw`),
+      d1Env,
+      {}
+    )).text();
+    const mciLines = mciRaw.trim().split('\n').filter(Boolean);
+    assert.ok(mciLines.length >= 8, 'ساب IPv6 همراه اول باید حداقل ۸ نود داشته باشد');
+    for (const line of mciLines) {
+      const m = line.match(/^vless:\/\/[^@]+@(\[[^\]]+\]):(\d+)/);
+      assert.ok(m, `نود IPv6 باید آدرس [IPv6]:port داشته باشد: ${line.slice(0, 48)}`);
+      assert.ok(m[1].includes(':'), 'آدرس نود IPv6 باید شامل کولون باشد');
+      const mciPath = new URL(line.replace(/^vless:\/\//, 'http://')).searchParams.get('path') || '';
+      assert.ok(!/[?&]p=/.test(mciPath), 'نود IPv6 نباید به خروجی IPv4 وابسته باشد');
+    }
+
+    const defaultRaw = await (await worker.fetch(
+      new Request(`https://mili.example.com/${newUserUuid}/sub?target=raw&limit=60`),
+      d1Env,
+      {}
+    )).text();
+    for (const line of defaultRaw.trim().split('\n').filter(Boolean)) {
+      const m = line.match(/^(?:vless|trojan):\/\/[^@]+@(\[[^\]]+\]|[^:?]+):(\d+)/);
+      assert.ok(m, `هر نود ساب پیش‌فرض باید آدرس داشته باشد: ${line.slice(0, 120)}`);
+      assert.ok(isValidIp(m[1].replace(/^\[|\]$/g, '')), `هیچ نود پیش‌فرضی نباید دامنه باشد: ${m[1]}`);
+    }
+    console.log(`  ✓ تست ۱۴ (مولتی‌لوکیشن با آی‌پی ثابت: ${proxyNodes} نود خروجی‌دار در ${locTags.size} لوکیشن + IPv6 همراه اول): موفق`);
+
+    // ========================================================================
+    // تست ۱۵: رابط کاربری اسکنر و پریست‌های جدید در پنل مدیریت
+    // ========================================================================
+    assert.ok(adminHtml.includes('/api/scanner') && adminHtml.includes('runIpScan'), 'پنل باید اسکنر واقعی را صدا بزند');
+    assert.ok(!adminHtml.includes('generateRandomCfIps'), 'دکمه قدیمی تولید تصادفی باید حذف شده باشد');
+    assert.ok(adminHtml.includes('تحریم‌شکن') && adminHtml.includes('همراه اول ایران — IPv6'), 'پریست‌های تحریم‌شکن و IPv6 باید در پنل باشند');
+    assert.ok(adminHtml.includes('cfg_locs') && adminHtml.includes('cfg_pm'), 'تنظیمات لوکیشن و خروجی ثابت باید در پنل باشند');
+    console.log('  ✓ تست ۱۵ (رابط اسکنر و پریست‌های تحریم‌شکن/IPv6 در پنل): موفق');
+
+    // ========================================================================
+    // تست ۱۶: موتور Shadowsocks — بردار RFC 8439، سه رمزنگاری و فریم‌بندی chunk
+    // ========================================================================
+    const hexBytes = s => Uint8Array.from(s.match(/../g).map(h => parseInt(h, 16)));
+    const toHex = a => Array.from(a).map(b => b.toString(16).padStart(2, '0')).join('');
+    const rfcKey = hexBytes('808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f');
+    const rfcNonce = hexBytes('070000004041424344454647');
+    const rfcAad = hexBytes('50515253c0c1c2c3c4c5c6c7');
+    const rfcPlain = new TextEncoder().encode("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.");
+    const rfcSealed = chacha20Poly1305Seal(rfcKey, rfcNonce, rfcPlain, rfcAad);
+    assert.strictEqual(toHex(rfcSealed.slice(0, 16)), 'd31a8d34648e60db7b86afbc53ef7ec2', 'خروجی ChaCha20 باید با RFC 8439 هم‌خوان باشد');
+    assert.strictEqual(toHex(rfcSealed.slice(-16)), '1ae10b594f09e26a7e902ecbd0600691', 'تگ Poly1305 باید با RFC 8439 هم‌خوان باشد');
+    assert.strictEqual(
+      new TextDecoder().decode(chacha20Poly1305Open(rfcKey, rfcNonce, rfcSealed, rfcAad)),
+      new TextDecoder().decode(rfcPlain),
+      'رمزگشایی ChaCha20-Poly1305 باید متن اصلی را برگرداند'
+    );
+
+    const ssKeyLens = { 'aes-128-gcm': 16, 'aes-256-gcm': 32, 'chacha20-ietf-poly1305': 32 };
+    for (const [cipher, keyLen] of Object.entries(ssKeyLens)) {
+      const masterKey = await evpBytesToKey('351c9981-04b6-4103-aa4b-864aa9c91469', keyLen);
+      const encoder = await createEncoder({ cipher, masterKey });
+      const payload = new Uint8Array(20000).map((_, i) => i & 255);
+      const wire = await encoder.encode(payload);
+      assert.ok(wire.byteLength > payload.byteLength, `فریم‌بندی ${cipher} باید salt و تگ داشته باشد`);
+      const decoder = createDecoder({ cipher, masterKey });
+      const chunks = [];
+      for (let i = 0; i < wire.byteLength; i += 777) {
+        chunks.push(...(await decoder.push(wire.slice(i, Math.min(i + 777, wire.byteLength)))));
+      }
+      const joined = new Uint8Array(chunks.reduce((n, c) => n + c.byteLength, 0));
+      let off = 0;
+      for (const c of chunks) { joined.set(c, off); off += c.byteLength; }
+      assert.strictEqual(joined.byteLength, payload.byteLength, `${cipher} باید کل payload را بازگرداند`);
+      assert.ok(joined.every((v, i) => v === payload[i]), `محتوای رمزگشایی‌شده ${cipher} باید یکسان باشد`);
+    }
+
+    const ssPassword = 'mili-ss-password';
+    const ssMaster = await evpBytesToKey(ssPassword, 32);
+    const ssEncoder = await createEncoder({ cipher: 'chacha20-ietf-poly1305', masterKey: ssMaster });
+    const ssFirstFrame = await ssEncoder.encode(encodeSsAddress('example.com', 443));
+    const ssAuth = await tryOpenShadowsocks(ssFirstFrame, ssPassword, ['chacha20-ietf-poly1305']);
+    assert.ok(ssAuth && ssAuth.target.host === 'example.com' && ssAuth.target.port === 443, 'احراز هویت Shadowsocks باید آدرس مقصد را باز کند');
+    assert.strictEqual(await tryOpenShadowsocks(ssFirstFrame, 'wrong-password', ['chacha20-ietf-poly1305']), null, 'رمز اشتباه نباید احراز شود');
+
+    const ssAddr4 = parseSsAddress(encodeSsAddress('104.16.1.1', 443));
+    const ssAddr6 = parseSsAddress(encodeSsAddress('2606:4700::6810:101', 443));
+    assert.deepStrictEqual([ssAddr4.host, ssAddr4.port], ['104.16.1.1', 443], 'آدرس IPv4 شادوساکس باید درست رمزگشایی شود');
+    assert.deepStrictEqual([ssAddr6.host, ssAddr6.port, ssAddr6.addressType], ['2606:4700:0:0:0:0:6810:101', 443, 3], 'آدرس IPv6 شادوساکس باید درست رمزگشایی شود');
+    assert.deepStrictEqual(resolveSsCiphers('all'), ['aes-128-gcm', 'aes-256-gcm', 'chacha20-ietf-poly1305'], 'حالت all باید سه رمزنگاری را برگرداند');
+    console.log('  ✓ تست ۱۶ (Shadowsocks: بردار RFC 8439 + سه رمزنگاری + فریم‌بندی + آدرس IPv4/IPv6): موفق');
+
+    // ========================================================================
+    // تست ۱۷: لینک‌های ss:// در ساب‌لینک (چند رمزنگاری) و تبدیل Clash/Sing-box
+    // ========================================================================
+    const ssUserResp = await worker.fetch(
+      new Request(`https://mili.example.com/${adminUuid}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'ss-user',
+          preset: 'iran-fast',
+          subNodeCount: 12,
+          config: { ss: 'yes', ssc: 'all', locs: 'DE, NL' }
+        })
+      }),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(ssUserResp.status, 200, 'ساخت کاربر Shadowsocks باید 200 بدهد');
+    const ssUser = (await ssUserResp.json()).user;
+    assert.strictEqual(ssUser.config.ss, 'yes', 'تنظیم ss باید برای کاربر ذخیره شود');
+    assert.strictEqual(ssUser.config.ssc, 'all', 'تنظیم ssc باید برای کاربر ذخیره شود');
+
+    const ssRaw = await (await worker.fetch(
+      new Request(`https://mili.example.com/${ssUser.uuid}/sub?target=raw`),
+      d1Env,
+      {}
+    )).text();
+    const ssLinks = ssRaw.trim().split('\n').filter(l => l.startsWith('ss://'));
+    assert.ok(ssLinks.length >= 3, `ساب باید حداقل ۳ لینک ss داشته باشد (${ssLinks.length})`);
+
+    const ssMethods = new Set();
+    for (const link of ssLinks) {
+      const url = new URL(link);
+      const decoded = Buffer.from(url.username.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+      const [method, password] = decoded.split(':');
+      assert.ok(['aes-128-gcm', 'aes-256-gcm', 'chacha20-ietf-poly1305'].includes(method), `رمزنگاری ناشناخته در لینک: ${method}`);
+      assert.strictEqual(password, ssUser.uuid, 'رمز عبور پیش‌فرض Shadowsocks باید UUID کاربر باشد');
+      ssMethods.add(method);
+      const plugin = url.searchParams.get('plugin') || '';
+      assert.ok(plugin.startsWith('v2ray-plugin;tls'), 'پلاگین لینک باید v2ray-plugin با TLS باشد');
+      assert.ok(plugin.includes(`host=${new URL('https://mili.example.com').host}`), 'پلاگین باید میزبان Worker را داشته باشد');
+      assert.ok(/[^\[]:\d+$/.test(url.host) || url.host.startsWith('['), 'آدرس لینک باید میزبان واقعی داشته باشد');
+    }
+    assert.deepStrictEqual([...ssMethods].sort(), ['aes-128-gcm', 'aes-256-gcm', 'chacha20-ietf-poly1305'], 'هر سه رمزنگاری باید در ساب باشند');
+
+    const ssClash = await (await worker.fetch(
+      new Request(`https://mili.example.com/${ssUser.uuid}/sub?target=clash`),
+      d1Env,
+      {}
+    )).text();
+    assert.ok(ssClash.includes('type: ss') && ssClash.includes('plugin: v2ray-plugin') && ssClash.includes('mode: websocket'), 'کانفیگ Clash باید نودهای Shadowsocks را با پلاگین وب‌سوکت داشته باشد');
+
+    const ssSingbox = JSON.parse(await (await worker.fetch(
+      new Request(`https://mili.example.com/${ssUser.uuid}/sub?target=singbox`),
+      d1Env,
+      {}
+    )).text());
+    const ssOutbounds = ssSingbox.outbounds.filter(o => o.type === 'shadowsocks');
+    assert.ok(ssOutbounds.length >= 3, 'کانفیگ Sing-box باید نودهای shadowsocks داشته باشد');
+    assert.ok(ssOutbounds.every(o => o.plugin === 'v2ray-plugin' && o.method && o.password), 'هر outbound شادوساکس باید پلاگین و رمز داشته باشد');
+    assert.ok(ssOutbounds.every(o => String(o.plugin_opts || '').includes('host=')), 'plugin_opts باید میزبان را داشته باشد');
+    console.log(`  ✓ تست ۱۷ (لینک‌های ss:// با ${ssMethods.size} رمزنگاری + خروجی Clash و Sing-box): موفق`);
+
+    // ========================================================================
+    // تست ۱۸: کنترل‌های Shadowsocks در پنل مدیریت
+    // ========================================================================
+    assert.ok(adminHtml.includes('cfg_ss') && adminHtml.includes('cfg_ssc') && adminHtml.includes('cfg_ssp'), 'پنل باید کنترل‌های Shadowsocks را داشته باشد');
+    assert.ok(adminHtml.includes('um_ss') && adminHtml.includes('um_ssc'), 'مودال کاربر باید تنظیمات Shadowsocks را داشته باشد');
+    assert.ok(adminHtml.includes('Shadowsocks'), 'عنوان Shadowsocks باید در پنل دیده شود');
+    assert.ok(adminHtml.includes('همه سه روش'), 'گزینه همه رمزنگاری‌ها باید در پنل باشد');
+    console.log('  ✓ تست ۱۸ (کنترل‌های Shadowsocks و انتخاب رمزنگاری در پنل): موفق');
   } finally {
     if (fs.existsSync(tmpTestFile)) fs.unlinkSync(tmpTestFile);
   }

@@ -16,6 +16,12 @@ import {
   normalizeEffectiveConfig
 } from '../config/defaults.js';
 import {
+  CLEAN_EDGE_IPV4,
+  CLEAN_EDGE_IPV6,
+  edgeIpForIndex,
+  parseLocationFilter
+} from '../config/locations.js';
+import {
   createMiliNodeNamer,
   encodeBase64Utf8,
   finalizeMiliSubscriptionLinks,
@@ -25,6 +31,7 @@ import {
   normalizeNodeHost,
   parseAddressAndPort
 } from '../core/utils.js';
+import { resolveSsCiphers } from '../core/shadowsocks.js';
 import {
   generateClashConfig,
   generateLoonConfig,
@@ -38,10 +45,50 @@ export function getOfficialDirectAddress() {
   const hit = OFFICIAL_DIRECT_IPS[Math.floor(Math.random() * OFFICIAL_DIRECT_IPS.length)];
   return {
     domain: hit,
+    ip: hit,
     region: 'CF',
     regionCode: 'CF',
     port: 443
   };
+}
+
+// ساخت مسیر WebSocket نود؛ p/pm داخل path قرار می‌گیرد تا سرور همان نود را
+// با خروجی ثابت خودش اجرا کند (بدون نیاز به تنظیم دستی p در پنل).
+function buildNodePath({ wkOverride = '', proxyIp = '', forceProxy = false } = {}) {
+  const params = new URLSearchParams();
+  params.set('ed', '2048');
+  if (wkOverride) params.set('wk', wkOverride);
+  if (proxyIp) params.set('p', proxyIp);
+  if (forceProxy) params.set('pm', '1');
+  return `/?${params.toString()}`;
+}
+
+// نودهای مولتی‌لوکیشن واقعی: آدرس = آی‌پی ثابت لبه کلودفلر، خروجی = آی‌پی ثابت لوکیشن
+function buildLocationItems(cfg = {}) {
+  const locations = parseLocationFilter(cfg.locs ?? 'all');
+  return locations.map((loc, idx) => ({
+    ip: edgeIpForIndex(idx, false),
+    port: 443,
+    isp: `${loc.code} · ${loc.name}`,
+    loc: `${loc.code}-${loc.colo}`,
+    proxyIp: `${loc.egress}:443`
+  }));
+}
+
+function buildIpv6Items(cfg = {}) {
+  if (!isEnabledValue(cfg.ipv6, true)) return [];
+  return CLEAN_EDGE_IPV6.map((ip, idx) => ({
+    ip,
+    port: 443,
+    isp: `IPv6-${idx + 1}`,
+    loc: 'V6'
+  }));
+}
+
+function buildIpv4FixedItems(cfg = {}) {
+  if (!isEnabledValue(cfg.ipv4, true)) return [];
+  const pool = CLEAN_EDGE_IPV4.length ? CLEAN_EDGE_IPV4 : OFFICIAL_DIRECT_IPS;
+  return pool.map((ip, idx) => ({ ip, port: 443, isp: `CF-${idx + 1}` }));
 }
 
 function getNeighborRegions(region) {
@@ -249,7 +296,7 @@ function buildVlessLinks(list, userUuid, workerHost, cfg, namer, wkOverride = ''
   const defaultHttps = [443];
   const defaultHttp = disableNonTls ? [] : [80];
   const links = [];
-  const wsPath = wkOverride ? `/?ed=2048&wk=${encodeURIComponent(wkOverride)}` : '/?ed=2048';
+  const forceProxyGlobal = cfg.pm === 'yes' || cfg.pm === 'only';
   const alpn = normalizeAlpn(cfg.alpn);
   const enableEch = cfg.ech === 'yes';
   const dnsVal = cfg.customDNS || CONFIG_DEFAULTS.customDNS;
@@ -274,8 +321,14 @@ function buildVlessLinks(list, userUuid, workerHost, cfg, namer, wkOverride = ''
       defaultHttp.forEach(p => portsToGen.push({ port: p, tls: false }));
     }
 
+    const wsPath = buildNodePath({
+      wkOverride,
+      proxyIp: item.proxyIp || '',
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+    });
+
     for (const { port, tls } of portsToGen) {
-      const nodeName = namer(item);
+      const nodeName = item.loc ? `__loc_${item.loc}__` : namer(item);
       if (tls) {
         const params = new URLSearchParams({
           encryption: 'none',
@@ -309,7 +362,7 @@ function buildTrojanLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '
   const defaultHttps = [443];
   const defaultHttp = disableNonTls ? [] : [80];
   const links = [];
-  const wsPath = wkOverride ? `/?ed=2048&wk=${encodeURIComponent(wkOverride)}` : '/?ed=2048';
+  const forceProxyGlobal = cfg.pm === 'yes' || cfg.pm === 'only';
   const password = (cfg.tp && String(cfg.tp).trim()) || userUuid;
   const alpn = normalizeAlpn(cfg.alpn);
   const enableEch = cfg.ech === 'yes';
@@ -335,8 +388,14 @@ function buildTrojanLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '
       defaultHttp.forEach(p => portsToGen.push({ port: p, tls: false }));
     }
 
+    const wsPath = buildNodePath({
+      wkOverride,
+      proxyIp: item.proxyIp || '',
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+    });
+
     for (const { port, tls } of portsToGen) {
-      const nodeName = namer(item);
+      const nodeName = item.loc ? `__loc_${item.loc}__` : namer(item);
       if (tls) {
         const params = new URLSearchParams({
           security: 'tls',
@@ -363,6 +422,40 @@ function buildTrojanLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '
   return links;
 }
 
+// لینک‌های Shadowsocks با پشتیبانی از چند رمزنگاری (SIP002 + v2ray-plugin)
+function buildShadowsocksLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '') {
+  if (!isEnabledValue(cfg.ss, false)) return [];
+  const ciphers = resolveSsCiphers(cfg.ssc);
+  const password = String(cfg.ssp && String(cfg.ssp).trim() ? String(cfg.ssp).trim() : userUuid);
+  const forceProxyGlobal = cfg.pm === 'yes' || cfg.pm === 'only';
+  const links = [];
+
+  for (const item of list) {
+    const rawHost = normalizeNodeHost(item.ip || item.domain);
+    if (!rawHost) continue;
+    const safeAddr = rawHost.includes(':') ? `[${rawHost}]` : rawHost;
+    const port = item.port || 443;
+    const wsPath = buildNodePath({
+      wkOverride,
+      proxyIp: item.proxyIp || '',
+      forceProxy: Boolean(item.proxyIp) || forceProxyGlobal
+    });
+    const plugin = `v2ray-plugin;tls;host=${workerHost};path=${wsPath}`;
+
+    for (const cipher of ciphers) {
+      const credential = encodeBase64Utf8(`${cipher}:${password}`)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      const tag = item.loc ? `__loc_${item.loc}__` : namer(item);
+      links.push(
+        `ss://${credential}@${safeAddr}:${port}?plugin=${encodeURIComponent(plugin)}#${encodeURIComponent(tag)}`
+      );
+    }
+  }
+  return links;
+}
+
 function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
   const links = [];
   const shortPath = String(userUuid || '').substring(0, 8);
@@ -377,7 +470,12 @@ function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
     if (!rawHost) continue;
     const safeAddr = rawHost.includes(':') ? `[${rawHost}]` : rawHost;
     const port = item.port || 443;
-    const nodeName = namer(item);
+    const nodeName = item.loc ? `__loc_${item.loc}__` : namer(item);
+    const forceProxyGlobal = cfg.pm === 'yes' || cfg.pm === 'only';
+    const xhttpQuery = [
+      item.proxyIp ? `p=${encodeURIComponent(item.proxyIp)}` : '',
+      item.proxyIp || forceProxyGlobal ? 'pm=1' : ''
+    ].filter(Boolean).join('&');
     const params = new URLSearchParams({
       encryption: 'none',
       security: 'tls',
@@ -385,7 +483,7 @@ function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
       fp: 'chrome',
       type: 'xhttp',
       host: workerHost,
-      path: `/${shortPath}`,
+      path: `/${shortPath}${xhttpQuery ? `?${xhttpQuery}` : ''}`,
       mode: 'stream-one'
     });
     params.set(
@@ -409,6 +507,9 @@ function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
 export async function generateUserNodesList(userOrConfig, workerHost, queryOverrides = {}) {
   const rawCfg = userOrConfig?.config ? userOrConfig.config : (userOrConfig || {});
   const cfg = normalizeEffectiveConfig(rawCfg);
+  // امکان انتخاب لوکیشن از طریق ساب‌لینک:  ?locs=DE یا ?locs=DE,NL
+  const locsOverride = String(queryOverrides.locs || '').trim();
+  if (locsOverride) cfg.locs = locsOverride;
   const userUuid = String(userOrConfig?.uuid || queryOverrides.uuid || '351c9981-04b6-4103-aa4b-864aa9c91469').toLowerCase();
   const nodeScope = queryOverrides.scope || userOrConfig?.nodeScope || 'all';
   const wkOverride = (queryOverrides.wk || cfg.wk || '').trim().toUpperCase();
@@ -417,6 +518,7 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
   const evEnabled = protoFilter ? protoFilter === 'vless' : isEnabledValue(cfg.ev, true);
   const etEnabled = protoFilter ? protoFilter === 'trojan' : isEnabledValue(cfg.et, false);
   const exEnabled = protoFilter ? protoFilter === 'xhttp' : isEnabledValue(cfg.ex, false);
+  const ssEnabled = protoFilter ? protoFilter === 'ss' : isEnabledValue(cfg.ss, false);
 
   const namer = createMiliNodeNamer(BRAND_NAME);
   const rawLinks = [];
@@ -426,6 +528,7 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
     if (evEnabled) rawLinks.push(...buildVlessLinks(sourceList, userUuid, workerHost, cfg, namer, wkOverride));
     if (etEnabled) rawLinks.push(...buildTrojanLinks(sourceList, userUuid, workerHost, cfg, namer, wkOverride));
     if (exEnabled) rawLinks.push(...buildXhttpLinks(sourceList, userUuid, workerHost, cfg, namer));
+    if (ssEnabled) rawLinks.push(...buildShadowsocksLinks(sourceList, userUuid, workerHost, cfg, namer, wkOverride));
   }
 
   const disablePreferred = cfg.yxby === 'yes' || nodeScope === 'origin';
@@ -439,6 +542,7 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
   const hasCustomPreferred = customIps.length > 0 || customDomains.length > 0;
 
   if (!disablePreferred) {
+    // ۱) لیست دستی مدیر اولویت دارد
     if (hasCustomPreferred) {
       if (customIps.length > 0 && cfg.epi === 'yes') {
         appendFromSource(customIps);
@@ -446,7 +550,29 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
       if (customDomains.length > 0 && cfg.epd === 'yes') {
         appendFromSource(customDomains.map(d => ({ ip: d.domain, port: d.port, isp: d.name || d.domain })));
       }
-    } else {
+    }
+
+    // ۲) نودهای مولتی‌لوکیشن واقعی: آی‌پی ثابت لبه + خروجی ثابت همان لوکیشن (p/pm)
+    //    این نودها همیشه در ابتدای ساب هستند تا حتی با تعداد کم (مثلاً ۸ نود) هم دیده شوند.
+    const locationItems = buildLocationItems(cfg);
+    if (locationItems.length > 0 && nodeScope !== 'origin') {
+      appendFromSource(locationItems);
+    }
+
+    // ۳) نودهای IPv4 ثابت و تست‌شده کلودفلر (بدون دامنه)
+    const v4Items = buildIpv4FixedItems(cfg);
+    if (v4Items.length > 0 && nodeScope !== 'origin') {
+      appendFromSource(v4Items);
+    }
+
+    // ۴) نودهای IPv6 ثابت (همراه اول ایران / ایرانسل) با آدرس [IPv6]:443
+    const v6Items = buildIpv6Items(cfg);
+    if (v6Items.length > 0 && nodeScope !== 'origin') {
+      appendFromSource(v6Items);
+    }
+
+    // ۵) منابع خارجی و لیست‌های پشتیبان در انتهای ساب
+    if (!hasCustomPreferred) {
       if (cfg.epd === 'yes') {
         appendFromSource(DIRECT_DOMAINS.map(d => ({ ip: d.domain, isp: d.name || d.domain })));
       }
@@ -462,7 +588,7 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
           appendFromSource(urlList);
         }
       }
-      // اگر لیست خارجی در دسترس نبود، از استخر IPهای مستقیم رسمی CF اضافه می‌کنیم تا همیشه تعداد کافی نود سالم تولید شود
+      // اگر لیست خارجی در دسترس نبود، از استخر IPهای مستقیم تأییدشده CF اضافه می‌کنیم
       if (rawLinks.length < 15 && cfg.epi === 'yes') {
         appendFromSource(OFFICIAL_DIRECT_IPS.map(ip => ({ ip, port: 443, isp: 'CF-Direct' })));
       }
@@ -473,12 +599,22 @@ export async function generateUserNodesList(userOrConfig, workerHost, queryOverr
     appendFromSource([{ ip: workerHost, port: 443, isp: 'Origin' }]);
   }
 
+  // حذف نودهای تکراری (آدرس + مسیر یکسان) تا ساب‌لینک تمیز بماند
+  const uniqueLinks = [];
+  const seenLinks = new Set();
+  for (const link of rawLinks) {
+    const key = link.split('#')[0];
+    if (seenLinks.has(key)) continue;
+    seenLinks.add(key);
+    uniqueLinks.push(link);
+  }
+
   const subNodeCount = queryOverrides.limit !== undefined
     ? parseInt(queryOverrides.limit, 10)
     : Number(userOrConfig?.subNodeCount ?? cfg.subNodeCount ?? 50);
 
-  // اعمال دقیق نام‌گذاری number+miliconfig و سقف تعداد نودهای ساب‌لینک کاربر
-  return finalizeMiliSubscriptionLinks(rawLinks, subNodeCount, BRAND_NAME);
+  // اعمال دقیق نام‌گذاری number+miliconfig (به همراه برچسب لوکیشن) و سقف نودهای ساب
+  return finalizeMiliSubscriptionLinks(uniqueLinks, subNodeCount, BRAND_NAME);
 }
 
 // تشخیص خودکار کلاینت از User-Agent در صورت عدم ارسال پارامتر target
@@ -526,6 +662,7 @@ export async function handleSubscriptionResponse(request, userOrConfig, url = nu
     wk: url.searchParams.get('wk') || '',
     proto: url.searchParams.get('proto') || '',
     scope: url.searchParams.get('scope') || userOrConfig?.nodeScope || 'all',
+    locs: url.searchParams.get('locs') || url.searchParams.get('loc') || '',
     limit: url.searchParams.get('limit') !== null ? url.searchParams.get('limit') : undefined
   };
 

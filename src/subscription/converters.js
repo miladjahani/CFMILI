@@ -69,6 +69,52 @@ export function parseShareLink(link) {
         ech: params.get('ech') || ''
       };
     }
+    if (link.startsWith('ss://')) {
+      const body = link.slice(5);
+      const hashIdx = body.indexOf('#');
+      const namePart = hashIdx > -1 ? body.slice(hashIdx + 1) : '';
+      const mainPart = hashIdx > -1 ? body.slice(0, hashIdx) : body;
+      const qIdx = mainPart.indexOf('?');
+      const core = qIdx > -1 ? mainPart.slice(0, qIdx) : mainPart;
+      const query = new URLSearchParams(qIdx > -1 ? mainPart.slice(qIdx + 1) : '');
+      const atIdx = core.lastIndexOf('@');
+      if (atIdx < 0) return null;
+      const credentialB64 = core.slice(0, atIdx).replace(/-/g, '+').replace(/_/g, '/');
+      const hostPort = core.slice(atIdx + 1);
+      const decoded = decodeBase64Utf8(credentialB64);
+      const sep = decoded.indexOf(':');
+      if (sep < 1) return null;
+      const method = decoded.slice(0, sep);
+      const password = decoded.slice(sep + 1);
+      const bracketMatch = hostPort.match(/^\[([^\]]+)\]:(\d+)$/);
+      const plainMatch = hostPort.match(/^([^:]+):(\d+)$/);
+      const serverHost = bracketMatch ? bracketMatch[1] : plainMatch ? plainMatch[1] : '';
+      const serverPort = bracketMatch ? bracketMatch[2] : plainMatch ? plainMatch[2] : '443';
+      if (!serverHost) return null;
+
+      const pluginRaw = query.get('plugin') || '';
+      const pluginParts = pluginRaw.split(';').map(s => s.trim());
+      const pluginOpts = {};
+      for (const part of pluginParts.slice(1)) {
+        const [k, ...rest] = part.split('=');
+        pluginOpts[k.toLowerCase()] = rest.join('=');
+      }
+
+      return {
+        proto: 'ss',
+        name: namePart ? decodeURIComponent(namePart) : `${serverHost}:${serverPort}`,
+        server: normalizeHost(serverHost),
+        port: parseInt(serverPort, 10) || 443,
+        method,
+        password,
+        plugin: pluginParts[0] || '',
+        tls: String(pluginOpts.tls || '').toLowerCase() !== 'false',
+        network: 'ws',
+        path: pluginOpts.path || '/?ed=2048',
+        host: normalizeHost(pluginOpts.host || serverHost),
+        sni: normalizeHost(pluginOpts.host || serverHost)
+      };
+    }
     if (link.startsWith('trojan://')) {
       const url = new URL(link);
       const params = new URLSearchParams(url.search);
@@ -111,6 +157,18 @@ function buildClashNodeYaml(node, customECHDomain = 'cloudflare-ech.com') {
     lines.push(`    password: ${quoteYaml(node.password)}`);
     lines.push(`    udp: true`);
     lines.push(`    client-fingerprint: ${quoteYaml(node.fp || 'chrome')}`);
+  } else if (node.proto === 'ss') {
+    lines.push(`    cipher: ${quoteYaml(node.method)}`);
+    lines.push(`    password: ${quoteYaml(node.password)}`);
+    lines.push(`    udp: true`);
+    lines.push(`    plugin: v2ray-plugin`);
+    lines.push(`    plugin-opts:`);
+    lines.push(`      mode: websocket`);
+    lines.push(`      tls: ${node.tls ? 'true' : 'false'}`);
+    lines.push(`      skip-cert-verify: false`);
+    lines.push(`      host: ${quoteYaml(host)}`);
+    lines.push(`      path: ${quoteYaml(node.path)}`);
+    return lines.join('\n');
   }
   if (node.tls) {
     lines.push(`    servername: ${quoteYaml(sni)}`);
@@ -142,7 +200,7 @@ function buildClashNodeYaml(node, customECHDomain = 'cloudflare-ech.com') {
 export function generateClashConfig(links, options = {}) {
   const customDNS = options.customDNS || 'https://223.5.5.5/dns-query';
   const customECHDomain = options.customECHDomain || 'cloudflare-ech.com';
-  const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+  const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan' || n.proto === 'ss'));
   const names = nodes.map(n => n.name);
 
   const header = [
@@ -384,10 +442,22 @@ function splitDnsAddress(addr) {
 
 export function generateSingboxConfig(links, options = {}) {
   const customDNS = options.customDNS || 'https://223.5.5.5/dns-query';
-  const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+  const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan' || n.proto === 'ss'));
   const outboundTags = nodes.map(n => n.name);
 
   function buildOutbound(n) {
+    if (n.proto === 'ss') {
+      return {
+        type: 'shadowsocks',
+        tag: n.name,
+        server: normalizeHost(n.server),
+        server_port: n.port,
+        method: n.method,
+        password: n.password,
+        plugin: 'v2ray-plugin',
+        plugin_opts: `tls;host=${n.host};path=${n.path}`
+      };
+    }
     const out = {
       type: n.proto,
       tag: n.name,

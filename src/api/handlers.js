@@ -9,6 +9,21 @@ import {
   OFFICIAL_DIRECT_IPS
 } from '../config/defaults.js';
 import { USER_PRESETS } from '../config/presets.js';
+import {
+  CF_IPV4_RANGES,
+  CF_IPV6_RANGES,
+  CLEAN_EDGE_IPV4,
+  CLEAN_EDGE_IPV6,
+  LOCATIONS,
+  SANCTION_FREE_CODES
+} from '../config/locations.js';
+import {
+  SCANNER_LIMITS,
+  normalizeScanInput,
+  resolveHostsToFixedIps,
+  scanIpPool,
+  summarizeScanResults
+} from '../core/scanner.js';
 import { isValidDomain, isValidIpAddress, parseAddressAndPort } from '../core/utils.js';
 import {
   addAuditLog,
@@ -25,6 +40,7 @@ import {
   updateUser
 } from '../db/d1.js';
 import { generateUserNodesList } from '../subscription/generator.js';
+import { getSocketConnector } from '../core/runtime.js';
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -322,6 +338,125 @@ export async function handlePreferredIpsApi(request, env, bypassAeCheck = false)
       error: 'خطا در پردازش درخواست',
       message: err?.message || String(err)
     }, 500);
+  }
+}
+
+// ۳.۵ اسکنر داخلی آی‌پی (معادل cfnew) و تبدیل دامنه به آی‌پی ثابت (/api/scanner)
+export async function handleScannerApi(request, env, bypassAeCheck = false) {
+  if (request.method === 'OPTIONS') return jsonResponse({ ok: true });
+  const clientIp = request.headers.get('CF-Connecting-IP') || '127.0.0.1';
+  const cfg = await loadGlobalConfig(env);
+  if (!bypassAeCheck && cfg.ae !== 'yes' && request.headers.get('X-Mili-Admin') !== '1') {
+    return jsonResponse({ success: false, error: 'API غیرفعال است' }, 403);
+  }
+
+  if (request.method === 'GET') {
+    return jsonResponse({
+      success: true,
+      engine: 'mili-cfnew-scanner',
+      locations: LOCATIONS.map(l => ({
+        code: l.code,
+        flag: l.flag,
+        name: l.name,
+        colo: l.colo,
+        egressIp: l.egress,
+        sanctionFree: SANCTION_FREE_CODES.includes(l.code)
+      })),
+      edgeIps: { ipv4: CLEAN_EDGE_IPV4, ipv6: CLEAN_EDGE_IPV6 },
+      ranges: { ipv4: CF_IPV4_RANGES, ipv6: CF_IPV6_RANGES },
+      limits: SCANNER_LIMITS
+    });
+  }
+
+  if (request.method !== 'POST') {
+    return jsonResponse({ success: false, error: 'Method not allowed' }, 405);
+  }
+
+  let body = {};
+  try {
+    body = await request.json();
+  } catch (_e) {
+    return jsonResponse({ success: false, error: 'بدنه درخواست JSON نامعتبر است' }, 400);
+  }
+
+  const action = String(body.action || 'scan').toLowerCase();
+  const port = Math.max(1, Math.min(65535, parseInt(body.port, 10) || SCANNER_LIMITS.defaultPort));
+  const timeoutMs = Math.max(500, Math.min(10000, parseInt(body.timeoutMs, 10) || SCANNER_LIMITS.defaultTimeoutMs));
+  const concurrency = Math.max(1, Math.min(6, parseInt(body.concurrency, 10) || SCANNER_LIMITS.defaultConcurrency));
+
+  try {
+    if (action === 'scan') {
+      const targets = normalizeScanInput(body.ips || [], {
+        ipv6: Boolean(body.ipv6),
+        count: body.count
+      });
+      if (!targets.length) {
+        return jsonResponse({ success: false, error: 'هیچ آی‌پی معتبری برای اسکن یافت نشد' }, 400);
+      }
+      const sni = String(body.sni || '').trim();
+      const results = await scanIpPool(targets, {
+        port,
+        timeoutMs,
+        concurrency,
+        connector: getSocketConnector(),
+        ...(sni ? { sni } : {})
+      });
+      const summary = summarizeScanResults(results);
+
+      if (body.save === true && summary.healthyIps.length > 0) {
+        const currentList = parseYxArray(cfg.yx || '');
+        let added = 0;
+        for (const ip of summary.healthyIps.slice(0, 10)) {
+          if (currentList.some(x => x.ip === ip && x.port === port)) continue;
+          currentList.push({ ip, port, name: `CF-${ip}`, addedAt: new Date().toISOString() });
+          added += 1;
+        }
+        if (added > 0) {
+          // آی‌پی‌های اسکن‌شده باید در تولید ساب‌لینک هم استفاده شوند
+          await saveGlobalConfig(env, { yx: serializeYxArray(currentList), epi: 'yes' });
+          await addAuditLog(env, 'اسکن داخلی آی‌پی', `${added} آی‌پی سالم ذخیره شد · پورت ${port}`, clientIp);
+        }
+        summary.saved = added;
+      }
+
+      return jsonResponse({ success: true, action, port, results, summary });
+    }
+
+    if (action === 'resolve') {
+      const hosts = Array.isArray(body.hosts)
+        ? body.hosts
+        : String(body.hosts || '').split(/[\s,]+/).filter(Boolean);
+      const cleanHosts = hosts
+        .map(h => String(h || '').trim())
+        .filter(h => isValidDomain(h) || isValidIpAddress(h))
+        .slice(0, 40);
+      if (!cleanHosts.length) {
+        return jsonResponse({ success: false, error: 'هیچ دامنه معتبری ارسال نشده است' }, 400);
+      }
+      const resolved = await resolveHostsToFixedIps(cleanHosts, { timeoutMs });
+      const fixedIps = resolved.map(r => r.fixedIp).filter(Boolean);
+
+      if (body.save === true && fixedIps.length > 0) {
+        const currentList = parseYxArray(cfg.yx || '');
+        let added = 0;
+        for (const entry of resolved) {
+          if (!entry.fixedIp) continue;
+          if (currentList.some(x => x.ip === entry.fixedIp)) continue;
+          currentList.push({ ip: entry.fixedIp, port, name: `CF-${entry.host}`, addedAt: new Date().toISOString() });
+          added += 1;
+        }
+        if (added > 0) {
+          await saveGlobalConfig(env, { yx: serializeYxArray(currentList), epi: 'yes' });
+          await addAuditLog(env, 'تبدیل دامنه به آی‌پی ثابت', `${added} آی‌پی ثابت ذخیره شد`, clientIp);
+        }
+      }
+
+      return jsonResponse({ success: true, action, resolved, fixedIps });
+    }
+
+    return jsonResponse({ success: false, error: 'action نامعتبر است (scan | resolve)' }, 400);
+  } catch (err) {
+    return jsonResponse({ success: false, error: 'خطا در اجرای اسکنر', message: err?.message || String(err) }, 500);
   }
 }
 

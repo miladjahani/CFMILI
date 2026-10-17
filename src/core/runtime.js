@@ -4,9 +4,16 @@
 // ============================================================================
 
 import { connect as cfConnect } from 'cloudflare:sockets';
+import { isEnabledValue } from '../config/defaults.js';
+import { createEncoder, resolveSsCiphers, tryOpenShadowsocks } from './shadowsocks.js';
 import { isValidUuid, parseAddressAndPort, sha224Hex, sharedDecoder } from './utils.js';
 import { getXhttpPaddingMeta, selectFallbackProxyAddress } from '../subscription/generator.js';
 import { recordUserActivity } from '../db/d1.js';
+
+// دسترسی به سوکت TCP پلتفرم برای اسکنر داخلی (هم در باندل و هم در ESM خالص)
+export function getSocketConnector() {
+  return cfConnect;
+}
 
 const ADDR_TYPE_IPV4 = 1;
 const ADDR_TYPE_DOMAIN = 2;
@@ -723,6 +730,21 @@ async function establishOutboundAndPipe(
     onBytesTransferred(firstPacket.byteLength);
   }
 
+  // pm = حالت خروجی ثابت نود: تمام ترافیک TLS (پورت ۴۴۳) از ProxyIP همان نود
+  // عبور می‌کند تا لوکیشن واقعی و دسترسی به سرویس‌های تحریم‌محور تأمین شود.
+  const pmMode = String(effectiveCfg.pm || '').trim().toLowerCase();
+  const forceFixedEgress = pmMode === 'yes' || pmMode === 'only' || pmMode === '1' || pmMode === 'force';
+
+  async function resolveFallbackTarget() {
+    if (fallbackAddr) {
+      const parsed = parseAddressAndPort(fallbackAddr);
+      if (parsed.address) return { host: parsed.address, port: parsed.port || port };
+    }
+    const fb = await selectFallbackProxyAddress(workerRegion, enableRegionMatch);
+    if (!fb) return null;
+    return { host: fb.ip || fb.domain, port: fb.port || port };
+  }
+
   async function connectAndSend(targetHost, targetPort, useProxy = false) {
     const remoteSock = useProxy
       ? await connectViaOutboundProxy(addressType, targetHost, targetPort, parsedProxy, fetcher, firstPacket)
@@ -770,16 +792,9 @@ async function establishOutboundAndPipe(
         bindRemote(remoteSock, writer, null);
         return;
       } catch (_proxyErr) {
-        let fbHost, fbPort;
-        if (fallbackAddr) {
-          const parsed = parseAddressAndPort(fallbackAddr);
-          fbHost = parsed.address;
-          fbPort = parsed.port || port;
-        } else {
-          const fb = await selectFallbackProxyAddress(workerRegion, enableRegionMatch);
-          fbHost = fb ? fb.domain : host;
-          fbPort = fb ? fb.port : port;
-        }
+        const fb = await resolveFallbackTarget();
+        const fbHost = fb ? fb.host : host;
+        const fbPort = fb ? fb.port : port;
         try {
           const { remoteSock, writer } = await connectAndSend(fbHost, fbPort, false);
           bindRemote(remoteSock, writer, null);
@@ -788,21 +803,34 @@ async function establishOutboundAndPipe(
         }
       }
     } else {
-      let fbHost, fbPort;
-      if (fallbackAddr) {
-        const parsed = parseAddressAndPort(fallbackAddr);
-        fbHost = parsed.address;
-        fbPort = parsed.port || port;
-      } else {
-        const fb = await selectFallbackProxyAddress(workerRegion, enableRegionMatch);
-        fbHost = fb ? fb.domain : host;
-        fbPort = fb ? fb.port : port;
-      }
+      const fb = await resolveFallbackTarget();
+      const fbHost = fb ? fb.host : host;
+      const fbPort = fb ? fb.port : port;
       try {
         const { remoteSock, writer } = await connectAndSend(fbHost, fbPort, proxyEnabled);
         bindRemote(remoteSock, writer, null);
       } catch (_fbErr) {
         closeSocketSafe(ws);
+      }
+    }
+  }
+
+  // نودهای دارای p/pm همیشه اول از خروجی ثابت خودشان عبور می‌کنند
+  if (forceFixedEgress && !proxyEnabled && Number(port) === 443) {
+    const fb = await resolveFallbackTarget();
+    if (fb) {
+      try {
+        const { remoteSock, writer } = await connectAndSend(fb.host, fb.port, false);
+        bindRemote(remoteSock, writer, pmMode === 'only' ? null : () => {
+          detachIfCurrent(remoteSock, writer);
+          retryConnect();
+        });
+        return;
+      } catch (_pmErr) {
+        if (pmMode === 'only') {
+          closeSocketSafe(ws);
+          return;
+        }
       }
     }
   }
@@ -822,6 +850,7 @@ async function establishOutboundAndPipe(
 export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, adminUuid) {
   const reqUrl = new URL(request.url);
   const queryP = reqUrl.searchParams.get('p') || '';
+  const queryPm = reqUrl.searchParams.get('pm') || '';
   const queryWk = (reqUrl.searchParams.get('wk') || '').toUpperCase();
   const queryRm = reqUrl.searchParams.get('rm') || '';
   const queryS = reqUrl.searchParams.get('s') || '';
@@ -869,6 +898,7 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
   serverWs.binaryType = 'arraybuffer';
 
   let remoteState = { socket: null, writer: null, drainUpload: null };
+  let ssState = null;
   let isDnsSession = false;
   let detectedProto = null;
   let matchedUserObj = null;
@@ -891,10 +921,118 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
     }
   }
 
+  // ================= Shadowsocks AEAD (چند رمزنگاری) =================
+  function collectShadowsocksCandidates() {
+    const out = [];
+    for (const u of allUsers) {
+      if (!u.enabled) continue;
+      const cfgU = { ...globalCfg, ...(u.config || {}) };
+      if (!isEnabledValue(cfgU.ss, false)) continue;
+      out.push({
+        user: u,
+        password: String(cfgU.ssp || u.uuid),
+        ciphers: resolveSsCiphers(cfgU.ssc)
+      });
+    }
+    if (isEnabledValue(globalCfg.ss, false)) {
+      out.push({
+        user: { id: null, username: 'admin', uuid: adminUuid, config: globalCfg },
+        password: String(globalCfg.ssp || adminUuid),
+        ciphers: resolveSsCiphers(globalCfg.ssc)
+      });
+    }
+    return out;
+  }
+
+  async function tryShadowsocksAuth(firstFrame) {
+    for (const candidate of collectShadowsocksCandidates()) {
+      const opened = await tryOpenShadowsocks(firstFrame, candidate.password, candidate.ciphers);
+      if (opened) return { ...opened, user: candidate.user };
+    }
+    return null;
+  }
+
+  async function resolveSsRemote(user, target) {
+    try {
+      return await connectRacedSocket(target.host, target.port, fetcher, CONNECT_RACE_COUNT);
+    } catch (_e) {
+      const cfgU = { ...globalCfg, ...(user?.config || {}) };
+      const parsed = parseAddressAndPort(String(cfgU.p || '').trim());
+      let fbHost = parsed.address;
+      let fbPort = parsed.port || target.port;
+      if (!fbHost) {
+        const fb = await selectFallbackProxyAddress(String(cfgU.wk || 'CF').toUpperCase(), true);
+        if (fb) {
+          fbHost = fb.ip || fb.domain;
+          fbPort = fb.port || target.port;
+        }
+      }
+      if (!fbHost) throw new Error('ss-connect-failed');
+      return await connectRacedSocket(fbHost, fbPort, fetcher, 1);
+    }
+  }
+
+  async function startShadowsocksSession(session) {
+    const { target, cipher, masterKey, payloads, user } = session;
+    const encoder = await createEncoder({ cipher, masterKey });
+    const remoteSock = await resolveSsRemote(user, target);
+    const writer = remoteSock.writable.getWriter();
+    ssState = { decoder: session.decoder, encoder, writer, closed: false };
+
+    for (const payload of payloads.slice(1)) {
+      if (!payload.byteLength) continue;
+      await writer.write(payload);
+    }
+
+    (async () => {
+      const reader = remoteSock.readable.getReader();
+      try {
+        for (;;) {
+          const r = await reader.read();
+          if (r.done) break;
+          if (!r.value || !r.value.byteLength) continue;
+          addTransferredBytes(r.value.byteLength);
+          if (!ssState || ssState.closed) break;
+          const framed = await encoder.encode(r.value);
+          serverWs.send(framed);
+        }
+      } catch (_e) {
+      } finally {
+        try { reader.releaseLock(); } catch (_e) {}
+        closeTransport();
+      }
+    })();
+  }
+
+  async function handleShadowsocksFrame(data) {
+    if (!ssState || ssState.closed) return;
+    addTransferredBytes(data.byteLength);
+    let payloads;
+    try {
+      payloads = await ssState.decoder.push(data);
+    } catch (_e) {
+      closeTransport();
+      return;
+    }
+    for (const payload of payloads) {
+      if (!payload.byteLength) continue;
+      try {
+        await ssState.writer.write(payload);
+      } catch (_e) {
+        closeTransport();
+        return;
+      }
+    }
+  }
+
   function closeTransport() {
     if (closed) return;
     closed = true;
     uploadQueue.clear();
+    if (ssState && !ssState.closed) {
+      ssState.closed = true;
+      try { ssState.writer?.releaseLock(); } catch (_e) {}
+    }
     try { remoteState.writer?.releaseLock(); } catch (_e) {}
     remoteState.writer = null;
     try { remoteState.socket?.close(); } catch (_e) {}
@@ -946,6 +1084,7 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
           if (closed) return;
           const data = toUint8Array(chunk);
           if (isDnsSession) return await handleUdpDns(data, serverWs, null, fetcher);
+          if (ssState) return await handleShadowsocksFrame(data);
           if (remoteState.socket && remoteState.writer) {
             if (!enqueueUpload(data)) throw new Error('upload queue overflow');
             return;
@@ -965,6 +1104,7 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
                 ...globalCfg,
                 ...(matchedUserObj?.config || {}),
                 ...(queryP ? { p: queryP } : {}),
+                ...(queryPm ? { pm: queryPm } : {}),
                 ...(queryWk ? { wk: queryWk } : {}),
                 ...(queryRm ? { rm: queryRm } : {}),
                 ...(queryS ? { s: queryS } : {})
@@ -1002,6 +1142,7 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
                 ...globalCfg,
                 ...(matchedUserObj?.config || {}),
                 ...(queryP ? { p: queryP } : {}),
+                ...(queryPm ? { pm: queryPm } : {}),
                 ...(queryWk ? { wk: queryWk } : {}),
                 ...(queryRm ? { rm: queryRm } : {}),
                 ...(queryS ? { s: queryS } : {})
@@ -1020,6 +1161,20 @@ export async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUs
               );
               return;
             }
+          }
+
+          // تلاش نهایی برای Shadowsocks AEAD (بدون افشای رمز؛ فقط تطبیق AEAD)
+          const ssSession = await tryShadowsocksAuth(data);
+          if (ssSession) {
+            detectedProto = 'ss';
+            matchedUserObj = ssSession.user;
+            addTransferredBytes(data.byteLength);
+            try {
+              await startShadowsocksSession(ssSession);
+            } catch (_e) {
+              closeTransport();
+            }
+            return;
           }
 
           throw new Error('Invalid protocol or authentication failed');
@@ -1186,14 +1341,26 @@ export async function handleXhttpPostRequest(request, env, ctx, globalCfg, allUs
     return new Response('Bad Request', { status: 400 });
   }
 
+  // پشتیبانی از خروجی ثابت نود در xhttp: پارامترهای p و pm در مسیر درخواست
+  const xhttpUrl = new URL(request.url);
+  const xhttpP = (xhttpUrl.searchParams.get('p') || '').trim();
+  const xhttpPm = (xhttpUrl.searchParams.get('pm') || '').trim().toLowerCase();
+  const xhttpForceEgress = Boolean(xhttpP) && ['1', 'yes', 'only', 'force'].includes(xhttpPm);
+
   let remoteSocket = null;
   try {
-    remoteSocket = await connectRacedSocket(parsedHeader.hostname, parsedHeader.port, request.fetcher, CONNECT_RACE_COUNT);
+    if (xhttpForceEgress && Number(parsedHeader.port) === 443) {
+      const egressTarget = parseAddressAndPort(xhttpP);
+      if (!egressTarget.address) throw new Error('invalid egress address');
+      remoteSocket = await connectRacedSocket(egressTarget.address, egressTarget.port || 443, request.fetcher, CONNECT_RACE_COUNT);
+    } else {
+      remoteSocket = await connectRacedSocket(parsedHeader.hostname, parsedHeader.port, request.fetcher, CONNECT_RACE_COUNT);
+    }
   } catch (_e) {
     const fb = await selectFallbackProxyAddress(globalCfg.wk || 'CF', true);
     if (!fb) return new Response('Gateway Timeout', { status: 504 });
     try {
-      remoteSocket = await connectRacedSocket(fb.domain, fb.port || parsedHeader.port, request.fetcher, 1);
+      remoteSocket = await connectRacedSocket(fb.ip || fb.domain, fb.port || parsedHeader.port, request.fetcher, 1);
     } catch (_e2) {
       return new Response('Bad Gateway', { status: 502 });
     }

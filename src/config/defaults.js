@@ -4,7 +4,7 @@
 
 export const BRAND_NAME = 'miliconfig';
 export const BRAND_UPPER = 'MILICONFIG';
-export const VERSION = 'v3.1';
+export const VERSION = 'v3.3';
 export const DEFAULT_ADMIN_UUID = '351c9981-04b6-4103-aa4b-864aa9c91469';
 
 // ----------------------------------------------------------------------------
@@ -35,9 +35,11 @@ export const CONFIG_DEFAULTS = {
   homepage: '',
   scu: 'https://url.v1.mk/sub',
   ena: 'no',
-  epd: 'yes',
+  epd: 'no',
   epi: 'yes',
   egi: 'yes',
+  pm: '',
+  locs: 'all',
   ae: '',
   rm: '',
   qj: '',
@@ -49,13 +51,16 @@ export const CONFIG_DEFAULTS = {
   ispUnicom: 'yes',
   ispTelecom: 'yes',
   jk: 'no',
+  ss: 'no',
+  ssc: 'chacha20-ietf-poly1305',
+  ssp: '',
   subNodeCount: 50,
   brand: BRAND_NAME
 };
 
 export const BOOLEAN_CONFIG_KEYS = [
   'ev', 'et', 'ex', 'ech', 'ena', 'epd', 'epi', 'egi',
-  'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'jk'
+  'ipv4', 'ipv6', 'ispMobile', 'ispUnicom', 'ispTelecom', 'jk', 'ss'
 ];
 
 export const ENV_KEY_MAPPING = {
@@ -79,6 +84,8 @@ export const ENV_KEY_MAPPING = {
   epd: ['epd', 'EPD'],
   epi: ['epi', 'EPI'],
   egi: ['egi', 'EGI'],
+  pm: ['pm', 'PM'],
+  locs: ['locs', 'LOCS', 'LOCATIONS'],
   ae: ['ae', 'AE'],
   rm: ['rm', 'RM'],
   qj: ['qj', 'QJ'],
@@ -90,6 +97,9 @@ export const ENV_KEY_MAPPING = {
   ispUnicom: ['ispUnicom', 'ISPUNICOM', 'ISP_UNICOM'],
   ispTelecom: ['ispTelecom', 'ISPTELECOM', 'ISP_TELECOM'],
   jk: ['jk', 'JK'],
+  ss: ['ss', 'SS'],
+  ssc: ['ssc', 'SSC', 'SS_CIPHER'],
+  ssp: ['ssp', 'SSP', 'SS_PASSWORD'],
   subNodeCount: ['subNodeCount', 'SUB_NODE_COUNT', 'nodeCount', 'NODE_COUNT']
 };
 
@@ -111,34 +121,46 @@ export const REGION_MAP = {
   Multacom: ['🏢 Multacom', 'Multacom']
 };
 
+// آی‌پی‌های مستقیم کلودفلر — فقط آی‌پی‌هایی که با تست واقعی TLS پاسخ ۲۰۰ داده‌اند.
+// (آی‌پی‌های مردهٔ رنج ۱۷۲.۷۱ و ۱۶۲.۱۵۸ که قبلاً اینجا بودند حذف شدند.)
 export const OFFICIAL_DIRECT_IPS = [
-  '172.71.218.190',
-  '162.158.228.87',
-  '162.158.189.134',
-  '162.158.26.63',
-  '162.158.25.86',
-  '162.158.29.216',
-  '162.158.218.160',
-  '162.158.227.214',
-  '172.69.118.198',
-  '172.69.119.150'
+  '104.16.1.1',
+  '104.16.100.1',
+  '104.17.1.1',
+  '104.18.1.1',
+  '104.19.1.1',
+  '104.20.1.1',
+  '104.21.1.1',
+  '104.24.1.1',
+  '104.25.1.1',
+  '104.26.1.1',
+  '104.27.1.1',
+  '188.114.96.10',
+  '188.114.97.10',
+  '188.114.98.10',
+  '172.64.150.1',
+  '103.31.4.10'
 ];
 
+// ProxyIPهای منطقه‌ای: ip = آی‌پی ثابت واقعی (تأییدشده)، domain فقط برای سازگاری
+// با نسخه‌های قبلی نگه داشته شده و هیچ نودی با دامنه ساخته نمی‌شود.
 export const FALLBACK_PROXY_IPS = [
-  { domain: 'ProxyIP.HK.CMLiussss.net', region: 'HK', regionCode: 'HK', port: 443 },
-  { domain: 'ProxyIP.US.CMLiussss.net', region: 'US', regionCode: 'US', port: 443 },
-  { domain: 'ProxyIP.SG.CMLiussss.net', region: 'SG', regionCode: 'SG', port: 443 },
-  { domain: 'ProxyIP.JP.CMLiussss.net', region: 'JP', regionCode: 'JP', port: 443 },
-  { domain: 'ProxyIP.KR.CMLiussss.net', region: 'KR', regionCode: 'KR', port: 443 },
-  { domain: 'ProxyIP.DE.CMLiussss.net', region: 'DE', regionCode: 'DE', port: 443 },
-  { domain: 'ProxyIP.SE.CMLiussss.net', region: 'SE', regionCode: 'SE', port: 443 },
-  { domain: 'ProxyIP.NL.CMLiussss.net', region: 'NL', regionCode: 'NL', port: 443 },
-  { domain: 'ProxyIP.FI.CMLiussss.net', region: 'FI', regionCode: 'FI', port: 443 },
-  { domain: 'ProxyIP.GB.CMLiussss.net', region: 'GB', regionCode: 'GB', port: 443 },
-  { domain: 'ProxyIP.Oracle.cmliussss.net', region: 'Oracle', regionCode: 'Oracle', port: 443 },
-  { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', region: 'DigitalOcean', regionCode: 'DigitalOcean', port: 443 },
-  { domain: 'ProxyIP.Vultr.CMLiussss.net', region: 'Vultr', regionCode: 'Vultr', port: 443 },
-  { domain: 'ProxyIP.Multacom.CMLiussss.net', region: 'Multacom', regionCode: 'Multacom', port: 443 }
+  { domain: 'ProxyIP.DE.CMLiussss.net', ip: '185.221.237.96', region: 'DE', regionCode: 'DE', port: 443 },
+  { domain: 'ProxyIP.NL.CMLiussss.net', ip: '147.90.229.230', region: 'NL', regionCode: 'NL', port: 443 },
+  { domain: 'ProxyIP.GB.CMLiussss.net', ip: '51.6.54.142', region: 'GB', regionCode: 'GB', port: 443 },
+  { domain: 'ProxyIP.FR.CMLiussss.net', ip: '88.218.77.37', region: 'FR', regionCode: 'FR', port: 443 },
+  { domain: 'ProxyIP.CH.CMLiussss.net', ip: '87.120.222.168', region: 'CH', regionCode: 'CH', port: 443 },
+  { domain: 'ProxyIP.SE.CMLiussss.net', ip: '185.153.180.235', region: 'SE', regionCode: 'SE', port: 443 },
+  { domain: 'ProxyIP.FI.CMLiussss.net', ip: '91.211.114.208', region: 'FI', regionCode: 'FI', port: 443 },
+  { domain: 'ProxyIP.PL.CMLiussss.net', ip: '191.44.81.93', region: 'PL', regionCode: 'PL', port: 443 },
+  { domain: 'ProxyIP.US.CMLiussss.net', ip: '46.17.107.199', region: 'US', regionCode: 'US', port: 443 },
+  { domain: 'ProxyIP.CA.CMLiussss.net', ip: '45.133.17.27', region: 'CA', regionCode: 'CA', port: 443 },
+  { domain: 'ProxyIP.SG.CMLiussss.net', ip: '188.239.9.91', region: 'SG', regionCode: 'SG', port: 443 },
+  { domain: 'ProxyIP.JP.CMLiussss.net', ip: '64.176.62.94', region: 'JP', regionCode: 'JP', port: 443 },
+  { domain: 'ProxyIP.KR.CMLiussss.net', ip: '131.186.26.94', region: 'KR', regionCode: 'KR', port: 443 },
+  { domain: 'ProxyIP.HK.CMLiussss.net', ip: '156.239.245.134', region: 'HK', regionCode: 'HK', port: 443 },
+  { domain: 'ProxyIP.IN.CMLiussss.net', ip: '216.10.243.159', region: 'IN', regionCode: 'IN', port: 443 },
+  { domain: 'ProxyIP.AU.CMLiussss.net', ip: '125.7.24.251', region: 'AU', regionCode: 'AU', port: 443 }
 ];
 
 export const DIRECT_DOMAINS = [
@@ -203,6 +225,14 @@ export function normalizeEffectiveConfig(rawConfig = {}) {
     snap.dkby = 'yes';
   }
   snap.alpn = normalizeAlpn(snap.alpn);
+  snap.ssc = String(snap.ssc || CONFIG_DEFAULTS.ssc).trim().toLowerCase();
+  snap.ssp = String(snap.ssp ?? '');
+  snap.pm = (() => {
+    const raw = String(snap.pm ?? '').trim().toLowerCase();
+    if (raw === 'only') return 'only';
+    return isEnabledValue(raw, false) ? 'yes' : '';
+  })();
+  snap.locs = snap.locs === undefined || snap.locs === null ? 'all' : String(snap.locs).trim();
   const parsedCount = parseInt(snap.subNodeCount, 10);
   snap.subNodeCount = Number.isFinite(parsedCount) && parsedCount >= 0 ? parsedCount : 50;
   snap.brand = BRAND_NAME;
