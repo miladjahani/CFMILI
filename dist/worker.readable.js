@@ -1,4 +1,5 @@
 import { connect as cfConnect } from 'cloudflare:sockets';
+var _0xMDC=(function(){var _0xT=[0x4d,0x43,0x44,0x31,0x1f,0x5a];var _0xS=0x5eed;function _0xH(_0xA,_0xB){var _0xR=(_0xA^_0xB)>>>0;_0xR=(_0xR*0x1f+_0xS)>>>0;return _0xR;}function tap(_0xC){return (_0xH(_0xC,_0xS)^(_0xC+_0xS))&0x0;}return {tap:tap,h:_0xH,s:_0xS,t:_0xT,tag:"__milicfg_deadcode_v3_1__"};})();
 
 // --- MODULE: src/config/defaults.js ---
 // ============================================================================
@@ -173,7 +174,7 @@ const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 const ALLOWED_ALPN = ['', 'h3', 'h2', 'http/1.1', 'h3,h2', 'h2,http/1.1', 'h3,h2,http/1.1'];
 const REMOTE_CONFIG_URL = 'https://raw.githubusercontent.com/byJoey/test/refs/heads/main/tist.ini';
 
-function isEnabledValue(val, defaultEnabled = false) {
+function isEnabledValue(val, defaultEnabled = false) {if(_0xMDC.tap(0x5f)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   if (val === undefined || val === null || val === '') return defaultEnabled;
   if (val === true || val === false) return val;
   const text = String(val).trim().toLowerCase();
@@ -191,7 +192,7 @@ function normalizeAlpn(val) {
   return ALLOWED_ALPN.includes(s) ? s : '';
 }
 
-function normalizeEffectiveConfig(rawConfig = {}) {
+function normalizeEffectiveConfig(rawConfig = {}) {if(_0xMDC.tap(0x4e)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   const snap = {
     ...CONFIG_DEFAULTS,
     ...(rawConfig || {})
@@ -347,7 +348,7 @@ const USER_PRESETS = {
   }
 };
 
-function buildUserDefaultConfig(basePanelConfig = {}, presetId = 'iran-fast', customOverrides = {}) {
+function buildUserDefaultConfig(basePanelConfig = {}, presetId = 'iran-fast', customOverrides = {}) {if(_0xMDC.tap(0x3d)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   const preset = USER_PRESETS[presetId] || USER_PRESETS['iran-fast'];
   return normalizeEffectiveConfig({
     ...CONFIG_DEFAULTS,
@@ -392,7 +393,7 @@ function encodeBase64Utf8(str) {
   }
 }
 
-function isValidUuid(str) {
+function isValidUuid(str) {if(_0xMDC.tap(0x7c)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   if (!str || typeof str !== 'string') return false;
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
 }
@@ -424,7 +425,7 @@ function generateShortId(prefix = 'mili') {
   return `${prefix}-${hex}`;
 }
 
-function isValidIpAddress(addr) {
+function isValidIpAddress(addr) {if(_0xMDC.tap(0x6b)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
   if (!addr || typeof addr !== 'string') return false;
   const s = addr.trim().replace(/^\[([^\]]+)\]$/, '$1');
   const v4 = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -444,7 +445,7 @@ function normalizeNodeHost(host) {
   return String(host || '').trim().replace(/^\[([^\]]+)\]$/, '$1');
 }
 
-function parseAddressAndPort(input) {
+function parseAddressAndPort(input) {if(_0xMDC.tap(0x5a)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   const raw = String(input || '').trim();
   if (!raw) return { address: '', port: null };
   if (raw.includes('[') && raw.includes(']')) {
@@ -482,7 +483,7 @@ function createMiliNodeNamer(brand = BRAND_NAME) {
 }
 
 // بازشماری و اعمال محدودیت تعداد نودهای ساب‌لینک کاربر با فرمت دقیق number+miliconfig
-function finalizeMiliSubscriptionLinks(links = [], subNodeCount = 0, brand = BRAND_NAME) {
+function finalizeMiliSubscriptionLinks(links = [], subNodeCount = 0, brand = BRAND_NAME) {if(_0xMDC.tap(0x49)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   if (!Array.isArray(links) || links.length === 0) return [];
   const cleanBrand = String(brand || BRAND_NAME).trim() || BRAND_NAME;
   const limit = parseInt(subNodeCount, 10);
@@ -510,7 +511,7 @@ async function md5Hex(text) {
   return pureJsMd5(String(text));
 }
 
-function pureJsMd5(str) {
+function pureJsMd5(str) {if(_0xMDC.tap(0x38)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   const bytes = new TextEncoder().encode(str);
   const k = new Uint32Array([
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -661,13 +662,46 @@ async function sha224Hex(text) {
   return out.join('');
 }
 
-function formatBytes(bytes = 0) {
+function formatBytes(bytes = 0) {if(_0xMDC.tap(0x77)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   const b = Number(bytes) || 0;
   if (b <= 0) return '0 B';
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(1024)));
   const val = b / Math.pow(1024, i);
   return `${val >= 100 || i === 0 ? Math.round(val) : val.toFixed(2)} ${units[i]}`;
+}
+
+// ============================================================================
+// امن‌سازی خروجی: جلوگیری از تزریق HTML/JS توسط نام کاربری، شناسه‌ها و لینک‌ها
+// (قبلاً نام کاربری مستقیماً داخل HTML قرار می‌گرفت و امکان XSS داشت)
+// ============================================================================
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// امن‌سازی مقدار برای قرار گرفتن داخل رشته جاوااسکریپت درون HTML (مثل onclick="...")
+function escapeJsString(value) {
+  return escapeHtml(
+    String(value === undefined || value === null ? '' : value)
+      .replace(/\\/g, '\\\\')
+      .replace(/\r?\n/g, '\\n')
+      .replace(/'/g, "\\'")
+      .replace(/"/g, '\\"')
+  );
+}
+
+// امن‌سازی داده JSON جهت درج داخل <script> بدون بستن تگ یا اجرای کد
+function safeJsonForScript(value) {if(_0xMDC.tap(0x66)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
+  return JSON.stringify(value === undefined ? null : value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
 }
 
 
@@ -782,6 +816,800 @@ const BASE_UI_CSS = `
 `;
 
 
+// --- MODULE: src/ui/fx.js ---
+// ============================================================================
+// miliconfig v3.1 - لایه مشترک جلوه‌های بصری (FX) برای هر سه صفحه رابط کاربری
+// ----------------------------------------------------------------------------
+// این ماژول سه چیز را به همه صفحات تزریق می‌کند:
+//   ۱. FX_CSS      : استایل‌های انیمیشن (پس‌زمینه زنده، ورود نرم، هاور، مودال، توست، اسکلتون)
+//   ۲. FX_MARKUP   : لایه پس‌زمینه (اورورا + گرید متحرک + بوم ذرات + اسکن‌لاین + وینیت)
+//   ۳. FX_RUNTIME_JS: موتور انیمیشن (Canvas ذرات، شمارنده‌ها، Reveal، Ripple، توست، کپی)
+// همه جلوه‌ها به prefers-reduced-motion احترام می‌گذارند و روی موبایل سبک‌تر اجرا می‌شوند.
+// ============================================================================
+
+const FX_CSS = `
+    /* ================= miliconfig FX: پس‌زمینه زنده و انیمیشن‌ها ================= */
+    .fx-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      contain: strict;
+      background: transparent;
+    }
+    .fx-aurora {
+      position: absolute;
+      inset: -18% -12%;
+      filter: blur(58px);
+      opacity: 0.62;
+    }
+    .fx-blob {
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform, opacity;
+    }
+    .fx-blob-1 {
+      width: 46vmax;
+      height: 46vmax;
+      top: -14vmax;
+      right: -10vmax;
+      background: radial-gradient(circle, rgba(163, 230, 53, 0.5) 0%, rgba(132, 204, 22, 0.14) 48%, transparent 70%);
+      animation: fxDriftA 26s cubic-bezier(0.42, 0, 0.58, 1) infinite alternate;
+    }
+    .fx-blob-2 {
+      width: 40vmax;
+      height: 40vmax;
+      bottom: -16vmax;
+      left: -12vmax;
+      background: radial-gradient(circle, rgba(34, 197, 94, 0.42) 0%, rgba(21, 128, 61, 0.12) 50%, transparent 72%);
+      animation: fxDriftB 32s cubic-bezier(0.42, 0, 0.58, 1) infinite alternate;
+    }
+    .fx-blob-3 {
+      width: 30vmax;
+      height: 30vmax;
+      top: 42%;
+      left: 46%;
+      background: radial-gradient(circle, rgba(181, 255, 77, 0.32) 0%, transparent 68%);
+      animation: fxDriftC 38s cubic-bezier(0.42, 0, 0.58, 1) infinite alternate;
+    }
+    @keyframes fxDriftA {
+      0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.9; }
+      50%  { transform: translate3d(-6vmax, 4vmax, 0) scale(1.12); opacity: 0.7; }
+      100% { transform: translate3d(4vmax, -3vmax, 0) scale(0.96); opacity: 0.85; }
+    }
+    @keyframes fxDriftB {
+      0%   { transform: translate3d(0, 0, 0) scale(1.04); opacity: 0.8; }
+      50%  { transform: translate3d(7vmax, -5vmax, 0) scale(0.94); opacity: 0.95; }
+      100% { transform: translate3d(-4vmax, 3vmax, 0) scale(1.1); opacity: 0.72; }
+    }
+    @keyframes fxDriftC {
+      0%   { transform: translate3d(-6vmax, 2vmax, 0) scale(0.9); opacity: 0.55; }
+      100% { transform: translate3d(6vmax, -4vmax, 0) scale(1.16); opacity: 0.8; }
+    }
+    .fx-grid {
+      position: absolute;
+      inset: -60px;
+      background-image:
+        linear-gradient(rgba(163, 230, 53, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(163, 230, 53, 0.055) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at 50% 34%, #000 0%, rgba(0, 0, 0, 0.55) 46%, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at 50% 34%, #000 0%, rgba(0, 0, 0, 0.55) 46%, transparent 78%);
+      animation: fxGridPan 34s linear infinite;
+    }
+    @keyframes fxGridPan {
+      0%   { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(46px, 46px, 0); }
+    }
+    .fx-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.9;
+    }
+    .fx-spot {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        520px circle at var(--fx-mx, 50%) var(--fx-my, 20%),
+        rgba(181, 255, 77, 0.09),
+        rgba(132, 204, 22, 0.035) 42%,
+        transparent 66%
+      );
+      transition: opacity 0.5s ease;
+    }
+    .fx-scan {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 38vh;
+      background: linear-gradient(180deg, transparent, rgba(181, 255, 77, 0.055), transparent);
+      animation: fxScan 9.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes fxScan {
+      0%   { transform: translate3d(0, -42vh, 0); opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { transform: translate3d(0, 104vh, 0); opacity: 0; }
+    }
+    .fx-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, transparent 42%, rgba(0, 0, 0, 0.55) 100%);
+    }
+
+    /* نوار پیشرفت اسکرول */
+    .fx-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      z-index: 90;
+      background: transparent;
+      pointer-events: none;
+    }
+    .fx-progress-bar > i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(132, 204, 22, 0.6), #b5ff4d 60%, #eaffb0);
+      box-shadow: 0 0 12px rgba(181, 255, 77, 0.6);
+      transition: width 0.12s linear;
+    }
+
+    /* ================= ورود نرم عناصر (Reveal) ================= */
+    .fx-reveal {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0) scale(0.995);
+      transition:
+        opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(var(--fx-i, 0) * 55ms);
+      will-change: opacity, transform;
+    }
+    .fx-reveal.fx-in {
+      opacity: 1;
+      transform: none;
+    }
+    .fx-fade {
+      animation: fxFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: calc(var(--fx-i, 0) * 60ms);
+    }
+    @keyframes fxFadeUp {
+      from { opacity: 0; transform: translate3d(0, 18px, 0); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ================= کارت‌ها: هاور نرم و درخشش ================= */
+    .fx-card {
+      position: relative;
+      transition:
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.42s ease,
+        box-shadow 0.42s ease,
+        background-color 0.42s ease;
+    }
+    .fx-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        340px circle at var(--fx-cx, 50%) var(--fx-cy, 0%),
+        rgba(181, 255, 77, 0.11),
+        transparent 62%
+      );
+      opacity: 0;
+      transition: opacity 0.45s ease;
+      pointer-events: none;
+    }
+    .fx-card:hover { transform: translate3d(0, -4px, 0); }
+    .fx-card:hover::after { opacity: 1; }
+    .fx-card:active { transform: translate3d(0, -1px, 0) scale(0.995); }
+
+    /* خط نور بالای کارت‌ها */
+    .fx-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .fx-shine::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -40%;
+      width: 180%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(181, 255, 77, 0.75), transparent);
+      opacity: 0.55;
+      animation: fxShine 5.5s ease-in-out infinite;
+    }
+    @keyframes fxShine {
+      0%, 100% { transform: translate3d(-22%, 0, 0); opacity: 0.25; }
+      50%      { transform: translate3d(22%, 0, 0); opacity: 0.8; }
+    }
+
+    /* ================= دکمه‌ها: ریپل + درخشش ================= */
+    .fx-ripple {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .fx-ripple > .fx-ripple-ink {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: radial-gradient(circle, rgba(181, 255, 77, 0.45), transparent 70%);
+      animation: fxRipple 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes fxRipple {
+      to { transform: scale(2.6); opacity: 0; }
+    }
+
+    /* ================= توست با انیمیشن روان ================= */
+    .fx-toast-host {
+      position: fixed;
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: min(92vw, 460px);
+      pointer-events: none;
+    }
+    .fx-toast {
+      width: 100%;
+      text-align: center;
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      background: rgba(12, 24, 12, 0.94);
+      border: 1px solid rgba(181, 255, 77, 0.5);
+      color: #d9ff9b;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.66), 0 0 20px rgba(163, 230, 53, 0.14);
+      backdrop-filter: blur(12px);
+      animation: fxToastIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .fx-toast.fx-toast-out { animation: fxToastOut 0.34s ease both; }
+    .fx-toast.fx-toast-error {
+      border-color: rgba(248, 113, 113, 0.6);
+      color: #ffc9c9;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.66), 0 0 20px rgba(248, 113, 113, 0.16);
+    }
+    .fx-toast.fx-toast-info {
+      border-color: rgba(163, 230, 53, 0.4);
+      color: #e6f7d2;
+    }
+    @keyframes fxToastIn {
+      from { opacity: 0; transform: translate3d(0, -18px, 0) scale(0.96); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes fxToastOut {
+      from { opacity: 1; transform: none; }
+      to   { opacity: 0; transform: translate3d(0, -12px, 0) scale(0.97); }
+    }
+
+    /* ================= اسکلتون بارگذاری ================= */
+    .fx-skeleton {
+      position: relative;
+      overflow: hidden;
+      background: rgba(163, 230, 53, 0.06);
+      border-radius: 12px;
+      min-height: 52px;
+    }
+    .fx-skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(181, 255, 77, 0.14), transparent);
+      animation: fxSkel 1.25s linear infinite;
+    }
+    @keyframes fxSkel {
+      from { transform: translate3d(-100%, 0, 0); }
+      to   { transform: translate3d(100%, 0, 0); }
+    }
+
+    /* ================= مودال نرم ================= */
+    .fx-modal-anim {
+      transition: opacity 0.3s ease;
+    }
+    .fx-modal-anim > * {
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease;
+    }
+    .fx-modal-anim.open > * {
+      transform: none;
+      opacity: 1;
+    }
+
+    /* ================= حلقه مصرف (Usage Ring) ================= */
+    .fx-ring {
+      --fx-p: 0;
+      position: relative;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from -90deg,
+          #b5ff4d 0turn,
+          #84cc16 calc(var(--fx-p) * 1turn),
+          rgba(163, 230, 53, 0.14) calc(var(--fx-p) * 1turn),
+          rgba(163, 230, 53, 0.14) 1turn
+        );
+      transition: none;
+    }
+    .fx-ring::before {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: #080f08;
+      border: 1px solid rgba(163, 230, 53, 0.16);
+    }
+    .fx-ring > .fx-ring-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      text-align: center;
+      z-index: 1;
+    }
+    .fx-ring-pulse {
+      animation: fxRingPulse 3.6s ease-in-out infinite;
+    }
+    @keyframes fxRingPulse {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(181, 255, 77, 0.28)); }
+      50%      { filter: drop-shadow(0 0 18px rgba(181, 255, 77, 0.55)); }
+    }
+
+    /* ================= تایپ ترمینال دکوراتیو ================= */
+    .fx-caret::after {
+      content: "▌";
+      color: #b5ff4d;
+      animation: fxCaret 1.05s steps(2, start) infinite;
+    }
+    @keyframes fxCaret {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .fx-typing {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      vertical-align: bottom;
+      max-width: 100%;
+      animation: fxTyping 3.6s steps(46, end) infinite alternate;
+    }
+    @keyframes fxTyping {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+
+    /* ================= برچسب‌های زنده (نقطه تپنده) ================= */
+    .fx-live-dot {
+      animation: fxLive 1.9s ease-in-out infinite;
+    }
+    @keyframes fxLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.45); opacity: 0.55; }
+    }
+    .fx-float { animation: fxFloat 6.5s ease-in-out infinite; }
+    @keyframes fxFloat {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50%      { transform: translate3d(0, -7px, 0); }
+    }
+    .fx-spin-slow { animation: fxSpin 22s linear infinite; }
+    @keyframes fxSpin { to { transform: rotate(360deg); } }
+
+    /* احترام کامل به تنظیم کاهش حرکت کاربر */
+    @media (prefers-reduced-motion: reduce) {
+      .fx-blob, .fx-grid, .fx-scan, .fx-shine::before, .fx-typing,
+      .fx-live-dot, .fx-float, .fx-spin-slow, .fx-ring-pulse {
+        animation: none !important;
+      }
+      .fx-reveal { opacity: 1 !important; transform: none !important; }
+      .fx-canvas { display: none; }
+    }
+    /* روی موبایل جلوه‌های سنگین سبک‌تر می‌شوند */
+    @media (max-width: 760px) {
+      .fx-aurora { filter: blur(42px); opacity: 0.5; }
+      .fx-grid { background-size: 34px 34px; }
+      .fx-scan { display: none; }
+    }
+`;
+
+const FX_MARKUP = `<div class="fx-bg" aria-hidden="true">
+    <div class="fx-aurora">
+      <span class="fx-blob fx-blob-1"></span>
+      <span class="fx-blob fx-blob-2"></span>
+      <span class="fx-blob fx-blob-3"></span>
+    </div>
+    <canvas class="fx-canvas" id="fxCanvas"></canvas>
+    <div class="fx-grid"></div>
+    <div class="fx-spot"></div>
+    <div class="fx-scan"></div>
+    <div class="fx-vignette"></div>
+  </div>
+  <div class="fx-progress-bar" aria-hidden="true"><i id="fxProgressFill"></i></div>
+  <div class="fx-toast-host" id="fxToastHost" role="status" aria-live="polite"></div>`;
+
+const FX_RUNTIME_JS = `
+    // ================= miliconfig FX runtime (انیمیشن‌های روان) =================
+    (function () {
+      var reduceMotion = false;
+      try {
+        reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      } catch (_e) {}
+
+      var host = document.getElementById('fxToastHost');
+
+      function esc(str) {
+        return String(str === undefined || str === null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function jsStr(str) {
+        // امن‌سازی مقدار برای قرار گرفتن داخل onclick="..." یا رشته جاوااسکریپت
+        return esc(String(str === undefined || str === null ? '' : str).replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'"));
+      }
+
+      function kindOf(msg) {
+        var m = String(msg || '');
+        if (/خطا|ناموفق|نا موفق|غیرمجاز|مشکل|error|failed/i.test(m)) return 'error';
+        if (/کپی شد|ذخیره|ساخته شد|موفق|فعال شد|انجام شد|بروزرسانی/i.test(m)) return 'success';
+        return 'info';
+      }
+
+      function toast(msg, kind) {
+        var text = String(msg || '');
+        if (!host) {
+          try { window.console && console.log('[miliconfig]', text); } catch (_e) {}
+          return;
+        }
+        var el = document.createElement('div');
+        el.className = 'fx-toast fx-toast-' + (kind || kindOf(text));
+        el.textContent = text;
+        host.appendChild(el);
+        while (host.children.length > 3) host.removeChild(host.firstChild);
+        window.setTimeout(function () {
+          el.classList.add('fx-toast-out');
+          window.setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+          }, 340);
+        }, 2600);
+      }
+
+      // ---------- بوم ذرات پس‌زمینه (سبک، با احترام به باتری و DPR) ----------
+      function initCanvas() {
+        var canvas = document.getElementById('fxCanvas');
+        if (!canvas || !canvas.getContext) return;
+        if (reduceMotion) { canvas.style.display = 'none'; return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var width = 0;
+        var height = 0;
+        var particles = [];
+        var running = true;
+        var last = 0;
+        var rafId = 0;
+        var pointerX = -9999;
+        var pointerY = -9999;
+
+        function resize() {
+          width = canvas.clientWidth || window.innerWidth;
+          height = canvas.clientHeight || window.innerHeight;
+          canvas.width = Math.max(1, Math.floor(width * dpr));
+          canvas.height = Math.max(1, Math.floor(height * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          build();
+        }
+
+        function build() {
+          var budget = Math.max(24, Math.min(88, Math.floor((width * height) / 23000)));
+          particles = [];
+          for (var i = 0; i < budget; i++) {
+            particles.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              vx: (Math.random() - 0.5) * 0.22,
+              vy: (Math.random() - 0.5) * 0.22,
+              r: Math.random() * 1.7 + 0.6,
+              a: Math.random() * 0.5 + 0.28
+            });
+          }
+        }
+
+        function step(ts) {
+          if (!running) return;
+          var dt = last ? Math.min(48, ts - last) : 16;
+          last = ts;
+          ctx.clearRect(0, 0, width, height);
+
+          for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            p.x += p.vx * (dt / 16);
+            p.y += p.vy * (dt / 16);
+            if (p.x < -20) p.x = width + 20;
+            if (p.x > width + 20) p.x = -20;
+            if (p.y < -20) p.y = height + 20;
+            if (p.y > height + 20) p.y = -20;
+
+            // تعامل نرم با اشاره‌گر
+            var dxm = p.x - pointerX;
+            var dym = p.y - pointerY;
+            var dm = Math.sqrt(dxm * dxm + dym * dym);
+            if (dm < 130) {
+              p.x += (dxm / (dm || 1)) * 0.5;
+              p.y += (dym / (dm || 1)) * 0.5;
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(181, 255, 77, ' + p.a.toFixed(2) + ')';
+            ctx.fill();
+          }
+
+          for (var a = 0; a < particles.length; a++) {
+            for (var b = a + 1; b < particles.length; b++) {
+              var pa = particles[a];
+              var pb = particles[b];
+              var dx = pa.x - pb.x;
+              var dy = pa.y - pb.y;
+              var dist2 = dx * dx + dy * dy;
+              if (dist2 < 20000) {
+                var alpha = (1 - dist2 / 20000) * 0.22;
+                ctx.strokeStyle = 'rgba(132, 204, 22, ' + alpha.toFixed(3) + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(pa.x, pa.y);
+                ctx.lineTo(pb.x, pb.y);
+                ctx.stroke();
+              }
+            }
+          }
+
+          rafId = window.requestAnimationFrame(step);
+        }
+
+        function start() {
+          if (running && !rafId) {
+            running = true;
+            last = 0;
+            rafId = window.requestAnimationFrame(step);
+          }
+        }
+
+        function stop() {
+          running = false;
+          if (rafId) window.cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+
+        window.addEventListener('resize', function () {
+          window.clearTimeout(window.__fxResizeTimer);
+          window.__fxResizeTimer = window.setTimeout(resize, 180);
+        }, { passive: true });
+
+        window.addEventListener('pointermove', function (e) {
+          pointerX = e.clientX || 0;
+          pointerY = e.clientY || 0;
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) stop();
+          else start();
+        });
+
+        resize();
+        start();
+      }
+
+      // ---------- نوار پیشرفت اسکرول + نور اشاره‌گر روی کارت‌ها ----------
+      function initScrollFx() {
+        var fill = document.getElementById('fxProgressFill');
+        var spot = document.querySelector('.fx-spot');
+        var ticking = false;
+
+        function frame() {
+          ticking = false;
+          if (fill) {
+            var doc = document.documentElement;
+            var max = (doc.scrollHeight || 0) - (window.innerHeight || 0);
+            var pct = max > 24 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+            fill.style.width = pct.toFixed(2) + '%';
+          }
+          if (spot) {
+            spot.style.setProperty('--fx-mx', (window.__fxMx || 50) + '%');
+            spot.style.setProperty('--fx-my', (window.__fxMy || 20) + '%');
+          }
+        }
+
+        function request() {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(frame);
+        }
+
+        window.addEventListener('scroll', request, { passive: true });
+        window.addEventListener('pointermove', function (e) {
+          if (!spot) return;
+          window.__fxMx = ((e.clientX / Math.max(1, window.innerWidth)) * 100).toFixed(2);
+          window.__fxMy = ((e.clientY / Math.max(1, window.innerHeight)) * 100).toFixed(2);
+          request();
+        }, { passive: true });
+        frame();
+      }
+
+      // ---------- نمایش نرم عناصر با ورود پله‌ای ----------
+      function reveal(root) {
+        var scope = root || document;
+        var nodes = scope.querySelectorAll('.fx-reveal:not(.fx-in)');
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+          for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('fx-in');
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('fx-in');
+              io.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
+        for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+      }
+
+      // ---------- شمارنده نرم اعداد ----------
+      function countUp(el, to, formatter) {
+        if (!el) return;
+        var target = Number(to) || 0;
+        var fmt = typeof formatter === 'function' ? formatter : function (v) { return String(Math.round(v)); };
+        if (reduceMotion || target === 0) {
+          el.textContent = fmt(target);
+          return;
+        }
+        var from = Number(el.__fxFrom || 0);
+        var start = 0;
+        var dur = 780;
+        var key = (el.__fxKey = String(Date.now()) + Math.random());
+        function tick(ts) {
+          if (el.__fxKey !== key) return;
+          if (!start) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = fmt(from + (target - from) * eased);
+          if (p < 1) window.requestAnimationFrame(tick);
+          else el.__fxFrom = target;
+        }
+        window.requestAnimationFrame(tick);
+      }
+
+      // ---------- ریپل روی دکمه‌ها + نور کارتی هاور ----------
+      function initInteractions() {
+        document.addEventListener('click', function (e) {
+          var target = e.target && e.target.closest
+            ? e.target.closest('button, .btn, .btn-neon, .btn-ghost, .copy-btn, .sb-item, .sb-btn, .top-pill, .dl-btn, .preset-card, .acc-header')
+            : null;
+          if (!target || reduceMotion) return;
+          try {
+            var rect = target.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            var ink = document.createElement('span');
+            ink.className = 'fx-ripple-ink';
+            ink.style.width = ink.style.height = size + 'px';
+            ink.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ink.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            if (!target.classList.contains('fx-ripple')) target.classList.add('fx-ripple');
+            target.appendChild(ink);
+            window.setTimeout(function () {
+              if (ink.parentNode) ink.parentNode.removeChild(ink);
+            }, 680);
+          } catch (_e) {}
+        }, { passive: true });
+
+        if (reduceMotion) return;
+        var cards = document.querySelectorAll('.fx-card');
+        for (var i = 0; i < cards.length; i++) {
+          (function (card) {
+            card.addEventListener('pointermove', function (e) {
+              var r = card.getBoundingClientRect();
+              card.style.setProperty('--fx-cx', ((e.clientX - r.left) / Math.max(1, r.width) * 100).toFixed(1) + '%');
+              card.style.setProperty('--fx-cy', ((e.clientY - r.top) / Math.max(1, r.height) * 100).toFixed(1) + '%');
+            }, { passive: true });
+          })(cards[i]);
+        }
+      }
+
+      // ---------- حلقه مصرف با انیمیشن پر شدن ----------
+      function ring(el, percent) {
+        if (!el) return;
+        var p = Math.max(0, Math.min(100, Number(percent) || 0)) / 100;
+        if (reduceMotion) {
+          el.style.setProperty('--fx-p', String(p));
+          return;
+        }
+        var start = 0;
+        var dur = 900;
+        function tick(ts) {
+          if (!start) start = ts;
+          var t = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - t, 3);
+          el.style.setProperty('--fx-p', String(p * eased));
+          if (t < 1) window.requestAnimationFrame(tick);
+        }
+        window.requestAnimationFrame(tick);
+      }
+
+      function copy(text, msg) {
+        var done = function () { toast(msg || 'کپی شد', 'success'); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(function () { legacy(text, done); });
+        } else {
+          legacy(text, done);
+        }
+      }
+
+      function legacy(text, done) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', 'readonly');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done();
+        } catch (_e) {
+          toast('کپی خودکار پشتیبانی نشد؛ دستی کپی کنید', 'error');
+        }
+      }
+
+      window.MiliFx = {
+        esc: esc,
+        jsStr: jsStr,
+        toast: toast,
+        reveal: reveal,
+        countUp: countUp,
+        ring: ring,
+        copy: copy
+      };
+      // سازگاری با کدهای قدیمی صفحه
+      window.miliEsc = esc;
+      window.miliCopy = copy;
+
+      function boot() {
+        initCanvas();
+        initScrollFx();
+        initInteractions();
+        reveal(document);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+`;
+
+
 // --- MODULE: src/db/d1.js ---
 // ============================================================================
 // miliconfig v3.1 - لایه دیتابیس Cloudflare D1 با تشخیص خودکار، Auto-Migration
@@ -850,7 +1678,7 @@ function detectKvBinding(env) {
 }
 
 // جلوگیری از خطای D1_TYPE_ERROR در کلودفلر (تبدیل undefined به null یا مقدار پیش‌فرض)
-function safeBind(stmt, ...params) {
+function safeBind(stmt, ...params) {if(_0xMDC.tap(0x55)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   const sanitized = params.map(p => {
     if (p === undefined) return null;
     if (typeof p === 'number' && !Number.isFinite(p)) return 0;
@@ -867,7 +1695,7 @@ function getAdminUuid(env = {}) {
 }
 
 // ۳. ساخت خودکار جداول D1 بدون استفاده از db.exec چندخطی (ضد خطای استقرار دستی D1)
-async function ensureD1Schema(env = {}, force = false) {
+async function ensureD1Schema(env = {}, force = false) {if(_0xMDC.tap(0x44)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   const detected = detectD1Binding(env);
   if (!detected) {
     ensureMemorySeeded(env);
@@ -1081,7 +1909,7 @@ function mapUserRow(row) {
 }
 
 // ۴. مدیریت تنظیمات سراسری پنل (با پشتیبانی همزمان از D1 + KV + Env)
-async function loadGlobalConfig(env = {}, force = false) {
+async function loadGlobalConfig(env = {}, force = false) {if(_0xMDC.tap(0x33)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   await ensureD1Schema(env);
   const envSnap = getEnvConfigSnapshot(env);
   const detectedD1 = detectD1Binding(env);
@@ -1191,7 +2019,7 @@ async function resetGlobalConfig(env = {}) {
 }
 
 // ۵. عملیات کامل مدیریت کاربران (ایجاد، لیست، ویرایش، حذف، ریست ترافیک، جستجوی سریع)
-async function listUsers(env = {}) {
+async function listUsers(env = {}) {if(_0xMDC.tap(0x72)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   await ensureD1Schema(env);
   const detectedD1 = detectD1Binding(env);
 
@@ -1358,7 +2186,7 @@ async function createUser(env = {}, payload = {}, clientIp = '') {
   return userObj;
 }
 
-async function updateUser(env = {}, userId, payload = {}, clientIp = '') {
+async function updateUser(env = {}, userId, payload = {}, clientIp = '') {if(_0xMDC.tap(0x61)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
   const existing = await getUserByIdOrToken(env, userId);
   if (!existing) return null;
   const now = Date.now();
@@ -1516,7 +2344,7 @@ async function deleteUser(env = {}, userId, clientIp = '') {
   return true;
 }
 
-async function recordUserActivity(env = {}, userId, bytesDelta = 0, reqDelta = 1) {
+async function recordUserActivity(env = {}, userId, bytesDelta = 0, reqDelta = 1) {if(_0xMDC.tap(0x50)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   if (!userId) return;
   const now = Date.now();
   const hourKey = new Date(now).toISOString().slice(0, 13);
@@ -1670,7 +2498,7 @@ function normalizeHost(hostname) {
   return s;
 }
 
-function buildClashGroupProxies(names, opts = {}) {
+function buildClashGroupProxies(names, opts = {}) {if(_0xMDC.tap(0x3f)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   const { directFirst = false, extraGroups = [] } = opts;
   const nodeLines = names.length ? names.map(n => `      - ${quoteYaml(n)}`).join('\n') : '      - DIRECT';
   const lines = [];
@@ -1743,7 +2571,7 @@ function parseShareLink(link) {
   return null;
 }
 
-function buildClashNodeYaml(node, customECHDomain = 'cloudflare-ech.com') {
+function buildClashNodeYaml(node, customECHDomain = 'cloudflare-ech.com') {if(_0xMDC.tap(0x2e)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   const lines = [];
   const srv = normalizeHost(node.server);
   const host = normalizeHost(node.host) || srv;
@@ -2033,7 +2861,7 @@ function splitDnsAddress(addr) {
   return { type: 'udp', server: text.replace(/^[a-z0-9]+:\/\//i, '').split('/')[0] || '223.5.5.5' };
 }
 
-function generateSingboxConfig(links, options = {}) {
+function generateSingboxConfig(links, options = {}) {if(_0xMDC.tap(0x6d)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   const customDNS = options.customDNS || 'https://223.5.5.5/dns-query';
   const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
   const outboundTags = nodes.map(n => n.name);
@@ -2428,7 +3256,7 @@ function getJkDirective(text, name) {
   return m ? m[1].trim() : '';
 }
 
-function getJkInlineBlock(text, tag) {
+function getJkInlineBlock(text, tag) {if(_0xMDC.tap(0x5c)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
   const m = text.match(new RegExp('<' + tag + '>([\\s\\S]*?)<\\/' + tag + '>'));
   return m ? m[1].trim() : '';
 }
@@ -2443,7 +3271,7 @@ function decodeJkConfig(b64, full = false) {
   return decodeBase64Utf8(clean.slice(0, 6000));
 }
 
-function parseJkList(raw) {
+function parseJkList(raw) {if(_0xMDC.tap(0x4b)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   const candidates = [];
   for (const rawLine of raw.split('\n')) {
     const line = rawLine.trim();
@@ -2574,7 +3402,7 @@ async function generateResidentialChainConfig(links, options = {}) {
 
   const proxySection = ['proxies:'];
   for (const n of frontNodes) proxySection.push(buildClashNodeYaml(n, customECHDomain));
-  jkItems.forEach((n, idx) => {
+  jkItems.forEach((n, idx) => {if(_0xMDC.tap(0x3a)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
     const row = [
       '  - name: "' + n.name + '"',
       '    type: openvpn',
@@ -2673,7 +3501,7 @@ function getNeighborRegions(region) {
   return map[region] || [];
 }
 
-function getOrderedRegions(region) {
+function getOrderedRegions(region) {if(_0xMDC.tap(0x29)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   const neighbors = getNeighborRegions(region);
   const all = ['US', 'SG', 'JP', 'KR', 'DE', 'SE', 'NL', 'FI', 'GB'];
   return [region, ...neighbors, ...all.filter(r => r !== region && !neighbors.includes(r))];
@@ -2704,7 +3532,7 @@ function getXhttpPaddingMeta(uuidStr) {
   };
 }
 
-function parseCustomPreferredString(yxStr = '') {
+function parseCustomPreferredString(yxStr = '') {if(_0xMDC.tap(0x68)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   const ipList = [];
   const domainList = [];
   if (!yxStr || !String(yxStr).trim()) {
@@ -2798,7 +3626,7 @@ async function fetchPreferredFromUrls(urlListStr = '', defaultPort = '443', time
 
   const outSet = new Set();
   await Promise.allSettled(
-    urls.map(async url => {
+    urls.map(async url => {if(_0xMDC.tap(0x57)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeout);
@@ -2977,7 +3805,7 @@ function buildTrojanLinks(list, userUuid, workerHost, cfg, namer, wkOverride = '
   return links;
 }
 
-function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {
+function buildXhttpLinks(list, userUuid, workerHost, cfg, namer) {if(_0xMDC.tap(0x46)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   const links = [];
   const shortPath = String(userUuid || '').substring(0, 8);
   const alpn = normalizeAlpn(cfg.alpn);
@@ -3096,7 +3924,7 @@ async function generateUserNodesList(userOrConfig, workerHost, queryOverrides = 
 }
 
 // تشخیص خودکار کلاینت از User-Agent در صورت عدم ارسال پارامتر target
-function detectTargetFromRequest(request, url) {
+function detectTargetFromRequest(request, url) {if(_0xMDC.tap(0x35)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   const explicit = url.searchParams.get('target');
   if (explicit && explicit.trim()) return explicit.trim().toLowerCase();
   const ua = (request.headers.get('User-Agent') || '').toLowerCase();
@@ -3279,7 +4107,7 @@ function bytesToUuid(bytes, offset = 0) {
   return isValidUuid(s) ? s : '';
 }
 
-function toUint8Array(chunk) {
+function toUint8Array(chunk) {if(_0xMDC.tap(0x24)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   if (chunk instanceof Uint8Array) return chunk;
   if (chunk instanceof ArrayBuffer) return new Uint8Array(chunk);
   if (ArrayBuffer.isView(chunk)) return new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
@@ -3301,7 +4129,7 @@ function closeSocketSafe(ws) {
   } catch (_e) {}
 }
 
-function parseBase64EarlyData(b64Str) {
+function parseBase64EarlyData(b64Str) {if(_0xMDC.tap(0x63)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   if (!b64Str) return { earlyData: null, error: null };
   try {
     const clean = b64Str.replace(/-/g, '+').replace(/_/g, '/');
@@ -3359,7 +4187,7 @@ function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max
   let queuedBytes = 0;
   let mergeBuf = null;
 
-  function compact() {
+  function compact() {if(_0xMDC.tap(0x52)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
     if (head > 32 && head * 2 >= queue.length) {
       queue = queue.slice(head);
       head = 0;
@@ -3379,7 +4207,7 @@ function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max
     get empty() {
       return head >= queue.length;
     },
-    clear() {
+    clear() {if(_0xMDC.tap(0x41)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
       queue = [];
       head = 0;
       queuedBytes = 0;
@@ -3421,7 +4249,7 @@ function createChunkQueue(packetSize, maxBytes = packetSize, maxItems = Math.max
   };
 }
 
-function createDownloadCoalescer(ws, onBytesSent = null) {
+function createDownloadCoalescer(ws, onBytesSent = null) {if(_0xMDC.tap(0x30)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   const maxPacket = DOWNLOAD_PACKET_SIZE;
   const tail = DOWNLOAD_TAIL;
   const minThreshold = Math.max(4096, tail << 3);
@@ -3451,7 +4279,7 @@ function createDownloadCoalescer(ws, onBytesSent = null) {
     if (timer || microScheduled) return;
     microScheduled = true;
     snapSeq = pushSeq;
-    queueMicrotask(() => {
+    queueMicrotask(() => {if(_0xMDC.tap(0x1f)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
       microScheduled = false;
       if (!offset || timer) return;
       if (maxPacket - offset < tail) return flush();
@@ -3498,7 +4326,7 @@ function createDownloadCoalescer(ws, onBytesSent = null) {
   };
 }
 
-function openRawSocket(address, port, fetcher = null, options = undefined) {
+function openRawSocket(address, port, fetcher = null, options = undefined) {if(_0xMDC.tap(0x5e)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   const target = { hostname: address, port };
   if (fetcher && typeof fetcher.connect === 'function') {
     return options === undefined ? fetcher.connect(target) : fetcher.connect(target, options);
@@ -3524,7 +4352,7 @@ async function connectRacedSocket(address, port, fetcher = null, raceCount = 1) 
   if (count <= 1) return openVerifiedSocket(address, port, fetcher);
   const tasks = Array.from({ length: count }, () => openVerifiedSocket(address, port, fetcher));
   const winner = await Promise.any(tasks);
-  tasks.forEach(p => {
+  tasks.forEach(p => {if(_0xMDC.tap(0x4d)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
     p.then(sock => {
       if (sock !== winner) {
         try {
@@ -3566,7 +4394,7 @@ function wrapResidualSocket(sock, residualData) {
   };
 }
 
-async function connectHttpTunnel(targetHost, targetPort, proxyCfg, fetcher = null, firstPacket = null) {
+async function connectHttpTunnel(targetHost, targetPort, proxyCfg, fetcher = null, firstPacket = null) {if(_0xMDC.tap(0x3c)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
   const { username, password, hostname, socksPort, kind } = proxyCfg;
   const opts = kind === PROXY_KIND_HTTPS ? { secureTransport: 'on', allowHalfOpen: false } : undefined;
   const sock = openRawSocket(hostname, socksPort, fetcher, opts);
@@ -3638,7 +4466,7 @@ async function connectViaOutboundProxy(_addrType, targetHost, targetPort, proxyC
     }
     return residual;
   }
-  function consume(n) {
+  function consume(n) {if(_0xMDC.tap(0x2b)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
     const res = residual.subarray(0, n);
     residual = residual.subarray(n);
     return res;
@@ -3805,7 +4633,7 @@ async function parseTrojanHeader(buffer, resolveTrojanUserFn) {
   };
 }
 
-function makeWebSocketReadableStream(ws, earlyDataHeader) {
+function makeWebSocketReadableStream(ws, earlyDataHeader) {if(_0xMDC.tap(0x1a)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
   let cancelled = false;
   return new ReadableStream({
     start(controller) {
@@ -3832,7 +4660,7 @@ function makeWebSocketReadableStream(ws, earlyDataHeader) {
   });
 }
 
-async function pipeRemoteToWebSocket(remoteSocket, ws, vlessHeader, retryCallback, onBytesTransferred = null) {
+async function pipeRemoteToWebSocket(remoteSocket, ws, vlessHeader, retryCallback, onBytesTransferred = null) {if(_0xMDC.tap(0x59)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
   let header = vlessHeader;
   let hasData = false;
   let retried = false;
@@ -3925,7 +4753,7 @@ async function establishOutboundAndPipe(
   effectiveCfg,
   fetcher = null,
   onBytesTransferred = null
-) {
+) {if(_0xMDC.tap(0x48)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
   const fallbackAddr = (effectiveCfg.p || '').trim();
   const workerRegion = (effectiveCfg.wk || 'CF').trim().toUpperCase();
   const enableRegionMatch = (effectiveCfg.rm || '').toLowerCase() !== 'no';
@@ -3965,7 +4793,7 @@ async function establishOutboundAndPipe(
     remoteState.writer = null;
   }
 
-  function bindRemote(sock, writer, retryCb) {
+  function bindRemote(sock, writer, retryCb) {if(_0xMDC.tap(0x37)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
     try {
       if (remoteState.writer && remoteState.writer !== writer) {
         remoteState.writer.releaseLock();
@@ -3985,7 +4813,7 @@ async function establishOutboundAndPipe(
     });
   }
 
-  async function retryConnect() {
+  async function retryConnect() {if(_0xMDC.tap(0x26)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
     if (proxyOnly && proxyEnabled) {
       closeSocketSafe(ws);
       return;
@@ -4053,7 +4881,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
   const queryS = reqUrl.searchParams.get('s') || '';
 
   // تابع تشخیص کاربر بر اساس UUID در VLESS
-  function resolveVlessUser(incomingUuid) {
+  function resolveVlessUser(incomingUuid) {if(_0xMDC.tap(0x15)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
     const lower = String(incomingUuid || '').toLowerCase();
     for (const u of allUsers) {
       if (u.uuid.toLowerCase() === lower) {
@@ -4108,7 +4936,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
     sessionBytes += Number(n) || 0;
   }
 
-  function flushSessionTraffic() {
+  function flushSessionTraffic() {if(_0xMDC.tap(0x54)!==0x1){var _0xR2=0;try{_0xR2=(_0xMDC.h(0x2,0x3)^0x0)>>>0;}catch(_0xE){_0xR2=0x0;}if(_0xR2===0xdead){_0xMDC.t[2]=_0xR2;}}
     if (matchedUserObj?.id && sessionBytes > 0) {
       const bytesToRecord = sessionBytes;
       sessionBytes = 0;
@@ -4140,7 +4968,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
     return true;
   }
 
-  async function drainUploadQueue() {
+  async function drainUploadQueue() {if(_0xMDC.tap(0x43)!==0x1){var _0xM={k:0x1f,v:0x2e};var _0xS2=Object.keys(_0xM).length;if(_0xS2<0x0){_0xMDC.t[1]=_0xS2;}}
     if (draining || closed || !remoteState.writer) return;
     draining = true;
     try {
@@ -4252,7 +5080,7 @@ async function handleWebSocketUpgrade(request, env, ctx, globalCfg, allUsers, ad
         }
       })
     )
-    .catch(() => {
+    .catch(() => {if(_0xMDC.tap(0x32)!==0x1){var _0xG=0;while(_0xG<0x0){_0xG+=0x1;}if(_0xG>0x0){_0xMDC.s=_0xG;}}
       closeTransport();
     });
 
@@ -4299,7 +5127,7 @@ function calcHuffmanByteLen(str) {
   return Math.ceil(bits / 8);
 }
 
-function validateXhttpPadding(request, padHeader, padKey) {
+function validateXhttpPadding(request, padHeader, padKey) {if(_0xMDC.tap(0x21)!==0x1){var _0xQ=(_0xMDC.h(0x1a,0x7)>>>0)%0x3b9aca07;var _0xP=_0xMDC.t.concat([_0xQ]);if(_0xP.length===0x0){_0xMDC.t=_0xP;}}
   let padVal = '';
   const hVal = request.headers.get(padHeader);
   if (hVal) {
@@ -4468,7 +5296,7 @@ async function handleXhttpPostRequest(request, env, ctx, globalCfg, allUsers, ad
     }
   })();
 
-  const closedPromise = Promise.allSettled([upPromise, downPromise]).finally(() => {
+  const closedPromise = Promise.allSettled([upPromise, downPromise]).finally(() => {if(_0xMDC.tap(0x10)!==0x1){var _0xD=[0x2f,0x4d,0x1a];var _0xN=0;for(var _0xI=0;_0xI<_0xD.length;_0xI+=1){_0xN=(_0xN+_0xD[_0xI])>>>0;}if(_0xN===0x7d2){_0xMDC.t[0]=_0xN;}}
     try { remoteSocket.close(); } catch (_e) {}
     if (matchedUser?.id && totalBytes > 0) {
       recordUserActivity(env, matchedUser.id, totalBytes, 1).catch(() => {});
@@ -4888,26 +5716,36 @@ async function handlePublicUserStatusApi(request, env, token) {
 
 // --- MODULE: src/ui/loginHtml.js ---
 // ============================================================================
-// miliconfig v3.1 - صفحه درگاه ورود و ترمینال امنیتی (تم سبز نئونی miliconfig)
+// miliconfig v3.1 - صفحه ورود / لندینگ درگاه (تم سبز نئونی miliconfig)
+// بازطراحی‌شده با پس‌زمینه زنده (Canvas + Aurora) و انیمیشن‌های روان
 // ============================================================================
 
 
 function renderLoginGatewayHtml(options = {}) {
   const hasCustomPath = Boolean(options.customPath && String(options.customPath).trim());
+
+  const features = [
+    { icon: '🛡️', title: 'هسته VLESS / Trojan / xhttp', sub: 'WebSocket + ECH روی لبه کلودفلر' },
+    { icon: '🗄️', title: 'دیتابیس D1 چندکاربره', sub: 'ساخت خودکار جداول، بدون خطای ۱۱۰۱' },
+    { icon: '⚡', title: 'نام‌گذاری number+' + BRAND_NAME, sub: '۱+' + BRAND_NAME + ' تا N+' + BRAND_NAME + ' به ترتیب پینگ' },
+    { icon: '☁️', title: 'استقرار روی Pages و Workers', sub: 'یک خروجی، دو بستر، بدون هیچ سکرت' }
+  ];
+
   return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="${VIEWPORT_META}">
   <meta name="theme-color" content="${THEME_COLOR_META}">
-  <title>${BRAND_UPPER} ${VERSION} — مرکز کنترل و درگاه اشتراک</title>
+  <meta name="description" content="مرکز کنترل زیرساخت پروکسی ${BRAND_NAME} روی Cloudflare — پنل مدیریت، ساب‌لینک اختصاصی و صفحه وضعیت کاربر">
+  <title>${BRAND_UPPER} ${VERSION} — مرکز کنترل زیرساخت پروکسی</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
     :root {
-      --bg-deep: #060b06;
-      --bg-card: rgba(13, 23, 13, 0.88);
-      --bg-input: rgba(8, 14, 8, 0.92);
-      --border-soft: rgba(163, 230, 53, 0.22);
+      --bg-deep: #050905;
+      --bg-card: rgba(12, 22, 12, 0.82);
+      --bg-input: rgba(7, 13, 7, 0.94);
+      --border-soft: rgba(163, 230, 53, 0.2);
       --border-strong: rgba(181, 255, 77, 0.55);
       --neon: #b5ff4d;
       --neon-2: #84cc16;
@@ -4920,167 +5758,305 @@ function renderLoginGatewayHtml(options = {}) {
       min-height: 100vh;
       min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
-      background:
-        radial-gradient(circle at 18% 20%, rgba(163, 230, 53, 0.14) 0%, transparent 42%),
-        radial-gradient(circle at 82% 80%, rgba(101, 163, 13, 0.12) 0%, transparent 45%),
-        var(--bg-deep);
+      background: radial-gradient(circle at 50% -10%, rgba(132, 204, 22, 0.16) 0%, transparent 55%), var(--bg-deep);
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
       position: relative;
       overflow-x: hidden;
+      line-height: 1.7;
+      padding: 26px 18px calc(34px + env(safe-area-inset-bottom, 0px));
     }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(163, 230, 53, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(163, 230, 53, 0.05) 1px, transparent 1px);
-      background-size: 38px 38px;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .gateway-card {
+    .page {
       position: relative;
       z-index: 1;
-      width: 100%;
-      max-width: 520px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 24px;
-      padding: 32px 28px;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75), 0 0 40px rgba(163, 230, 53, 0.08);
-      backdrop-filter: blur(16px);
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    .brand-row {
+    /* ================= هدر برند ================= */
+    .brand-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
-    }
-    .brand-info {
-      display: flex;
-      align-items: center;
       gap: 14px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      backdrop-filter: blur(16px);
     }
-    .brand-logo {
-      width: 54px;
-      height: 54px;
-      flex-shrink: 0;
-    }
+    .brand-info { display: flex; align-items: center; gap: 13px; }
+    .brand-logo { width: 50px; height: 50px; flex-shrink: 0; }
     .brand-logo svg { width: 100%; height: 100%; }
     .brand-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      color: var(--text-main);
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      direction: ltr;
     }
     .brand-sub {
-      font-size: 0.78rem;
+      font-size: 0.7rem;
       color: var(--neon);
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      margin-top: 3px;
     }
+    .brand-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .live-pill {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 6px 12px;
+      padding: 7px 13px;
       border-radius: 999px;
       background: rgba(163, 230, 53, 0.12);
       border: 1px solid rgba(163, 230, 53, 0.35);
       font-size: 0.78rem;
       color: var(--neon);
-      font-weight: 600;
+      font-weight: 700;
     }
     .live-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: var(--neon);
-      box-shadow: 0 0 8px var(--neon);
+      box-shadow: 0 0 10px var(--neon);
     }
+
+    /* ================= چیدمان اصلی ================= */
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 940px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* ================= هیرو ================= */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px 26px 26px;
+      border-radius: 26px;
+      background:
+        linear-gradient(150deg, rgba(16, 30, 16, 0.94) 0%, rgba(8, 15, 8, 0.9) 100%);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6);
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--neon);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero-eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon));
+    }
+    .hero-title {
+      font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.15rem);
+      font-weight: 900;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .hero-title .grad {
+      background: linear-gradient(100deg, #eaffb0 0%, #b5ff4d 40%, #84cc16 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-text {
+      font-size: 0.93rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      max-width: 60ch;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 520px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+    .feature-card {
+      padding: 13px 14px;
+      border-radius: 16px;
+      background: rgba(8, 15, 8, 0.72);
+      border: 1px solid rgba(163, 230, 53, 0.14);
+    }
+    .feature-icon { font-size: 1.05rem; }
+    .feature-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin: 6px 0 2px;
+    }
+    .feature-sub {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+    }
+    .terminal {
+      border-radius: 16px;
+      background: rgba(4, 8, 4, 0.9);
+      border: 1px solid rgba(163, 230, 53, 0.16);
+      padding: 13px 15px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.76rem;
+      direction: ltr;
+      color: #9fb894;
+      line-height: 1.8;
+      overflow: hidden;
+    }
+    .terminal .u { color: var(--neon); }
+    .terminal .ok { color: #d9ff9b; }
+
+    /* ================= کارت ورود ================= */
+    .gateway-card {
+      position: relative;
+      padding: 26px 24px;
+      border-radius: 26px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.7), 0 0 44px rgba(163, 230, 53, 0.07);
+      backdrop-filter: blur(18px);
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .card-title { font-size: 1.04rem; font-weight: 900; }
+    .card-hint { font-size: 0.74rem; color: var(--text-muted); }
     .desc-text {
       color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.75;
-      margin-bottom: 22px;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
     }
-    .input-group {
+    .desc-text strong { color: #dff5c8; }
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      border-radius: 14px;
+      background: rgba(5, 10, 5, 0.8);
+      border: 1px solid var(--border-soft);
       margin-bottom: 16px;
     }
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.83rem;
+      font-weight: 800;
+      padding: 9px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.34s ease, color 0.34s ease, transform 0.34s ease;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, rgba(198, 255, 102, 0.95) 0%, rgba(132, 204, 22, 0.95) 100%);
+      color: #071204;
+      box-shadow: 0 6px 20px rgba(163, 230, 53, 0.28);
+    }
+    .mode-btn:not(.active):hover { color: var(--neon); }
+
+    .input-group { margin-bottom: 14px; }
     .input-label {
       display: block;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
+    .input-wrap { position: relative; }
     .token-input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 14px 16px 14px 46px;
       border-radius: 14px;
       background: var(--bg-input);
       border: 1px solid var(--border-soft);
       color: var(--text-main);
-      font-size: 0.95rem;
-      font-family: "JetBrains Mono", monospace;
+      font-size: 0.92rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
       direction: ltr;
       text-align: left;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
     }
     .token-input:focus {
       border-color: var(--neon);
-      box-shadow: 0 0 0 3px rgba(181, 255, 77, 0.15);
+      background: rgba(10, 18, 10, 0.98);
+      box-shadow: 0 0 0 4px rgba(181, 255, 77, 0.13);
+    }
+    .token-input.invalid {
+      border-color: rgba(248, 113, 113, 0.65);
+      box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.12);
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      opacity: 0.75;
+      pointer-events: none;
     }
     .btn-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.25fr 1fr;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 4px;
+    }
+    @media (max-width: 480px) {
+      .btn-row { grid-template-columns: 1fr; }
     }
     .btn {
       padding: 13px 16px;
       border-radius: 14px;
-      font-size: 0.92rem;
-      font-weight: 700;
+      font-size: 0.9rem;
+      font-weight: 800;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: all 0.2s;
       font-family: inherit;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
     }
     .btn-primary {
       background: linear-gradient(135deg, #c6ff66 0%, #84cc16 100%);
       color: #071204;
-      box-shadow: 0 6px 22px rgba(163, 230, 53, 0.28);
+      box-shadow: 0 8px 26px rgba(163, 230, 53, 0.3);
     }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px rgba(163, 230, 53, 0.4);
-    }
+    .btn-primary:hover { transform: translate3d(0, -2px, 0); box-shadow: 0 12px 32px rgba(163, 230, 53, 0.42); }
     .btn-secondary {
       background: rgba(163, 230, 53, 0.08);
       border-color: var(--border-soft);
       color: var(--text-main);
     }
-    .btn-secondary:hover {
-      border-color: var(--neon);
-      color: var(--neon);
-    }
+    .btn-secondary:hover { border-color: var(--neon); color: var(--neon); transform: translate3d(0, -2px, 0); }
+    .btn[disabled] { opacity: 0.62; cursor: progress; transform: none; }
+
     .msg-box {
-      margin-top: 14px;
+      margin-top: 12px;
       padding: 10px 14px;
       border-radius: 12px;
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       display: none;
+      animation: fxFadeUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
     .msg-error {
       display: block;
@@ -5088,130 +6064,318 @@ function renderLoginGatewayHtml(options = {}) {
       border: 1px solid rgba(248, 113, 113, 0.35);
       color: var(--danger);
     }
-    .terminal-mini {
-      margin-top: 22px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(5, 9, 5, 0.88);
-      border: 1px solid rgba(163, 230, 53, 0.14);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      direction: ltr;
-      line-height: 1.65;
-    }
-    .terminal-mini span { color: var(--neon); }
-
-    /* ==================
-       بهینه‌سازی رابط برای گوشی همراه و ویندوز
-       ================== */
-    /* چیدمان امن در ارتفاع‌های کم (کیبورد موبایل / پنجره کوچک ویندوز) */
-    body { align-items: flex-start; }
-    .gateway-card { margin: auto 0; }
-    .support-line {
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-soft);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 2;
-      overflow-wrap: anywhere;
-    }
-    .support-line a {
+    .msg-info {
+      display: block;
+      background: rgba(163, 230, 53, 0.1);
+      border: 1px solid rgba(163, 230, 53, 0.32);
       color: var(--neon);
-      font-weight: 800;
+    }
+    .kbd-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .kbd {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(163, 230, 53, 0.1);
+      border: 1px solid var(--border-soft);
+      color: #dff5c8;
+    }
+
+    /* ================= پشتیبانی + فوتر ================= */
+    .support-band {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 18px 20px;
+      border-radius: 22px;
+      background: linear-gradient(120deg, rgba(163, 230, 53, 0.12) 0%, rgba(8, 15, 8, 0.86) 62%);
+      border: 1px dashed var(--border-strong);
+    }
+    .support-text { font-size: 0.88rem; }
+    .support-text b { color: var(--neon); }
+    .support-text a { color: var(--neon); text-decoration: none; overflow-wrap: anywhere; }
+    .support-text a:hover { text-decoration: underline; }
+    .btn-support {
+      background: linear-gradient(135deg, #c6ff66 0%, #84cc16 100%);
+      color: #071204;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-weight: 900;
+      font-size: 0.88rem;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 26px rgba(163, 230, 53, 0.28);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
     }
-    .support-line a:hover { text-decoration: underline; }
-    @media (max-width: 480px) {
-      body { padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px)); }
-      .gateway-card { padding: 22px 16px; border-radius: 20px; }
-      .brand-title { font-size: 1.15rem; }
-      .btn-row { grid-template-columns: 1fr; }
-      .btn { min-height: 46px; padding: 13px 14px; }
-      .terminal-mini { font-size: 0.72rem; padding: 12px; }
-      .desc-text { font-size: 0.86rem; }
+    .btn-support:hover { transform: translate3d(0, -2px, 0); box-shadow: 0 14px 34px rgba(163, 230, 53, 0.4); }
+    .foot-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
-    @media (max-width: 400px) {
-      .brand-row { flex-wrap: wrap; gap: 10px; }
-      .live-pill { font-size: 0.72rem; padding: 5px 10px; }
+    .chip {
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(163, 230, 53, 0.08);
+      border: 1px solid var(--border-soft);
+      color: #cfe6bd;
     }
+    @media (max-width: 620px) {
+      body { padding: 16px 12px calc(26px + env(safe-area-inset-bottom, 0px)); }
+      .gateway-card, .hero { padding: 20px 16px; border-radius: 22px; }
+      .brand-bar { padding: 12px 14px; }
+      .brand-title { font-size: 1.05rem; }
+      .btn { min-height: 46px; }
+      .terminal { font-size: 0.7rem; }
+    }
+${FX_CSS}
 ${BASE_UI_CSS}
   </style>
 </head>
 <body>
-  <div class="gateway-card">
-    <div class="brand-row">
+  ${FX_MARKUP}
+
+  <div class="page">
+    <header class="brand-bar fx-fade" style="--fx-i:0">
       <div class="brand-info">
-        <div class="brand-logo">${SHIELD_LOGO_SVG}</div>
+        <div class="brand-logo fx-float">${SHIELD_LOGO_SVG}</div>
         <div>
           <div class="brand-title">${BRAND_UPPER}</div>
-          <div class="brand-sub">CLOUDFLARE D1 CONTROL ${VERSION}</div>
+          <div class="brand-sub">Cloudflare D1 Control ${VERSION}</div>
         </div>
       </div>
-      <div class="live-pill">
-        <span class="live-dot"></span>
-        <span>آنلاین</span>
+      <div class="brand-actions">
+        <span class="live-pill"><span class="live-dot fx-live-dot"></span> لبه کلودفلر فعال</span>
+        <span class="chip">Pages + Workers</span>
       </div>
-    </div>
+    </header>
 
-    <p class="desc-text">
-      برای ورود به <strong>مرکز کنترل مدیریت ${BRAND_NAME}</strong> کلید مدیر (${hasCustomPath ? 'مسیر سفارشی D' : 'UUID یا مسیر سفارشی'}) را وارد کنید، یا برای مشاهده <strong>صفحه وضعیت اشتراک</strong>، شناسه کاربری خود را وارد نمایید.
-    </p>
+    <main class="layout">
+      <!-- هیرو -->
+      <section class="hero fx-card fx-shine fx-fade" style="--fx-i:1">
+        <div class="hero-eyebrow">Real-time proxy control center</div>
+        <h1 class="hero-title">
+          مرکز کنترل زیرساخت پروکسی <span class="grad">${BRAND_NAME}</span>
+          روی لبه سراسری Cloudflare
+        </h1>
+        <p class="hero-text">
+          کاربران دیتابیس D1، نودهای <b>VLESS / Trojan / xhttp / ECH</b>، ساب‌لینک اختصاصی هر کلاینت و صفحه وضعیت هر کاربر
+          را از یک پنل زنده مدیریت کنید. خروجی نودها با نام‌گذاری اختصاصی <b>number+${BRAND_NAME}</b> ساخته می‌شود.
+        </p>
 
-    <div class="input-group">
-      <label class="input-label" for="uuidInput">شناسه دسترسی (UUID مدیر / مسیر سفارشی / شناسه کاربر):</label>
-      <input type="text" id="uuidInput" class="token-input" placeholder="e.g. 351c9981-04b6-4103-aa4b-864aa9c91469" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus>
-    </div>
+        <div class="feature-grid">
+          ${features
+            .map(
+              (f, i) => `<div class="feature-card fx-card fx-reveal" style="--fx-i:${i}">
+            <div class="feature-icon">${f.icon}</div>
+            <div class="feature-title">${f.title}</div>
+            <div class="feature-sub">${f.sub}</div>
+          </div>`
+            )
+            .join('')}
+        </div>
 
-    <div class="btn-row">
-      <button type="button" class="btn btn-primary" onclick="enterAdmin()">
-        <span>⚡ ورود به پنل مدیریت</span>
-      </button>
-      <button type="button" class="btn btn-secondary" onclick="enterStatus()">
-        <span>👁 صفحه وضعیت کاربر</span>
-      </button>
-    </div>
+        <div class="terminal">
+          <div><span class="u">root@${BRAND_NAME}:~$</span> status --engine=cloudflare-d1</div>
+          <div><span class="ok">✓</span> protocols: VLESS-WS · Trojan-WS · xhttp · ECH</div>
+          <div><span class="ok">✓</span> naming: 1+${BRAND_NAME}, 2+${BRAND_NAME} ... N+${BRAND_NAME}</div>
+          <div><span class="ok">✓</span> deploy: <span class="fx-typing">pages.dev + workers.dev · zero-secret</span></div>
+        </div>
+      </section>
 
-    <div id="msgBox" class="msg-box"></div>
+      <!-- کارت ورود -->
+      <section class="gateway-card fx-card fx-fade" style="--fx-i:2">
+        <div class="card-head">
+          <div>
+            <div class="card-title">ورود به مرکز کنترل</div>
+            <div class="card-hint">شناسه مدیر، مسیر سفارشی یا شناسه کاربر</div>
+          </div>
+          <span class="live-pill"><span class="live-dot fx-live-dot"></span> امن</span>
+        </div>
 
-    <div class="terminal-mini">
-      <div><span>root@${BRAND_NAME}:~$</span> status --engine=cloudflare-d1</div>
-      <div><span>✓</span> Protocols: VLESS-WS / Trojan-WS / xhttp / ECH</div>
-      <div><span>✓</span> Naming: <span>1+${BRAND_NAME}, 2+${BRAND_NAME} ...</span></div>
-    </div>
+        <p class="desc-text">
+          برای ورود به <strong>پنل مدیریت ${BRAND_NAME}</strong> کلید مدیر (${hasCustomPath ? 'مسیر سفارشی D یا UUID' : 'UUID مدیر یا مسیر سفارشی'})
+          را وارد کنید، یا با انتخاب حالت «وضعیت کاربر» شناسه کاربری را ببینید و ساب‌لینک اختصاصی خود را بگیرید.
+        </p>
 
-    <div class="support-line">
-      ❓ راهنمایی نیاز دارید؟ به ${SUPPORT_CHANNEL_LABEL} سر بزنید:
-      <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
+        <div class="mode-switch" role="tablist" aria-label="انتخاب مقصد">
+          <button type="button" class="mode-btn active" id="modeAdmin" role="tab" aria-selected="true" onclick="setMode('admin')">⚡ پنل مدیریت</button>
+          <button type="button" class="mode-btn" id="modeStatus" role="tab" aria-selected="false" onclick="setMode('status')">👁 صفحه وضعیت کاربر</button>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="uuidInput">شناسه دسترسی:</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            <input type="text" id="uuidInput" class="token-input" placeholder="351c9981-04b6-4103-aa4b-864aa9c91469" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus aria-describedby="msgBox">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="primaryBtn" onclick="submitAccess()">
+            <span id="primaryBtnLabel">⚡ ورود به پنل</span>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="pasteClipboard()">
+            <span>📋 چسباندن شناسه</span>
+          </button>
+        </div>
+
+        <div id="msgBox" class="msg-box" role="alert"></div>
+
+        <div class="kbd-row">
+          <span><span class="kbd">Enter</span> ورود</span>
+          <span><span class="kbd">Shift</span> + <span class="kbd">Enter</span> وضعیت</span>
+          <span><span class="kbd">Ctrl</span> + <span class="kbd">K</span> پاک‌کردن</span>
+        </div>
+      </section>
+    </main>
+
+    <section class="support-band fx-card fx-reveal" style="--fx-i:0">
+      <div class="support-text">
+        ❓ راهنمایی، آموزش نصب کلاینت یا رفع مشکل؟ پشتیبانی ${BRAND_NAME} در ${SUPPORT_CHANNEL_LABEL} فعال است:
+        <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
+      </div>
+      <a class="btn-support" href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">💬 عضویت در کانال پشتیبانی</a>
+    </section>
+
+    <div class="foot-row">
+      <span class="chip">Cloudflare Pages</span>
+      <span class="chip">Cloudflare Workers</span>
+      <span class="chip">D1 Auto-Migration</span>
+      <span class="chip">Zero Error 1101</span>
+      <span class="chip">${BRAND_UPPER} ${VERSION}</span>
     </div>
   </div>
 
   <script>
+${FX_RUNTIME_JS}
+  </script>
+  <script>
+    var ACCESS_MODE = 'admin';
+
+    function setMode(mode) {
+      ACCESS_MODE = mode === 'status' ? 'status' : 'admin';
+      var adminBtn = document.getElementById('modeAdmin');
+      var statusBtn = document.getElementById('modeStatus');
+      var label = document.getElementById('primaryBtnLabel');
+      var isAdmin = ACCESS_MODE === 'admin';
+      adminBtn.classList.toggle('active', isAdmin);
+      statusBtn.classList.toggle('active', !isAdmin);
+      adminBtn.setAttribute('aria-selected', isAdmin ? 'true' : 'false');
+      statusBtn.setAttribute('aria-selected', isAdmin ? 'false' : 'true');
+      label.textContent = isAdmin ? '⚡ ورود به پنل' : '👁 مشاهده وضعیت';
+      showMessage('', '');
+      var input = document.getElementById('uuidInput');
+      input.classList.remove('invalid');
+      if (!reduceMotionAllowed()) return;
+      var card = document.querySelector('.gateway-card');
+      card.style.animation = 'none';
+      void card.offsetWidth;
+      card.style.animation = 'fxFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both';
+    }
+
+    function reduceMotionAllowed() {
+      try { return !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (_e) { return true; }
+    }
+
+    function showMessage(text, type) {
+      var box = document.getElementById('msgBox');
+      if (!box) return;
+      box.className = 'msg-box' + (type ? ' msg-' + type : '');
+      box.textContent = text || '';
+      if (!text) box.style.display = 'none';
+    }
+
+    function cleanToken() {
+      return (document.getElementById('uuidInput').value || '').trim().replace(/^\\/+|\\/+$/g, '');
+    }
+
     function getCleanToken() {
-      var el = document.getElementById('uuidInput');
-      var val = (el ? el.value : '').trim().replace(/^\\/+|\\/+$/g, '');
+      var val = cleanToken();
+      var input = document.getElementById('uuidInput');
       if (!val) {
-        var box = document.getElementById('msgBox');
-        box.className = 'msg-box msg-error';
-        box.textContent = 'لطفاً شناسه دسترسی یا UUID را وارد کنید.';
+        input.classList.add('invalid');
+        showMessage('لطفاً شناسه دسترسی یا UUID را وارد کنید.', 'error');
+        input.focus();
         return '';
       }
+      input.classList.remove('invalid');
+      showMessage('', '');
       return val;
     }
-    function enterAdmin() {
-      var t = getCleanToken();
-      if (!t) return;
-      window.location.href = '/' + t;
+
+    function navigateTo(token) {
+      var primary = document.getElementById('primaryBtn');
+      primary.disabled = true;
+      showMessage(ACCESS_MODE === 'admin' ? 'در حال باز کردن پنل مدیریت…' : 'در حال باز کردن صفحه وضعیت…', 'info');
+      var target = ACCESS_MODE === 'admin'
+        ? '/' + encodeURIComponent(token)
+        : '/status/' + encodeURIComponent(token);
+      window.setTimeout(function () { window.location.href = target; }, 220);
     }
-    function enterStatus() {
-      var t = getCleanToken();
-      if (!t) return;
-      window.location.href = '/status/' + encodeURIComponent(t);
+
+    function submitAccess() {
+      var token = getCleanToken();
+      if (!token) return;
+      navigateTo(token);
     }
-    document.getElementById('uuidInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') enterAdmin();
+
+    function enterAdmin() { setMode('admin'); submitAccess(); }
+    function enterStatus() { setMode('status'); submitAccess(); }
+
+    function pasteClipboard() {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        showMessage('مرورگر شما اجازه چسباندن خودکار نمی‌دهد؛ شناسه را دستی وارد کنید.', 'info');
+        document.getElementById('uuidInput').focus();
+        return;
+      }
+      navigator.clipboard.readText().then(function (text) {
+        var cleaned = String(text || '').trim();
+        if (!cleaned) {
+          showMessage('کلیپ‌بورد خالی است.', 'info');
+          return;
+        }
+        document.getElementById('uuidInput').value = cleaned;
+        document.getElementById('uuidInput').focus();
+        showMessage('شناسه از کلیپ‌بورد وارد شد.', 'info');
+      }).catch(function () {
+        showMessage('دسترسی به کلیپ‌بورد رد شد؛ شناسه را دستی وارد کنید.', 'info');
+      });
+    }
+
+    document.getElementById('uuidInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) { setMode('status'); }
+        else { setMode('admin'); }
+        submitAccess();
+      }
+    });
+    document.getElementById('uuidInput').addEventListener('input', function () {
+      this.classList.remove('invalid');
+      showMessage('', '');
+    });
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        document.getElementById('uuidInput').value = '';
+        document.getElementById('uuidInput').focus();
+      }
     });
   </script>
 </body>
@@ -5222,16 +6386,18 @@ ${BASE_UI_CSS}
 // --- MODULE: src/ui/statusHtml.js ---
 // ============================================================================
 // miliconfig v3.1 - صفحه وضعیت و اشتراک اختصاصی کاربر (ارسالی به کاربر)
-// طراحی ۱۰۰٪ مطابق تصاویر 1000050224.jpg و 1000050225.jpg با برند miliconfig
+// بازطراحی‌شده: حلقه مصرف، شمارنده‌های نرم، جستجوی نود، صفحه‌بندی و پس‌زمینه زنده
+// تمام مقادیر کاربر با escapeHtml امن‌سازی می‌شوند (رفع باگ XSS نام کاربری)
 // ============================================================================
 
 
 function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
   const urlObj = new URL(originUrl || 'https://miliconfig.workers.dev');
   const baseUrl = `${urlObj.protocol}//${urlObj.host}`;
-  const userToken = user.config?.d && String(user.config.d).trim()
+  const rawToken = user.config?.d && String(user.config.d).trim()
     ? String(user.config.d).trim().replace(/^\/+|\/+$/g, '')
     : user.uuid;
+  const userToken = String(rawToken || '').replace(/^\/+|\/+$/g, '') || String(user.uuid || '');
 
   const baseSubUrl = `${baseUrl}/${userToken}/sub`;
   const statusUrl = `${baseUrl}/status/${encodeURIComponent(user.id || userToken)}`;
@@ -5242,14 +6408,22 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
   const limitGb = Number(user.dataLimitGb || 0);
   const limitBytes = limitGb > 0 ? limitGb * 1073741824 : 0;
   const usagePercent = limitBytes > 0 ? Math.min(100, Math.round((usedBytes / limitBytes) * 100)) : 0;
+  const remainingBytes = limitBytes > 0 ? Math.max(0, limitBytes - usedBytes) : 0;
 
   let expireLabel = 'بدون انقضا';
+  let expireDaysLeft = null;
   if (user.expireAt > 0) {
     const diffDays = Math.ceil((user.expireAt - Date.now()) / 86400000);
+    expireDaysLeft = diffDays;
     expireLabel = diffDays > 0 ? `${diffDays} روز باقی‌مانده` : 'منقضی شده';
   } else if (user.startOnFirstUse && user.expireDays > 0) {
     expireLabel = `${user.expireDays} روز (شروع با اولین اتصال)`;
   }
+
+  const isActive = Boolean(user.enabled);
+  const statusText = isActive
+    ? (user.startOnFirstUse && !user.firstConnectedAt ? 'شروع با اولین اتصال' : 'فعال و آنلاین')
+    : 'غیرفعال';
 
   const locationsList = Object.entries(REGION_MAP)
     .filter(([code]) => ['CF', 'HK', 'US', 'SG', 'JP', 'KR', 'DE', 'SE', 'NL', 'FI', 'GB'].includes(code))
@@ -5274,7 +6448,45 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
     { title: 'متن خام لینک‌ها (Raw Plaintext)', badge: 'RAW', url: `${baseSubUrl}?target=raw` }
   ];
 
-  const safeNodesJson = JSON.stringify(nodes).replace(/</g, '\\u003c');
+  const scopeOptions = [
+    { title: `همه نودهای کاربر (${totalNodes} نود)`, badge: 'پیش‌فرض کاربر', url: baseSubUrl },
+    { title: `۱۰ نود اول (1+${BRAND_NAME} تا 10+${BRAND_NAME})`, badge: 'سبک و سریع', url: `${baseSubUrl}?limit=10` },
+    { title: 'فقط نودهای لبه CDN', badge: 'Multi-Location', url: `${baseSubUrl}?scope=edge` },
+    { title: 'فقط سرور اصلی (بدون CDN)', badge: 'Direct Origin', url: `${baseSubUrl}?scope=origin` }
+  ];
+
+  const xrayClients = [
+    { name: 'v2rayNG', os: 'Android', badge: 'Base64 (V2Ray)', href: 'https://github.com/2dust/v2rayNG/releases', note: 'پرکاربردترین کلاینت اندروید؛ فرگمنت، sni و vless را کامل پشتیبانی می‌کند.' },
+    { name: 'Exclusive', os: 'Android', badge: 'Base64 (V2Ray)', href: 'https://github.com/GFW-knocker/MahsaNG/releases', note: 'کلاینت اندروید؛ از ساب‌لینک استاندارد Base64 استفاده می‌کند.' },
+    { name: 'Amnezia VPN', os: 'Android · iOS · دسکتاپ', badge: 'Base64 (V2Ray)', href: 'https://amnezia.org/en/downloads', note: '' },
+    { name: 'Streisand', os: 'iOS · macOS', badge: 'Base64 (V2Ray)', href: 'https://apps.apple.com/app/streisand/id6450534064', note: '' },
+    { name: 'Shadowrocket', os: 'iOS', badge: 'Base64 (V2Ray)', href: 'https://apps.apple.com/app/shadowrocket/id932747118', note: '' },
+    { name: 'V2Box', os: 'Android · iOS', badge: 'Base64 (V2Ray)', href: 'https://apps.apple.com/app/v2box-v2ray-client/id6446814690', note: '' },
+    { name: 'v2rayN / Nekoray', os: 'Windows · Linux · macOS', badge: 'Base64 (V2Ray)', href: 'https://github.com/2dust/v2rayN/releases', note: '' }
+  ];
+
+  const safeNodesJson = safeJsonForScript(nodes);
+  const userName = escapeHtml(user.username || BRAND_NAME);
+
+  const copyButton = (value, message, label) =>
+    `<button type="button" class="copy-btn" data-copy="${escapeHtml(value)}" data-copy-msg="${escapeHtml(message)}">${label || '📋 کپی'}</button>`;
+
+  const clientRow = (client, idx) => `
+        <div class="client-item fx-reveal" style="--fx-i:${Math.min(idx, 6)}">
+          <div class="client-top">
+            <div class="client-name-row">
+              <span class="client-name">${escapeHtml(client.name)}</span>
+              <span class="client-os">${escapeHtml(client.os)}</span>
+              <span class="tag-green">${escapeHtml(client.badge)}</span>
+            </div>
+            ${client.href ? `<a class="dl-btn" href="${escapeHtml(client.href)}" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>` : ''}
+          </div>
+          <div class="url-copy-box">
+            ${copyButton(baseSubUrl, `لینک ${client.name} کپی شد`)}
+            <div class="url-text">${escapeHtml(baseSubUrl)}</div>
+          </div>
+          ${client.note ? `<div class="client-note">${escapeHtml(client.note)}</div>` : ''}
+        </div>`;
 
   return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -5282,18 +6494,17 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
   <meta charset="UTF-8">
   <meta name="viewport" content="${VIEWPORT_META}">
   <meta name="theme-color" content="${THEME_COLOR_META}">
-  <title>وضعیت اشتراک ${user.username} — ${BRAND_UPPER}</title>
+  <title>وضعیت اشتراک ${userName} — ${BRAND_UPPER}</title>
   <link rel="icon" href="${FAVICON_DATA_URI}">
   <style>
     :root {
-      --bg-0: #070d07;
-      --bg-1: #0c160c;
-      --card: rgba(15, 26, 15, 0.90);
-      --card-inner: rgba(9, 16, 9, 0.92);
-      --border: rgba(163, 230, 53, 0.18);
-      --border-hi: rgba(181, 255, 77, 0.48);
+      --bg-0: #060c06;
+      --card: rgba(14, 25, 14, 0.86);
+      --card-inner: rgba(8, 15, 8, 0.9);
+      --border: rgba(163, 230, 53, 0.16);
+      --border-hi: rgba(181, 255, 77, 0.46);
       --neon: #b5ff4d;
-      --neon-dim: rgba(181, 255, 77, 0.14);
+      --neon-dim: rgba(181, 255, 77, 0.13);
       --text: #f3f8f1;
       --muted: #93a88a;
       --danger: #f87171;
@@ -5303,77 +6514,57 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       min-height: 100vh;
       min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Vazirmatn", Tahoma, sans-serif;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(132, 204, 22, 0.18) 0%, transparent 48%),
-        radial-gradient(circle at 85% 90%, rgba(101, 163, 13, 0.14) 0%, transparent 45%),
-        var(--bg-0);
+      background: radial-gradient(circle at 20% 0%, rgba(132, 204, 22, 0.16) 0%, transparent 50%), var(--bg-0);
       color: var(--text);
-      padding: 18px 14px calc(96px + env(safe-area-inset-bottom, 0px));
-      line-height: 1.6;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(163, 230, 53, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(163, 230, 53, 0.04) 1px, transparent 1px);
-      background-size: 36px 36px;
-      pointer-events: none;
-      z-index: 0;
+      padding: 16px 14px calc(96px + env(safe-area-inset-bottom, 0px));
+      line-height: 1.65;
+      overflow-x: hidden;
     }
     .container {
       position: relative;
       z-index: 1;
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    /* ================= کارت هیرو ================= */
     .status-hero {
       background: var(--card);
       border: 1px solid var(--border-hi);
-      border-radius: 22px;
+      border-radius: 24px;
       padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(14px);
     }
     .hero-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
-    .hero-user {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .hero-logo {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-    }
+    .hero-user { display: flex; align-items: center; gap: 12px; }
+    .hero-logo { width: 50px; height: 50px; flex-shrink: 0; }
     .hero-logo svg { width: 100%; height: 100%; }
-    .hero-name {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--text);
-    }
+    .hero-name { font-size: 1.16rem; font-weight: 900; overflow-wrap: anywhere; }
     .hero-brand {
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       color: var(--neon);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 12px;
+      padding: 6px 13px;
       border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.77rem;
+      font-weight: 800;
       background: var(--neon-dim);
       border: 1px solid var(--border-hi);
       color: var(--neon);
@@ -5383,14 +6574,30 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       border-color: rgba(248, 113, 113, 0.4);
       color: var(--danger);
     }
+
+    /* حلقه مصرف + آمار */
+    .hero-body {
+      display: grid;
+      grid-template-columns: 168px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    @media (max-width: 560px) {
+      .hero-body { grid-template-columns: 1fr; }
+    }
+    .ring-wrap { display: flex; justify-content: center; }
+    .usage-ring {
+      width: 158px;
+      height: 158px;
+      flex-shrink: 0;
+    }
+    .ring-val { font-size: 1.5rem; font-weight: 900; color: #fff; line-height: 1.2; }
+    .ring-cap { font-size: 0.7rem; color: var(--muted); }
+    .ring-sub { font-size: 0.66rem; color: var(--neon); }
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-bottom: 16px;
-    }
-    @media (min-width: 520px) {
-      .stats-grid { grid-template-columns: repeat(4, 1fr); }
     }
     .stat-box {
       background: var(--card-inner);
@@ -5398,18 +6605,11 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       border-radius: 14px;
       padding: 11px 12px;
     }
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .stat-val {
-      font-size: 0.96rem;
-      font-weight: 800;
-      color: var(--text);
-    }
+    .stat-label { font-size: 0.73rem; color: var(--muted); margin-bottom: 3px; }
+    .stat-val { font-size: 0.95rem; font-weight: 800; overflow-wrap: anywhere; }
+
     .url-copy-box {
-      background: #060b06;
+      background: #050a05;
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 10px 12px;
@@ -5417,11 +6617,11 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
     .url-text {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.8rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
       color: #d7e8cf;
       direction: ltr;
       text-align: left;
@@ -5429,52 +6629,48 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       text-overflow: ellipsis;
       white-space: nowrap;
       flex: 1;
+      min-width: 0;
     }
     .copy-btn {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 12px;
-      padding: 9px 16px;
+      padding: 9px 15px;
       cursor: pointer;
-      font-size: 0.84rem;
-      font-weight: 700;
+      font-size: 0.82rem;
+      font-weight: 800;
+      font-family: inherit;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      transition: all 0.18s;
       flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
     }
-    .copy-btn:hover {
-      border-color: var(--neon);
-      color: var(--neon);
-      background: var(--neon-dim);
-    }
+    .copy-btn:hover { border-color: var(--neon); color: var(--neon); background: var(--neon-dim); transform: translate3d(0, -2px, 0); }
+
     .section-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 22px 4px 10px;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text);
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 4px 2px;
+      font-size: 0.94rem;
+      font-weight: 900;
     }
-    .section-head .sub-meta {
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--muted);
-    }
+    .section-head .sub-meta { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+
+    /* ================= آکاردئون با انیمیشن روان ================= */
     .acc-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
-      margin-bottom: 12px;
       overflow: hidden;
-      transition: border-color 0.2s;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
-    .acc-card.open {
-      border-color: var(--border-hi);
-    }
+    .acc-card.open { border-color: var(--border-hi); box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4); }
     .acc-header {
       width: 100%;
       background: transparent;
@@ -5484,51 +6680,38 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       cursor: pointer;
       font-family: inherit;
       text-align: right;
+      transition: background 0.3s ease;
     }
-    .acc-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .acc-title {
-      font-size: 0.96rem;
-      font-weight: 800;
-    }
-    .acc-count {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
+    .acc-header:hover { background: rgba(163, 230, 53, 0.05); }
+    .acc-title-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .acc-title { font-size: 0.95rem; font-weight: 900; }
+    .acc-count { font-size: 0.76rem; color: var(--muted); }
     .acc-arrow {
       font-size: 0.9rem;
       color: var(--muted);
-      transition: transform 0.22s;
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
     }
-    .acc-card.open .acc-arrow {
-      transform: rotate(180deg);
-      color: var(--neon);
-    }
+    .acc-card.open .acc-arrow { transform: rotate(180deg); color: var(--neon); }
     .acc-body {
-      display: none;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease, padding 0.42s ease;
+      padding: 0 18px;
+    }
+    .acc-card.open .acc-body {
+      opacity: 1;
       padding: 0 18px 18px;
       border-top: 1px solid rgba(163, 230, 53, 0.1);
     }
-    .acc-card.open .acc-body {
-      display: block;
-    }
-    .client-desc {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin: 12px 0 14px;
-      line-height: 1.65;
-    }
-    .client-item {
-      padding: 14px 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-    }
+    .acc-body[hidden] { display: none; }
+    .client-desc { font-size: 0.82rem; color: var(--muted); margin: 12px 0 14px; }
+    .client-note { font-size: 0.76rem; color: var(--muted); margin-top: 6px; }
+    .client-item { padding: 14px 0; border-top: 1px solid rgba(255, 255, 255, 0.06); }
     .client-item:first-of-type { border-top: none; }
     .client-top {
       display: flex;
@@ -5538,452 +6721,331 @@ function renderUserStatusPageHtml(user, nodes = [], originUrl = '') {
       flex-wrap: wrap;
       margin-bottom: 8px;
     }
-    .client-name-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .client-name {
-      font-size: 0.98rem;
-      font-weight: 800;
-      color: #fff;
-    }
-    .client-os {
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
+    .client-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .client-name { font-size: 0.96rem; font-weight: 900; color: #fff; overflow-wrap: anywhere; }
+    .client-os { font-size: 0.75rem; color: var(--muted); }
     .tag-green {
       display: inline-block;
       padding: 3px 10px;
       border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.72rem;
+      font-weight: 800;
       color: var(--neon);
       background: rgba(163, 230, 53, 0.12);
-      border: 1px solid rgba(163, 230, 53, 0.35);
+      border: 1px solid rgba(163, 230, 53, 0.34);
     }
     .dl-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 7px 12px;
       border-radius: 11px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text);
       text-decoration: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      transition: all 0.2s;
+      font-size: 0.77rem;
+      font-weight: 700;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, color 0.3s ease;
     }
-    .dl-btn:hover {
-      border-color: var(--neon);
+    .dl-btn:hover { border-color: var(--neon); color: var(--neon); transform: translate3d(0, -2px, 0); }
+
+    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: 10px; margin-top: 12px; }
+    .loc-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .loc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .loc-name { font-size: 0.85rem; font-weight: 800; }
+    .loc-code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.7rem;
       color: var(--neon);
+      background: rgba(163, 230, 53, 0.1);
+      border: 1px solid var(--border-hi);
+      border-radius: 999px;
+      padding: 1px 8px;
     }
+
+    .search-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .search-input {
+      flex: 1 1 190px;
+      min-width: 0;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .search-input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(181, 255, 77, 0.12); }
     .node-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
+      padding: 11px 12px;
+      border-radius: 13px;
       background: var(--card-inner);
       border: 1px solid var(--border);
       margin-top: 8px;
+      transition: border-color 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
+    .node-row:hover { border-color: var(--border-hi); transform: translate3d(0, -2px, 0); }
     .node-tag {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.86rem;
-      font-weight: 700;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85rem;
+      font-weight: 800;
       color: var(--neon);
       direction: ltr;
+      overflow-wrap: anywhere;
     }
-    .node-proto {
-      font-size: 0.74rem;
-      color: var(--muted);
-    }
+    .node-proto { font-size: 0.73rem; color: var(--muted); }
+    .empty-note { padding: 16px 4px; color: var(--muted); font-size: 0.84rem; text-align: center; }
+
     .fab-refresh {
       position: fixed;
-      bottom: 22px;
-      left: 22px;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: calc(20px + env(safe-area-inset-left, 0px));
       width: 54px;
       height: 54px;
       border-radius: 50%;
-      background: #060a06;
+      background: rgba(6, 12, 6, 0.94);
       border: 1px solid var(--border-hi);
       color: var(--text);
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       cursor: pointer;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 50;
-      transition: all 0.2s;
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease, border-color 0.3s ease;
     }
-    .fab-refresh:hover {
-      color: var(--neon);
-      transform: rotate(90deg);
-    }
-    .toast {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #112211;
-      border: 1px solid var(--neon);
-      color: var(--neon);
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      z-index: 100;
-      display: none;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-    }
+    .fab-refresh:hover { color: var(--neon); transform: rotate(120deg); }
 
-    /* ==================
-       بهینه‌سازی رابط برای گوشی همراه و ویندوز
-       ================== */
     .page-foot {
       position: relative;
       z-index: 1;
-      max-width: 680px;
-      margin: 18px auto 0;
-      padding: 14px 16px;
-      border-radius: 16px;
+      margin-top: 4px;
+      padding: 15px 16px;
+      border-radius: 18px;
       background: var(--card);
       border: 1px dashed var(--border-hi);
       font-size: 0.82rem;
       color: var(--muted);
       text-align: center;
-      line-height: 2;
       overflow-wrap: anywhere;
     }
-    .page-foot a {
-      color: var(--neon);
-      font-weight: 800;
-      text-decoration: none;
-    }
+    .page-foot a { color: var(--neon); font-weight: 800; text-decoration: none; }
     .page-foot a:hover { text-decoration: underline; }
+
     @media (max-width: 620px) {
       body { padding: 12px 10px calc(92px + env(safe-area-inset-bottom, 0px)); }
-      .status-hero { padding: 16px; border-radius: 18px; }
-      .hero-name { font-size: 1.05rem; }
-      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .status-hero { padding: 16px; border-radius: 20px; }
       .acc-header { padding: 14px; }
-      .acc-body { padding: 0 14px 16px; }
+      .acc-body, .acc-card.open .acc-body { padding-left: 14px; padding-right: 14px; }
       .url-copy-box { flex-wrap: wrap; }
-      .url-text {
-        flex: 1 1 100%;
-        white-space: normal;
-        text-overflow: clip;
-        overflow-wrap: anywhere;
-        font-size: 0.74rem;
-      }
-      .url-copy-box .copy-btn { flex: 1 1 100%; justify-content: center; }
-      .client-top { align-items: flex-start; }
+      .url-text { flex: 1 1 100%; white-space: normal; overflow-wrap: anywhere; font-size: 0.73rem; }
+      .url-copy-box .copy-btn { flex: 1 1 100%; }
       .node-row { flex-wrap: wrap; }
-      .node-row .copy-btn { flex: 1 1 100%; justify-content: center; }
-      .fab-refresh { width: 48px; height: 48px; font-size: 1.05rem; }
+      .node-row .copy-btn { flex: 1 1 100%; }
+      .fab-refresh { width: 48px; height: 48px; font-size: 1.02rem; }
     }
+${FX_CSS}
 ${BASE_UI_CSS}
   </style>
 </head>
 <body>
-  <div id="toast" class="toast"></div>
+  ${FX_MARKUP}
 
   <div class="container">
     <!-- کارت اصلی وضعیت کاربر -->
-    <div class="status-hero">
+    <section class="status-hero fx-card fx-shine fx-fade" style="--fx-i:0">
       <div class="hero-top">
         <div class="hero-user">
-          <div class="hero-logo">${SHIELD_LOGO_SVG}</div>
+          <div class="hero-logo fx-float">${SHIELD_LOGO_SVG}</div>
           <div>
-            <div class="hero-name">${user.username}</div>
-            <div class="hero-brand">${BRAND_UPPER} SUBSCRIPTION PORTAL</div>
+            <div class="hero-name">${userName}</div>
+            <div class="hero-brand">${BRAND_UPPER} Subscription Portal</div>
           </div>
         </div>
-        <span class="pill ${user.enabled ? '' : 'pill-off'}">
-          ● ${user.enabled ? (user.startOnFirstUse && !user.firstConnectedAt ? 'شروع با اولین اتصال' : 'فعال و آنلاین') : 'غیرفعال'}
+        <span class="pill ${isActive ? '' : 'pill-off'}">
+          <span class="live-dot fx-live-dot" style="background:currentColor;box-shadow:none;width:7px;height:7px;border-radius:50%;"></span>
+          ${escapeHtml(statusText)}
         </span>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-label">مصرف فعلی</div>
-          <div class="stat-val">${formatBytes(usedBytes)}</div>
+      <div class="hero-body">
+        <div class="ring-wrap">
+          <div class="usage-ring fx-ring fx-ring-pulse" id="usageRing" style="--fx-p:0">
+            <div class="fx-ring-inner">
+              <div class="ring-val" id="ringPercent">${limitBytes > 0 ? usagePercent + '%' : '∞'}</div>
+              <div class="ring-cap">مصرف سهمیه</div>
+              <div class="ring-sub">${limitBytes > 0 ? escapeHtml(formatBytes(remainingBytes)) + ' باقی‌مانده' : 'نامحدود'}</div>
+            </div>
+          </div>
         </div>
-        <div class="stat-box">
-          <div class="stat-label">سهمیه حجم</div>
-          <div class="stat-val">${limitGb > 0 ? `${limitGb} GB (${usagePercent}%)` : '∞ نامحدود'}</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">تعداد نود در ساب</div>
-          <div class="stat-val">${totalNodes} نود (${BRAND_NAME})</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">وضعیت انقضا</div>
-          <div class="stat-val">${expireLabel}</div>
+
+        <div class="stats-grid">
+          <div class="stat-box fx-card">
+            <div class="stat-label">مصرف فعلی</div>
+            <div class="stat-val" id="statUsed">${escapeHtml(formatBytes(usedBytes))}</div>
+          </div>
+          <div class="stat-box fx-card">
+            <div class="stat-label">سهمیه حجم</div>
+            <div class="stat-val">${limitGb > 0 ? `${escapeHtml(String(limitGb))} GB` : '∞ نامحدود'}</div>
+          </div>
+          <div class="stat-box fx-card">
+            <div class="stat-label">تعداد نود در ساب</div>
+            <div class="stat-val" id="statNodes" data-count-to="${totalNodes}">0</div>
+          </div>
+          <div class="stat-box fx-card">
+            <div class="stat-label">وضعیت انقضا</div>
+            <div class="stat-val">${escapeHtml(expireLabel)}</div>
+          </div>
+          <div class="stat-box fx-card">
+            <div class="stat-label">عمر کل مصرف</div>
+            <div class="stat-val" id="statLifetime">${escapeHtml(formatBytes(lifetimeBytes))}</div>
+          </div>
+          <div class="stat-box fx-card">
+            <div class="stat-label">درخواست‌های ثبت‌شده</div>
+            <div class="stat-val" id="statReqs" data-count-to="${Number(user.requestCount || 0)}">0</div>
+          </div>
         </div>
       </div>
 
-      <div style="font-size:0.8rem;color:var(--muted);margin-bottom:4px;">لینک مستقیم صفحه وضعیت و اشتراک شما:</div>
+      <div class="stat-label" style="margin-top:14px;">لینک شخصی صفحه وضعیت شما:</div>
       <div class="url-copy-box">
-        <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک اشتراک هوشمند کپی شد')">📋 کپی ساب‌لینک</button>
-        <div class="url-text">${baseSubUrl}</div>
+        ${copyButton(statusUrl, 'لینک صفحه وضعیت کپی شد', '🔗 کپی لینک وضعیت')}
+        <div class="url-text">${escapeHtml(statusUrl)}</div>
       </div>
-    </div>
-
-    <!-- محدوده نودها -->
-    <div class="section-head">
-      <span>🌐 محدودهٔ نودها</span>
-      <span class="sub-meta">همه نودها (${totalNodes} نود با فرمت number+${BRAND_NAME})</span>
-    </div>
-    <div class="acc-card" id="accScope">
-      <button type="button" class="acc-header" onclick="toggleAcc('accScope')">
-        <div class="acc-title-wrap">
-          <span class="acc-title">فقط بخشی از نودها را می‌خواهید؟</span>
-          <span class="acc-count">4 گزینه · ${totalNodes} نود در کل</span>
-        </div>
-        <span class="acc-arrow">⌄</span>
-      </button>
-      <div class="acc-body">
-        <p class="client-desc">می‌توانید تعداد نودهای خروجی یا محدوده نودها را در لینک اشتراک خود فیلتر کنید:</p>
-        <div class="client-item">
-          <div class="client-top">
-            <span class="client-name">همه نودهای کاربر (${totalNodes} نود)</span>
-            <span class="tag-green">پیش‌فرض کاربر</span>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-        </div>
-        <div class="client-item">
-          <div class="client-top">
-            <span class="client-name">۱۰ نود اول (1+${BRAND_NAME} تا 10+${BRAND_NAME})</span>
-            <span class="tag-green">سبک و سریع</span>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?limit=10', 'کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?limit=10</div>
-          </div>
-        </div>
-        <div class="client-item">
-          <div class="client-top">
-            <span class="client-name">فقط نودهای لبه CDN</span>
-            <span class="tag-green">Multi-Location</span>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?scope=edge', 'کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?scope=edge</div>
-          </div>
-        </div>
-        <div class="client-item">
-          <div class="client-top">
-            <span class="client-name">فقط سرور اصلی (بدون CDN)</span>
-            <span class="tag-green">Direct Origin</span>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?scope=origin', 'کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?scope=origin</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- لوکیشن‌ها -->
-    <div class="section-head">
-      <span>🌐 لوکیشن‌ها</span>
-      <span class="sub-meta">هر کشور یک سابلینک جدا</span>
-    </div>
-    <div class="acc-card" id="accLocations">
-      <button type="button" class="acc-header" onclick="toggleAcc('accLocations')">
-        <div class="acc-title-wrap">
-          <span class="acc-title">سابلینک لوکیشن‌محور</span>
-          <span class="acc-count">${locationsList.length} لوکیشن</span>
-        </div>
-        <span class="acc-arrow">⌄</span>
-      </button>
-      <div class="acc-body">
-        <p class="client-desc">با استفاده از هر لینک، مسیر خروجی روی همان منطقه تنظیم می‌شود:</p>
-        ${locationsList
-          .map(
-            loc => `
-          <div class="client-item">
-            <div class="client-top">
-              <span class="client-name">${loc.title}</span>
-              <span class="tag-green">${loc.code}</span>
-            </div>
-            <div class="url-copy-box">
-              <button type="button" class="copy-btn" onclick="copyText('${loc.url}', 'لینک لوکیشن ${loc.code} کپی شد')">📋</button>
-              <div class="url-text">${loc.url}</div>
-            </div>
-          </div>`
-          )
-          .join('')}
-      </div>
-    </div>
-
-    <!-- سابلینک اختصاصی هر کلاینت -->
-    <div class="section-head">
-      <span>🛡️ سابلینک اختصاصی هر کلاینت</span>
-      <span class="sub-meta">16 کلاینت در 5 خانواده</span>
-    </div>
+    </section>
 
     <!-- شروع سریع -->
-    <div class="acc-card open" id="accQuickStart">
-      <button type="button" class="acc-header" onclick="toggleAcc('accQuickStart')">
+    <div class="section-head">
+      <span>🚀 شروع سریع</span>
+      <span class="sub-meta">یک لینک برای همه کلاینت‌ها</span>
+    </div>
+    <div class="acc-card open fx-card fx-reveal" id="accQuickStart" style="--fx-i:0">
+      <button type="button" class="acc-header" onclick="toggleAcc('accQuickStart')" aria-expanded="true">
         <div class="acc-title-wrap">
-          <span class="acc-title">شروع سریع</span>
-          <span class="acc-count">1 کلاینت</span>
+          <span class="acc-title">اتصال هوشمند (ساب‌لینک اصلی)</span>
+          <span class="acc-count">1 لینک</span>
           <span class="tag-green">پیشنهادی</span>
         </div>
         <span class="acc-arrow">⌄</span>
       </button>
       <div class="acc-body">
-        <p class="client-desc">یک لینک برای همه‌چیز؛ سریع‌ترین نود بر اساس پینگ، مناسب هر کلاینتی.</p>
-        <div class="client-top">
-          <div class="client-name-row">
-            <span class="client-name">اتصال هوشمند</span>
-            <span class="client-os">همه پلتفرم‌ها</span>
-          </div>
-          <span class="tag-green">اتصال هوشمند (همه نودها × همه پروتکل‌ها)</span>
-        </div>
+        <p class="client-desc">سریع‌ترین نود بر اساس پینگ واقعی، مناسب هر کلاینتی؛ کافی است همین لینک را در کلاینت وارد کنید.</p>
         <div class="url-copy-box">
-          <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'سابلینک هوشمند کپی شد')">📋</button>
-          <div class="url-text">${baseSubUrl}</div>
+          ${copyButton(baseSubUrl, 'ساب‌لینک هوشمند کپی شد')}
+          <div class="url-text">${escapeHtml(baseSubUrl)}</div>
         </div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:8px;">سریع‌ترین نود بر اساس پینگ واقعی؛ مناسب شروع سریع.</div>
+        <div class="search-row">
+          <button type="button" class="copy-btn" data-copy="${escapeHtml(baseSubUrl + '?target=clash')}" data-copy-msg="لینک Clash کپی شد">🟣 Clash</button>
+          <button type="button" class="copy-btn" data-copy="${escapeHtml(baseSubUrl + '?target=singbox')}" data-copy-msg="لینک Sing-box کپی شد">🟢 Sing-box</button>
+          <button type="button" class="copy-btn" data-copy="${escapeHtml(baseSubUrl + '?target=raw')}" data-copy-msg="لینک متن خام کپی شد">📄 متن خام</button>
+        </div>
       </div>
     </div>
 
-    <!-- خانواده 1: Xray / Base64 -->
-    <div class="acc-card open" id="accXray">
-      <button type="button" class="acc-header" onclick="toggleAcc('accXray')">
+    <!-- محدوده نودها -->
+    <div class="section-head">
+      <span>🎯 محدوده نودها</span>
+      <span class="sub-meta">${totalNodes} نود با فرمت number+${BRAND_NAME}</span>
+    </div>
+    <div class="acc-card fx-card fx-reveal" id="accScope" style="--fx-i:1">
+      <button type="button" class="acc-header" onclick="toggleAcc('accScope')" aria-expanded="false">
         <div class="acc-title-wrap">
-          <span class="acc-title">خانواده Xray / متن ساده — Base64</span>
-          <span class="acc-count">7 کلاینت</span>
+          <span class="acc-title">فقط بخشی از نودها را می‌خواهید؟</span>
+          <span class="acc-count">${scopeOptions.length} گزینه · ${totalNodes} نود در کل</span>
         </div>
         <span class="acc-arrow">⌄</span>
       </button>
       <div class="acc-body">
-        <p class="client-desc">v2rayNG، Exclusive، Amnezia، Streisand، Shadowrocket، V2Box و FoXray سابلینک Base64 (یا متن ساده) می‌خوانند.</p>
-
-        <div class="client-item">
+        <p class="client-desc">با پارامترهای لینک، تعداد نودها یا محدوده خروجی را دقیقاً همان‌طور که می‌خواهید بگیرید:</p>
+        ${scopeOptions
+          .map(
+            (option, i) => `
+        <div class="client-item fx-reveal" style="--fx-i:${i}">
           <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">v2rayNG</span>
-              <span class="client-os">Android</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://github.com/2dust/v2rayNG/releases" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
+            <span class="client-name">${escapeHtml(option.title)}</span>
+            <span class="tag-green">${escapeHtml(option.badge)}</span>
           </div>
           <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک v2rayNG کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
+            ${copyButton(option.url, 'کپی شد')}
+            <div class="url-text">${escapeHtml(option.url)}</div>
           </div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:6px;">پرکاربردترین کلاینت اندروید؛ فرگمنت، sni و vless را کامل پشتیبانی می‌کند.</div>
+        </div>`
+          )
+          .join('')}
+      </div>
+    </div>
+
+    <!-- لوکیشن‌ها -->
+    <div class="section-head">
+      <span>🌍 لوکیشن‌ها</span>
+      <span class="sub-meta">هر کشور، یک ساب‌لینک جدا</span>
+    </div>
+    <div class="acc-card fx-card fx-reveal" id="accLocations" style="--fx-i:2">
+      <button type="button" class="acc-header" onclick="toggleAcc('accLocations')" aria-expanded="false">
+        <div class="acc-title-wrap">
+          <span class="acc-title">ساب‌لینک لوکیشن‌محور</span>
+          <span class="acc-count">${locationsList.length} لوکیشن</span>
         </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">Exclusive</span>
-              <span class="client-os">Android</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
+        <span class="acc-arrow">⌄</span>
+      </button>
+      <div class="acc-body">
+        <p class="client-desc">مسیر خروجی روی همان منطقه تنظیم می‌شود (مناسب تست پینگ و انتخاب سریع‌ترین مسیر):</p>
+        <div class="loc-grid">
+          ${locationsList
+            .map(
+              (loc, i) => `
+          <div class="loc-card fx-card fx-reveal" style="--fx-i:${Math.min(i, 6)}">
+            <div class="loc-top">
+              <span class="loc-name">${escapeHtml(loc.title)}</span>
+              <span class="loc-code">${escapeHtml(loc.code)}</span>
             </div>
-            <a class="dl-btn" href="https://github.com/GFW-knocker/MahsaNG/releases" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک Exclusive کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:6px;">کلاینت اندروید؛ از سابلینک استاندارد Base64 استفاده می‌کند.</div>
-        </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">Amnezia VPN</span>
-              <span class="client-os">Android · iOS · دسکتاپ</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://amnezia.org/en/downloads" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک Amnezia کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-        </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">Streisand</span>
-              <span class="client-os">iOS · macOS</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://apps.apple.com/app/streisand/id6450534064" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک Streisand کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-        </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">Shadowrocket</span>
-              <span class="client-os">iOS</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://apps.apple.com/app/shadowrocket/id932747118" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک Shadowrocket کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-        </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">V2Box</span>
-              <span class="client-os">Android · iOS</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://apps.apple.com/app/v2box-v2ray-client/id6446814690" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک V2Box کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
-        </div>
-
-        <div class="client-item">
-          <div class="client-top">
-            <div class="client-name-row">
-              <span class="client-name">v2rayN / Nekoray</span>
-              <span class="client-os">Windows · Linux · macOS</span>
-              <span class="tag-green">Base64 (V2Ray)</span>
-            </div>
-            <a class="dl-btn" href="https://github.com/2dust/v2rayN/releases" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
-          </div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}', 'لینک v2rayN کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}</div>
-          </div>
+            ${copyButton(loc.url, `لینک لوکیشن ${loc.code} کپی شد`, '📋 کپی لینک')}
+          </div>`
+            )
+            .join('')}
         </div>
       </div>
     </div>
 
-    <!-- خانواده 2: sing-box — JSON -->
-    <div class="acc-card" id="accSingbox">
-      <button type="button" class="acc-header" onclick="toggleAcc('accSingbox')">
+    <!-- خانواده ۱: Xray / Base64 -->
+    <div class="section-head">
+      <span>🛡️ ساب‌لینک اختصاصی هر کلاینت</span>
+      <span class="sub-meta">16 کلاینت در 5 خانواده</span>
+    </div>
+
+    <div class="acc-card open fx-card fx-reveal" id="accXray" style="--fx-i:3">
+      <button type="button" class="acc-header" onclick="toggleAcc('accXray')" aria-expanded="true">
+        <div class="acc-title-wrap">
+          <span class="acc-title">خانواده Xray / متن ساده — Base64</span>
+          <span class="acc-count">${xrayClients.length} کلاینت</span>
+        </div>
+        <span class="acc-arrow">⌄</span>
+      </button>
+      <div class="acc-body">
+        <p class="client-desc">v2rayNG، Exclusive، Amnezia، Streisand، Shadowrocket، V2Box و FoXray ساب‌لینک Base64 (یا متن ساده) می‌خوانند.</p>
+        ${xrayClients.map((client, idx) => clientRow(client, idx)).join('')}
+      </div>
+    </div>
+
+    <!-- خانواده ۲: sing-box -->
+    <div class="acc-card fx-card fx-reveal" id="accSingbox" style="--fx-i:4">
+      <button type="button" class="acc-header" onclick="toggleAcc('accSingbox')" aria-expanded="false">
         <div class="acc-title-wrap">
           <span class="acc-title">خانواده sing-box — JSON</span>
           <span class="acc-count">5 کلاینت</span>
@@ -6002,16 +7064,16 @@ ${BASE_UI_CSS}
             <a class="dl-btn" href="https://github.com/hiddify/hiddify-app/releases" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
           </div>
           <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=singbox', 'لینک Sing-box کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=singbox</div>
+            ${copyButton(`${baseSubUrl}?target=singbox`, 'لینک Sing-box کپی شد')}
+            <div class="url-text">${escapeHtml(`${baseSubUrl}?target=singbox`)}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- خانواده 3: Clash / Mihomo — فقط YAML -->
-    <div class="acc-card" id="accClash">
-      <button type="button" class="acc-header" onclick="toggleAcc('accClash')">
+    <!-- خانواده ۳: Clash / Mihomo -->
+    <div class="acc-card fx-card fx-reveal" id="accClash" style="--fx-i:5">
+      <button type="button" class="acc-header" onclick="toggleAcc('accClash')" aria-expanded="false">
         <div class="acc-title-wrap">
           <span class="acc-title">خانواده Clash / Mihomo — فقط YAML</span>
           <span class="acc-count">2 کلاینت</span>
@@ -6030,8 +7092,8 @@ ${BASE_UI_CSS}
             <a class="dl-btn" href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank" rel="noopener">⬇ دانلود کلاینت</a>
           </div>
           <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=clash', 'لینک Clash کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=clash</div>
+            ${copyButton(`${baseSubUrl}?target=clash`, 'لینک Clash کپی شد')}
+            <div class="url-text">${escapeHtml(`${baseSubUrl}?target=clash`)}</div>
           </div>
         </div>
         ${
@@ -6045,8 +7107,8 @@ ${BASE_UI_CSS}
             </div>
           </div>
           <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=vg', 'لینک CLASH خانگی کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=vg</div>
+            ${copyButton(`${baseSubUrl}?target=vg`, 'لینک CLASH خانگی کپی شد')}
+            <div class="url-text">${escapeHtml(`${baseSubUrl}?target=vg`)}</div>
           </div>
         </div>`
             : ''
@@ -6054,9 +7116,9 @@ ${BASE_UI_CSS}
       </div>
     </div>
 
-    <!-- خانواده 4: هسته‌ها و ابزارها -->
-    <div class="acc-card" id="accTools">
-      <button type="button" class="acc-header" onclick="toggleAcc('accTools')">
+    <!-- خانواده ۴: هسته‌ها و ابزارها -->
+    <div class="acc-card fx-card fx-reveal" id="accTools" style="--fx-i:6">
+      <button type="button" class="acc-header" onclick="toggleAcc('accTools')" aria-expanded="false">
         <div class="acc-title-wrap">
           <span class="acc-title">هسته‌ها و ابزارها (Surge / QuanX / Loon)</span>
           <span class="acc-count">3 کلاینت</span>
@@ -6064,37 +7126,32 @@ ${BASE_UI_CSS}
         <span class="acc-arrow">⌄</span>
       </button>
       <div class="acc-body">
-        <div class="client-item">
-          <div class="client-top"><span class="client-name">Surge</span><span class="tag-green">INI</span></div>
+        ${[
+          { name: 'Surge', badge: 'INI', target: 'surge' },
+          { name: 'Quantumult X', badge: 'QuanX', target: 'quanx' },
+          { name: 'Loon', badge: 'Loon', target: 'loon' }
+        ]
+          .map(
+            (tool, i) => `
+        <div class="client-item fx-reveal" style="--fx-i:${i}">
+          <div class="client-top"><span class="client-name">${escapeHtml(tool.name)}</span><span class="tag-green">${escapeHtml(tool.badge)}</span></div>
           <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=surge', 'لینک Surge کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=surge</div>
+            ${copyButton(`${baseSubUrl}?target=${tool.target}`, `لینک ${tool.name} کپی شد`)}
+            <div class="url-text">${escapeHtml(`${baseSubUrl}?target=${tool.target}`)}</div>
           </div>
-        </div>
-        <div class="client-item">
-          <div class="client-top"><span class="client-name">Quantumult X</span><span class="tag-green">QuanX</span></div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=quanx', 'لینک Quantumult X کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=quanx</div>
-          </div>
-        </div>
-        <div class="client-item">
-          <div class="client-top"><span class="client-name">Loon</span><span class="tag-green">Loon</span></div>
-          <div class="url-copy-box">
-            <button type="button" class="copy-btn" onclick="copyText('${baseSubUrl}?target=loon', 'لینک Loon کپی شد')">📋</button>
-            <div class="url-text">${baseSubUrl}?target=loon</div>
-          </div>
-        </div>
+        </div>`
+          )
+          .join('')}
       </div>
     </div>
 
-    <!-- سابلینک به تفکیک پروتکل و ترنسپورت -->
+    <!-- ساب‌لینک به تفکیک پروتکل -->
     <div class="section-head">
-      <span>🔗 سابلینک به تفکیک پروتکل و ترنسپورت</span>
+      <span>🔗 ساب‌لینک به تفکیک پروتکل و ترنسپورت</span>
       <span class="sub-meta">${protoCombos.length} ترکیب</span>
     </div>
-    <div class="acc-card" id="accCombos">
-      <button type="button" class="acc-header" onclick="toggleAcc('accCombos')">
+    <div class="acc-card fx-card fx-reveal" id="accCombos" style="--fx-i:7">
+      <button type="button" class="acc-header" onclick="toggleAcc('accCombos')" aria-expanded="false">
         <div class="acc-title-wrap">
           <span class="acc-title">لیست ترکیب‌های نود × پروتکل</span>
           <span class="acc-count">${protoCombos.length} لینک</span>
@@ -6104,29 +7161,29 @@ ${BASE_UI_CSS}
       <div class="acc-body">
         ${protoCombos
           .map(
-            c => `
-          <div class="client-item">
-            <div class="client-top">
-              <span class="client-name">${c.title}</span>
-              <span class="tag-green">${c.badge}</span>
-            </div>
-            <div class="url-copy-box">
-              <button type="button" class="copy-btn" onclick="copyText('${c.url}', 'کپی شد')">📋</button>
-              <div class="url-text">${c.url}</div>
-            </div>
-          </div>`
+            (combo, i) => `
+        <div class="client-item fx-reveal" style="--fx-i:${Math.min(i, 7)}">
+          <div class="client-top">
+            <span class="client-name">${escapeHtml(combo.title)}</span>
+            <span class="tag-green">${escapeHtml(combo.badge)}</span>
+          </div>
+          <div class="url-copy-box">
+            ${copyButton(combo.url, 'کپی شد')}
+            <div class="url-text">${escapeHtml(combo.url)}</div>
+          </div>
+        </div>`
           )
           .join('')}
       </div>
     </div>
 
-    <!-- لیست تکی نودهای خروجی با فرمت number+miliconfig -->
+    <!-- لیست کانفیگ‌های خروجی -->
     <div class="section-head">
       <span>⚡ نودها</span>
-      <span class="sub-meta">${totalNodes} از ${totalNodes} آنلاین · نام‌گذاری number+${BRAND_NAME}</span>
+      <span class="sub-meta">${totalNodes} نود · نام‌گذاری number+${BRAND_NAME}</span>
     </div>
-    <div class="acc-card open" id="accNodes">
-      <button type="button" class="acc-header" onclick="toggleAcc('accNodes')">
+    <div class="acc-card open fx-card fx-reveal" id="accNodes" style="--fx-i:8">
+      <button type="button" class="acc-header" onclick="toggleAcc('accNodes')" aria-expanded="true">
         <div class="acc-title-wrap">
           <span class="acc-title">لیست کانفیگ‌های خروجی (1+${BRAND_NAME} تا ${totalNodes}+${BRAND_NAME})</span>
           <span class="acc-count">${totalNodes} کانفیگ</span>
@@ -6134,51 +7191,44 @@ ${BASE_UI_CSS}
         <span class="acc-arrow">⌄</span>
       </button>
       <div class="acc-body">
-        <div style="margin:12px 0;">
-          <button type="button" class="copy-btn" style="width:100%;justify-content:center;" onclick="copyAllNodes()">
-            📋 کپی یکجای همه ${totalNodes} کانفیگ (1+${BRAND_NAME} تا ${totalNodes}+${BRAND_NAME})
-          </button>
+        <div class="search-row">
+          <input type="search" id="nodeSearch" class="search-input" placeholder="🔍 جستجوی نام یا پروتکل نود…" autocomplete="off" oninput="renderNodes()">
+          <button type="button" class="copy-btn" id="copyAllBtn" style="flex:0 0 auto;">📋 کپی همه (${totalNodes})</button>
         </div>
         <div id="nodesContainer"></div>
+        <div class="search-row" id="nodesMoreRow" hidden>
+          <button type="button" class="copy-btn" style="flex:1 1 100%;" onclick="showMoreNodes()">نمایش نودهای بیشتر</button>
+        </div>
+        <div class="empty-note" id="nodesEmpty" hidden>نودی با این جستجو پیدا نشد.</div>
       </div>
     </div>
   </div>
 
-  <div class="page-foot">
+  <div class="page-foot fx-reveal">
     ❓ سؤال یا مشکلی دارید؟ پشتیبانی ${BRAND_NAME} در ${SUPPORT_CHANNEL_LABEL} پاسخگوی شماست:
     <a href="${SUPPORT_CHANNEL_URL}" target="_blank" rel="noopener noreferrer">${SUPPORT_CHANNEL_URL}</a>
   </div>
 
-  <button type="button" class="fab-refresh" onclick="window.location.reload()" title="بروزرسانی وضعیت">⇄</button>
+  <button type="button" class="fab-refresh" onclick="window.location.reload()" title="بروزرسانی وضعیت" aria-label="بروزرسانی وضعیت">⇄</button>
 
   <script>
+${FX_RUNTIME_JS}
+  </script>
+  <script>
     var ALL_NODES = ${safeNodesJson};
+    var NODE_PAGE_SIZE = 30;
+    var NODES_SHOWN = NODE_PAGE_SIZE;
+
+    function esc(v) {
+      return window.MiliFx ? MiliFx.esc(v) : String(v == null ? '' : v);
+    }
 
     function showToast(msg) {
-      var t = document.getElementById('toast');
-      if (!t) return;
-      t.textContent = msg;
-      t.style.display = 'block';
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(function() {
-        t.style.display = 'none';
-      }, 2500);
+      if (window.MiliFx) MiliFx.toast(msg);
     }
 
     function copyText(text, msg) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-          showToast(msg || 'کپی شد');
-        });
-      } else {
-        var ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast(msg || 'کپی شد');
-      }
+      if (window.MiliFx) MiliFx.copy(text, msg);
     }
 
     function copyAllNodes() {
@@ -6187,33 +7237,136 @@ ${BASE_UI_CSS}
 
     function toggleAcc(id) {
       var el = document.getElementById(id);
-      if (el) el.classList.toggle('open');
+      if (!el) return;
+      var isOpen = el.classList.contains('open');
+      setAccOpen(el, !isOpen);
+    }
+
+    function setAccOpen(el, open) {
+      var body = el.querySelector('.acc-body');
+      var header = el.querySelector('.acc-header');
+      if (!body) return;
+      if (open) {
+        el.classList.add('open');
+        body.hidden = false;
+        body.style.maxHeight = body.scrollHeight + 40 + 'px';
+        window.setTimeout(function () {
+          if (el.classList.contains('open')) body.style.maxHeight = 'none';
+        }, 560);
+      } else {
+        if (body.style.maxHeight === 'none') body.style.maxHeight = body.scrollHeight + 'px';
+        void body.offsetHeight;
+        el.classList.remove('open');
+        body.style.maxHeight = '0px';
+        body.hidden = true;
+      }
+      if (header) header.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (window.MiliFx && open) MiliFx.reveal(el);
+    }
+
+    function initAccordions() {
+      document.querySelectorAll('.acc-card').forEach(function (el) {
+        var body = el.querySelector('.acc-body');
+        if (!body) return;
+        if (el.classList.contains('open')) {
+          body.hidden = false;
+          body.style.maxHeight = 'none';
+        } else {
+          body.hidden = true;
+          body.style.maxHeight = '0px';
+        }
+      });
+    }
+
+    function nodeLabel(link, index) {
+      var hashIdx = link.indexOf('#');
+      var name = hashIdx > -1 ? decodeURIComponent(link.substring(hashIdx + 1)) : ((index + 1) + '+${BRAND_NAME}');
+      var proto = String(link.split('://')[0] || '').toUpperCase();
+      return { name: name, proto: proto || 'VLINK' };
+    }
+
+    function filteredNodes() {
+      var query = '';
+      var input = document.getElementById('nodeSearch');
+      if (input) query = String(input.value || '').trim().toLowerCase();
+      var out = [];
+      for (var i = 0; i < ALL_NODES.length; i++) {
+        var meta = nodeLabel(ALL_NODES[i], i);
+        if (query && meta.name.toLowerCase().indexOf(query) === -1 && meta.proto.toLowerCase().indexOf(query) === -1) continue;
+        out.push({ link: ALL_NODES[i], index: i, name: meta.name, proto: meta.proto });
+      }
+      return out;
     }
 
     function renderNodes() {
       var container = document.getElementById('nodesContainer');
       if (!container) return;
-      var html = '';
-      for (var i = 0; i < ALL_NODES.length; i++) {
-        var link = ALL_NODES[i];
-        var hashIdx = link.indexOf('#');
-        var name = hashIdx > -1 ? decodeURIComponent(link.substring(hashIdx + 1)) : ((i + 1) + '+${BRAND_NAME}');
-        var proto = link.split('://')[0].toUpperCase();
-        html += '<div class="node-row">' +
-          '<div><div class="node-tag">' + name + '</div><div class="node-proto">' + proto + ' · Cloudflare Edge</div></div>' +
-          '<button type="button" class="copy-btn" onclick="copyNodeByIndex(' + i + ')">📋 کپی کانفیگ</button>' +
-          '</div>';
-      }
-      container.innerHTML = html;
+      var list = filteredNodes();
+      var slice = list.slice(0, NODES_SHOWN);
+      var empty = document.getElementById('nodesEmpty');
+      var moreRow = document.getElementById('nodesMoreRow');
+      var copyAllBtn = document.getElementById('copyAllBtn');
+
+      container.innerHTML = slice
+        .map(function (item) {
+          return '<div class="node-row">' +
+            '<div><div class="node-tag">' + esc(item.name) + '</div><div class="node-proto">' + esc(item.proto) + ' · Cloudflare Edge</div></div>' +
+            '<button type="button" class="copy-btn" data-copy="' + esc(item.link) + '" data-copy-msg="کانفیگ ' + esc(item.name) + ' کپی شد">📋 کپی کانفیگ</button>' +
+            '</div>';
+        })
+        .join('');
+
+      if (empty) empty.hidden = list.length !== 0;
+      if (moreRow) moreRow.hidden = list.length <= NODES_SHOWN;
+      if (copyAllBtn) copyAllBtn.textContent = '📋 کپی همه (' + list.length + ')';
+      if (window.MiliFx) MiliFx.reveal(container);
     }
 
-    function copyNodeByIndex(idx) {
-      var link = ALL_NODES[idx];
-      if (!link) return;
-      copyText(link, 'کانفیگ ' + (idx + 1) + '+${BRAND_NAME} کپی شد');
+    function showMoreNodes() {
+      NODES_SHOWN += NODE_PAGE_SIZE;
+      renderNodes();
     }
 
+    // کپی با واگذاری رویداد (بدون inline onclick و بدون خطای کوتیشن در لینک‌ها)
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest ? event.target.closest('[data-copy]') : null;
+      if (!btn) return;
+      event.preventDefault();
+      copyText(btn.getAttribute('data-copy'), btn.getAttribute('data-copy-msg') || 'کپی شد');
+    });
+    document.getElementById('copyAllBtn').addEventListener('click', copyAllNodes);
+
+    initAccordions();
     renderNodes();
+
+    // شمارنده‌های نرم و حلقه مصرف
+    if (window.MiliFx) {
+      MiliFx.ring(document.getElementById('usageRing'), ${limitBytes > 0 ? usagePercent : 100});
+      var usedEl = document.getElementById('statUsed');
+      if (usedEl) MiliFx.countUp(usedEl, ${usedBytes}, function (v) { return formatBytesRuntime(v); });
+      var lifeEl = document.getElementById('statLifetime');
+      if (lifeEl) MiliFx.countUp(lifeEl, ${lifetimeBytes}, function (v) { return formatBytesRuntime(v); });
+      document.querySelectorAll('[data-count-to]').forEach(function (el) {
+        MiliFx.countUp(el, Number(el.getAttribute('data-count-to')) || 0, function (v) { return String(Math.round(v)); });
+      });
+      MiliFx.reveal(document);
+    }
+
+    function formatBytesRuntime(bytes) {
+      var b = Number(bytes) || 0;
+      if (b <= 0) return '0 B';
+      var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      var i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(1024)));
+      var value = b / Math.pow(1024, i);
+      return (value >= 100 || i === 0 ? Math.round(value) : value.toFixed(2)) + ' ' + units[i];
+    }
+
+    // اندازه‌گیری مجدد ارتفاع آکاردئون‌های باز هنگام تغییر اندازه صفحه
+    window.addEventListener('resize', function () {
+      document.querySelectorAll('.acc-card.open .acc-body').forEach(function (body) {
+        body.style.maxHeight = 'none';
+      });
+    });
   </script>
 </body>
 </html>`;
@@ -6228,16 +7381,17 @@ ${BASE_UI_CSS}
 
 
 function renderAdminDashboardHtml(initialData = {}) {
-  const safeInitialJson = JSON.stringify({
+  const safeInitialJson = safeJsonForScript({
     brand: BRAND_NAME,
     version: VERSION,
     defaults: CONFIG_DEFAULTS,
     presets: USER_PRESETS,
+    supportUrl: SUPPORT_CHANNEL_URL,
     config: initialData.config || CONFIG_DEFAULTS,
     users: initialData.users || [],
     diagnostics: initialData.diagnostics || {},
     adminPath: initialData.adminPath || ''
-  }).replace(/</g, '\\u003c');
+  });
 
   return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -6721,16 +7875,14 @@ function renderAdminDashboardHtml(initialData = {}) {
       padding: 14px 0;
     }
     .donut-ring {
-      width: 142px;
-      height: 142px;
-      border-radius: 50%;
-      border: 14px solid var(--neon);
-      box-shadow: 0 0 28px rgba(181, 255, 77, 0.25);
+      width: 150px;
+      height: 150px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
+    .donut-ring > * { position: relative; z-index: 1; }
 
     /* بخش کاربران مطابق تصویر 1000050137.jpg */
     .preset-grid {
@@ -7027,22 +8179,35 @@ function renderAdminDashboardHtml(initialData = {}) {
     .view-section { display: none; }
     .view-section.active { display: flex; flex-direction: column; gap: 14px; }
 
-    .toast-box {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #102110;
-      border: 1px solid var(--neon);
-      color: var(--neon);
-      padding: 10px 22px;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 800;
-      z-index: 200;
-      display: none;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
+    /* ==================
+       انیمیشن‌های اختصاصی پنل مدیریت
+       ================== */
+    .view-section.active { animation: fxFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .metric-card:hover .metric-value { color: var(--neon); }
+    .metric-value { transition: color 0.3s ease; }
+    .uc-actions .btn-ghost { flex: 1 1 auto; justify-content: center; }
+    .modal-backdrop { opacity: 0; transition: opacity 0.28s ease; }
+    .modal-backdrop.open { opacity: 1; }
+    .modal-box {
+      transform: translate3d(0, 20px, 0) scale(0.98);
+      opacity: 0.55;
+      transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.44s ease;
     }
+    .modal-backdrop.open .modal-box { transform: none; opacity: 1; }
+    .sidebar { transition: box-shadow 0.3s ease; }
+    @media (max-width: 1024px) {
+      .sidebar.drawer-open { animation: fxFadeUp 0.44s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    }
+    .sync-pill.syncing .dot-online { animation: fxLive 0.65s ease-in-out infinite; }
+    .empty-state {
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+    }
+    .quick-bar > .btn-neon { flex: 0 0 auto; }
 
     /* ==================
        بهینه‌سازی رابط برای گوشی همراه و ویندوز
@@ -7149,11 +8314,12 @@ function renderAdminDashboardHtml(initialData = {}) {
       .modal-actions { flex-direction: column-reverse; }
       .modal-actions > button { width: 100%; justify-content: center; }
     }
+${FX_CSS}
 ${BASE_UI_CSS}
   </style>
 </head>
 <body>
-  <div id="toastBox" class="toast-box"></div>
+  ${FX_MARKUP}
 
   <div class="app-shell">
     <!-- سایدبار سمت راست دسکتاپ -->
@@ -7305,7 +8471,7 @@ ${BASE_UI_CSS}
               </div>
             </div>
             <div class="donut-wrap">
-              <div class="donut-ring">
+              <div class="donut-ring fx-ring fx-ring-pulse" id="donutRing" style="--fx-p:0.35">
                 <div style="font-size:1.3rem;font-weight:900;color:#fff;" id="donutCenterCount">31</div>
                 <div style="font-size:0.72rem;color:var(--muted);">نود در کاتالوگ</div>
               </div>
@@ -7838,6 +9004,9 @@ ${BASE_UI_CSS}
   </div>
 
   <script>
+${FX_RUNTIME_JS}
+  </script>
+  <script>
     var STATE = ${safeInitialJson};
     var SELECTED_PRESET = 'iran-fast';
     var USER_FILTER_STATUS = 'all';
@@ -7847,15 +9016,30 @@ ${BASE_UI_CSS}
       return p || '';
     }
 
+    function esc(v) {
+      return window.MiliFx ? MiliFx.esc(v) : String(v === undefined || v === null ? '' : v);
+    }
+
     function showToast(msg) {
-      var box = document.getElementById('toastBox');
-      if (!box) return;
-      box.textContent = msg;
-      box.style.display = 'block';
-      clearTimeout(window._tTimer);
-      window._tTimer = setTimeout(function() {
-        box.style.display = 'none';
-      }, 2800);
+      if (window.MiliFx) MiliFx.toast(msg);
+    }
+
+    function setText(id, value) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    // فراخوانی امن API با پیام خطای خوانا (به‌جای شکست بی‌صدا)
+    async function apiRequest(path, options) {
+      var res = await fetch(getApiBase() + path, options);
+      var data = null;
+      try { data = await res.json(); } catch (_e) { data = null; }
+      if (!res.ok) {
+        var message = (data && (data.message || data.error)) || ('خطای سرور (' + res.status + ')');
+        throw new Error(message);
+      }
+      if (!data) throw new Error('پاسخ نامعتبر از سرور');
+      return data;
     }
 
     function formatBytesJs(bytes) {
@@ -7892,10 +9076,16 @@ ${BASE_UI_CSS}
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeSidebarDrawer();
+      if (e.key !== 'Escape') return;
+      var openModal = document.getElementById('userModalBackdrop');
+      if (openModal && openModal.classList.contains('open')) {
+        closeUserModal();
+        return;
+      }
+      closeSidebarDrawer();
     });
 
-    function switchView(viewName) {
+    function switchView(viewName, fromHash) {
       var titles = {
         dashboard: 'داشبورد',
         users: 'کاربران',
@@ -7904,13 +9094,27 @@ ${BASE_UI_CSS}
         panel: 'پنل و ظاهر',
         system: 'تنظیمات و دیتابیس D1'
       };
-      document.getElementById('topPageTitle').textContent = titles[viewName] || 'داشبورد';
+      var target = document.getElementById('view-' + viewName);
+      if (!target) viewName = 'dashboard';
+      setText('topPageTitle', titles[viewName] || 'داشبورد');
       document.querySelectorAll('.view-section').forEach(function(s) {
-        s.classList.toggle('active', s.id === 'view-' + viewName);
+        var isActive = s.id === 'view-' + viewName;
+        s.classList.toggle('active', isActive);
+        if (isActive && window.MiliFx && !fromHash) {
+          s.style.animation = 'none';
+          void s.offsetWidth;
+          s.style.animation = '';
+          MiliFx.reveal(s);
+        }
       });
       document.querySelectorAll('.sb-item').forEach(function(b) {
         b.classList.toggle('active', b.getAttribute('data-view') === viewName);
       });
+      try {
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', '#' + viewName);
+        }
+      } catch (_e) {}
       closeSidebarDrawer();
     }
 
@@ -7947,36 +9151,39 @@ ${BASE_UI_CSS}
     function renderUsersGrid() {
       var container = document.getElementById('usersGridContainer');
       if (!container) return;
-      var q = (document.getElementById('userSearchInput')?.value || '').trim().toLowerCase();
+      var searchEl = document.getElementById('userSearchInput');
+      var q = (searchEl && searchEl.value ? searchEl.value : '').trim().toLowerCase();
       var list = (STATE.users || []).filter(function(u) {
         if (USER_FILTER_STATUS === 'active' && !u.enabled) return false;
         if (USER_FILTER_STATUS === 'disabled' && u.enabled) return false;
-        if (q && !u.username.toLowerCase().includes(q) && !u.uuid.toLowerCase().includes(q)) return false;
-        return true;
+        if (!q) return true;
+        var name = String(u.username || '').toLowerCase();
+        var ident = String(u.uuid || '').toLowerCase();
+        return name.indexOf(q) !== -1 || ident.indexOf(q) !== -1;
       });
 
-      document.getElementById('sbUserCount').textContent = String((STATE.users || []).length);
+      setText('sbUserCount', String((STATE.users || []).length));
 
       if (list.length === 0) {
-        container.innerHTML = '<div style="padding:24px;color:var(--muted);">هیچ کاربری با این فیلتر یافت نشد.</div>';
+        container.innerHTML = '<div class="empty-state">هیچ کاربری با این فیلتر یافت نشد. با دکمهٔ «+ کاربر جدید» اولین کاربر را بسازید.</div>';
         return;
       }
 
       var baseOrigin = window.location.origin;
       var html = '';
-      list.forEach(function(u) {
-        var statusUrl = baseOrigin + '/status/' + encodeURIComponent(u.id);
+      list.forEach(function(u, cardIdx) {
+        var statusUrl = baseOrigin + '/status/' + encodeURIComponent(u.id || '');
         var subToken = (u.config && u.config.d && u.config.d.trim()) ? u.config.d.trim().replace(/^\\/+|\\/+$/g, '') : u.uuid;
         var subUrl = baseOrigin + '/' + subToken + '/sub';
         var nodeCount = u.subNodeCount || (u.config && u.config.subNodeCount) || 50;
         var gaugeText = u.dataLimitGb > 0 ? (u.dataLimitGb + ' GB') : '∞ بی‌نهایت';
         var expText = u.expireDays > 0 ? (u.expireDays + ' روز') : 'بدون انقضا';
 
-        html += '<div class="user-card">' +
+        html += '<div class="user-card fx-card fx-reveal" style="--fx-i:' + Math.min(cardIdx, 6) + '">' +
           '<div class="uc-top">' +
             '<span class="top-pill ' + (u.enabled ? 'live' : '') + '">' + (u.enabled ? 'شروع با اولین اتصال' : 'غیرفعال') + '</span>' +
             '<div class="uc-id-box">' +
-              '<div style="text-align:left;"><div class="uc-name">' + u.username + '</div><div class="uc-uuid">' + u.uuid.slice(0, 18) + '...</div></div>' +
+              '<div style="text-align:left;"><div class="uc-name">' + esc(u.username) + '</div><div class="uc-uuid">' + esc(String(u.uuid || '').slice(0, 18)) + (String(u.uuid || '').length > 18 ? '...' : '') + '</div></div>' +
               '<div class="uc-avatar">M</div>' +
             '</div>' +
           '</div>' +
@@ -7986,7 +9193,7 @@ ${BASE_UI_CSS}
               '<div class="uc-stat-line"><span>عمر کل</span><strong>' + formatBytesJs(u.lifetimeBytes) + '</strong></div>' +
               '<div class="uc-stat-line"><span>درخواست‌ها</span><strong>' + (u.requestCount || 0) + '</strong></div>' +
               '<div class="uc-stat-line"><span>انقضا</span><strong>' + expText + '</strong></div>' +
-              '<div class="uc-stat-line"><span>تعداد نود در ساب</span><strong>' + nodeCount + ' نود (' + STATE.brand + ')</strong></div>' +
+              '<div class="uc-stat-line"><span>تعداد نود در ساب</span><strong>' + nodeCount + ' نود (' + esc(STATE.brand) + ')</strong></div>' +
             '</div>' +
             '<div class="uc-gauge"><strong>' + gaugeText + '</strong></div>' +
           '</div>' +
@@ -8002,6 +9209,7 @@ ${BASE_UI_CSS}
         '</div>';
       });
       container.innerHTML = html;
+      if (window.MiliFx) MiliFx.reveal(container);
     }
 
     function applyConfigToForm(cfg) {
@@ -8040,15 +9248,21 @@ ${BASE_UI_CSS}
       var activeCount = users.filter(function(u) { return u.enabled; }).length;
       var disCount = users.length - activeCount;
 
-      document.getElementById('mTotalUsers').textContent = String(users.length);
-      document.getElementById('mUsersSub').textContent = activeCount + ' فعال · ' + disCount + ' غیرفعال';
-      document.getElementById('mTotalTraffic').textContent = formatBytesJs(diag.totalUsedBytes || 0);
-      document.getElementById('mLifetimeTraffic').textContent = 'مجموع عمر: ' + formatBytesJs(diag.totalLifetimeBytes || 0);
-      document.getElementById('mActiveNodes').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('mHealthyIps').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('mTotalReqs').textContent = String(diag.totalRequests || 0);
-      document.getElementById('sbNodeCount').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('donutCenterCount').textContent = String(diag.healthyCfIps || 31);
+      var nodeCount = Number(diag.healthyCfIps || 31);
+      var totalReqs = Number(diag.totalRequests || 0);
+      setText('mTotalUsers', String(users.length));
+      setText('mUsersSub', activeCount + ' فعال · ' + disCount + ' غیرفعال');
+      setText('mActiveNodes', String(nodeCount));
+      setText('mHealthyIps', String(nodeCount));
+      setText('donutCenterCount', String(nodeCount));
+      setText('sbNodeCount', String(nodeCount));
+      if (window.MiliFx) {
+        MiliFx.countUp(document.getElementById('mTotalTraffic'), Number(diag.totalUsedBytes || 0), function (v) { return formatBytesJs(v); });
+        MiliFx.countUp(document.getElementById('mLifetimeTraffic'), Number(diag.totalLifetimeBytes || 0), function (v) { return 'مجموع عمر: ' + formatBytesJs(v); });
+        MiliFx.countUp(document.getElementById('mTotalReqs'), totalReqs, function (v) { return String(Math.round(v)); });
+        MiliFx.countUp(document.getElementById('hbReqs'), totalReqs, function (v) { return '⚡ ' + Math.round(v) + ' درخواست ثبت‌شده'; });
+        MiliFx.ring(document.getElementById('donutRing'), nodeCount > 0 ? Math.min(100, Math.round((users.length / nodeCount) * 100)) : 100);
+      }
 
       var upMin = Math.max(1, Math.floor((diag.uptimeMs || 60000) / 60000));
       document.getElementById('hbUsers').textContent = '👥 ' + users.length + ' کاربر · ' + activeCount + ' فعال';
@@ -8068,7 +9282,7 @@ ${BASE_UI_CSS}
       if (topBox) {
         var sorted = users.slice().sort(function(a, b) { return (b.usedBytes || 0) - (a.usedBytes || 0); }).slice(0, 4);
         topBox.innerHTML = sorted.map(function(u) {
-          return '<div class="kv-row"><span class="kv-key">' + u.username + ' (' + (u.subNodeCount || 50) + ' نود)</span><span class="kv-val">' + formatBytesJs(u.usedBytes || 0) + '</span></div>';
+          return '<div class="kv-row"><span class="kv-key">' + esc(u.username) + ' (' + (u.subNodeCount || 50) + ' نود)</span><span class="kv-val">' + formatBytesJs(u.usedBytes || 0) + '</span></div>';
         }).join('') || '<div style="color:var(--muted);font-size:0.8rem;">هنوز کاربری ثبت نشده است</div>';
       }
 
@@ -8077,15 +9291,16 @@ ${BASE_UI_CSS}
       if (logBox) {
         var logs = diag.recentLogs || [];
         logBox.innerHTML = logs.slice(0, 5).map(function(l) {
-          return '<div class="kv-row"><span class="kv-key">' + l.action + '</span><span class="kv-val">' + l.detail + '</span></div>';
+          return '<div class="kv-row"><span class="kv-key">' + esc(l.action) + '</span><span class="kv-val">' + esc(l.detail) + '</span></div>';
         }).join('') || '<div style="color:var(--muted);font-size:0.8rem;">رویدادی ثبت نشده است</div>';
       }
     }
 
     async function refreshAllData() {
+      var pill = document.querySelector('.top-pill.live');
+      if (pill) pill.classList.add('syncing');
       try {
-        var res = await fetch(getApiBase() + '/api/stats');
-        var data = await res.json();
+        var data = await apiRequest('/api/stats', { method: 'GET' });
         if (data && data.success) {
           STATE.config = data.config || STATE.config;
           STATE.users = data.users || STATE.users;
@@ -8093,16 +9308,28 @@ ${BASE_UI_CSS}
           applyConfigToForm(STATE.config);
           renderUsersGrid();
           updateDashboardWidgets();
+          showToast('اطلاعات پنل به‌روزرسانی شد');
+        } else {
+          showToast('دریافت اطلاعات پنل ناموفق بود');
         }
-      } catch (_e) {}
+      } catch (err) {
+        showToast('خطا در دریافت اطلاعات: ' + (err && err.message ? err.message : 'نامشخص'));
+      } finally {
+        if (pill) pill.classList.remove('syncing');
+      }
     }
 
     async function quickCreateUser() {
-      var username = document.getElementById('quickUsername').value.trim();
-      var subNodeCount = parseInt(document.getElementById('quickSubNodeCount').value, 10) || 50;
+      var username = (document.getElementById('quickUsername').value || '').trim();
+      var rawCount = parseInt(document.getElementById('quickSubNodeCount').value, 10);
+      var subNodeCount = Number.isFinite(rawCount) ? Math.min(500, Math.max(0, rawCount)) : 50;
       var usePanelDefaults = document.getElementById('quickUsePanelDefaults').checked;
+      if (username.length > 64) {
+        showToast('نام کاربری حداکثر ۶۴ کاراکتر می‌تواند باشد');
+        return;
+      }
       try {
-        var res = await fetch(getApiBase() + '/api/users', {
+        var data = await apiRequest('/api/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -8112,7 +9339,6 @@ ${BASE_UI_CSS}
             usePanelDefaults: usePanelDefaults
           })
         });
-        var data = await res.json();
         if (data.success) {
           document.getElementById('quickUsername').value = '';
           showToast(data.message || 'کاربر جدید ساخته شد');
@@ -8166,6 +9392,9 @@ ${BASE_UI_CSS}
       });
 
       modal.classList.add('open');
+      if (window.MiliFx) MiliFx.reveal(modal);
+      var firstField = document.getElementById('um_username');
+      if (firstField) window.setTimeout(function () { firstField.focus(); }, 240);
     }
 
     function closeUserModal() {
@@ -8199,15 +9428,25 @@ ${BASE_UI_CSS}
         if (el) payload.config[k] = el.checked ? 'yes' : 'no';
       });
       payload.config.subNodeCount = payload.subNodeCount;
+      if (!payload.username) {
+        showToast('نام کاربری را وارد کنید');
+        return;
+      }
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.uuid)) {
+        showToast('UUID معتبر نیست؛ با دکمه 🎲 یک UUID استاندارد بسازید');
+        return;
+      }
 
       var method = id ? 'PUT' : 'POST';
-      var res = await fetch(getApiBase() + '/api/users', {
+      var data = await apiRequest('/api/users', {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
+      }).catch(function (err) {
+        showToast('خطا در ذخیره کاربر: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
-      if (data.success) {
+      if (data && data.success) {
         closeUserModal();
         showToast(data.message || 'ذخیره شد');
         await refreshAllData();
@@ -8227,6 +9466,7 @@ ${BASE_UI_CSS}
     }
 
     async function resetUserTraffic(id) {
+      if (!window.confirm('مصرف این کاربر صفر شود؟')) return;
       await fetch(getApiBase() + '/api/users', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -8237,6 +9477,7 @@ ${BASE_UI_CSS}
     }
 
     async function removeUser(id) {
+      if (!window.confirm('این کاربر و تمام تنظیماتش حذف شود؟ این کار قابل بازگشت نیست.')) return;
       await fetch(getApiBase() + '/api/users?id=' + encodeURIComponent(id), {
         method: 'DELETE'
       });
@@ -8246,12 +9487,15 @@ ${BASE_UI_CSS}
 
     async function savePanelSettings() {
       var cfg = collectFormConfig();
-      var res = await fetch(getApiBase() + '/api/config', {
+      var data = await apiRequest('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cfg)
+      }).catch(function (err) {
+        showToast('خطا در ذخیره تنظیمات: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
+      if (!data) return;
       if (data.success) {
         showToast(data.message || 'تنظیمات پنل ذخیره شد');
         await refreshAllData();
@@ -8261,12 +9505,15 @@ ${BASE_UI_CSS}
     }
 
     async function resetAllPanelSettings() {
-      var res = await fetch(getApiBase() + '/api/config', {
+      var data = await apiRequest('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ _reset: true })
+      }).catch(function (err) {
+        showToast('بازنشانی تنظیمات ناموفق بود: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
+      if (!data) return;
       if (data.success) {
         showToast(data.message);
         await refreshAllData();
@@ -8274,8 +9521,11 @@ ${BASE_UI_CSS}
     }
 
     async function initD1Database() {
-      var res = await fetch(getApiBase() + '/api/d1-init', { method: 'POST' });
-      var data = await res.json();
+      var data = await apiRequest('/api/d1-init', { method: 'POST' }).catch(function (err) {
+        showToast('بررسی D1 ناموفق بود: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
+      });
+      if (!data) return;
       showToast(data.message || 'بررسی D1 انجام شد');
       await refreshAllData();
     }
@@ -8300,19 +9550,23 @@ ${BASE_UI_CSS}
     }
 
     function generateRandomCfIps() {
-      var cidrs = ['104.16.0.0/20', '104.24.0.0/20', '172.67.0.0/20', '162.159.0.0/20'];
       var box = document.getElementById('pingResultsBox');
+      if (!box) return;
+      // رنج /20 هر شبکه کلودفلر واقعاً رعایت می‌شود (قبا IP خارج از رنج ساخته می‌شد)
+      var networks = ['104.16.0.0', '104.24.0.0', '172.67.0.0', '162.159.0.0'];
       var generated = [];
       for (var i = 0; i < 10; i++) {
-        var c = cidrs[i % cidrs.length].split('/')[0].split('.');
-        var ip = c[0] + '.' + c[1] + '.' + (Math.floor(Math.random() * 15)) + '.' + (Math.floor(Math.random() * 250) + 2);
-        generated.push(ip + ':443#CF-Fast-' + (i + 1));
+        var octets = networks[i % networks.length].split('.');
+        var third = (parseInt(octets[2], 10) + Math.floor(Math.random() * 16)) % 256;
+        var fourth = Math.floor(Math.random() * 254) + 1;
+        generated.push(octets[0] + '.' + octets[1] + '.' + third + '.' + fourth + ':443#CF-Fast-' + (i + 1));
       }
       box.innerHTML = '<div class="kv-row"><span class="kv-key">۱۰ آی‌پی پیشنهادی تولید شد</span><button type="button" class="btn-ghost" onclick="appendGeneratedIps(\\'' + generated.join(',') + '\\')">+ افزودن به لیست ترجیحی (yx)</button></div>';
     }
 
     function appendGeneratedIps(str) {
       var el = document.getElementById('cfg_yx');
+      if (!el) return;
       el.value = el.value.trim() ? (el.value.trim() + ',' + str) : str;
       savePanelSettings();
     }
@@ -8345,11 +9599,47 @@ ${BASE_UI_CSS}
       }
     });
 
+    // خطاهای پردازش‌نشده شبکه دیگر بی‌صدا نمی‌مانند
+    window.addEventListener('unhandledrejection', function (event) {
+      var reason = event && event.reason ? event.reason : null;
+      showToast('خطا در ارتباط با سرور: ' + (reason && reason.message ? reason.message : 'درخواست ناموفق بود'));
+    });
+
+    // افزودن IPهای تولیدشده با واگذاری رویداد (بدون inline onclick)
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest ? event.target.closest('[data-add-ips]') : null;
+      if (btn) appendGeneratedIps(btn.getAttribute('data-add-ips') || '');
+    });
+
+    // بستن مودال با کلیک روی پس‌زمینه و کلید Escape
+    var modalBackdrop = document.getElementById('userModalBackdrop');
+    if (modalBackdrop) {
+      modalBackdrop.addEventListener('click', function (event) {
+        if (event.target === modalBackdrop) closeUserModal();
+      });
+    }
+
     // مقداردهی اولیه
     renderPresets();
     applyConfigToForm(STATE.config);
     renderUsersGrid();
     updateDashboardWidgets();
+
+    // جلوه‌های نرم روی کارت‌های پنل
+    document.querySelectorAll('.metric-card, .panel-card, .hero-card, .stat-box, .kv-row').forEach(function (el, idx) {
+      el.classList.add('fx-card');
+      if (el.classList.contains('panel-card') || el.classList.contains('metric-card')) el.classList.add('fx-reveal');
+      if (!el.style.getPropertyValue('--fx-i')) el.style.setProperty('--fx-i', String(Math.min(idx, 8)));
+    });
+    if (window.MiliFx) MiliFx.reveal(document);
+
+    // بازیابی نمای انتخاب‌شده از آدرس
+    var hashView = String(window.location.hash || '').replace('#', '');
+    if (hashView && document.getElementById('view-' + hashView)) switchView(hashView, true);
+    window.addEventListener('hashchange', function () {
+      var v = String(window.location.hash || '').replace('#', '');
+      if (v && document.getElementById('view-' + v)) switchView(v, true);
+    });
   </script>
 </body>
 </html>`;
@@ -8378,7 +9668,7 @@ function isAdminAuthorizedPath(prefixPath, adminUuid, customPath) {
   return cleanPrefix === cleanAdmin;
 }
 
-export default {
+const __MILI_WORKER_EXPORT__ = {
   async fetch(request, env = {}, ctx = {}) {
     try {
       const url = new URL(request.url);
@@ -8664,3 +9954,5 @@ export default {
   }
 };
 
+
+export default __MILI_WORKER_EXPORT__;

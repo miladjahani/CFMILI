@@ -28,7 +28,7 @@ jobs:
 
       - name: Build and Obfuscate
         run: |
-          npm install --no-save javascript-obfuscator terser
+          npm install --no-save acorn javascript-obfuscator terser
           npm run build
           npm test
 

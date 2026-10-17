@@ -5,12 +5,15 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { obfuscateWorkerBundle } from './obfuscate.js';
+import { obfuscateWorkerBundle, DEAD_CODE_MARKER } from './obfuscate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
+
+const pkgVersion = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8')).version;
 
 // ترتیب دقیق ماژول‌ها برای باندلینگ یکپارچه بدون وابستگی به باندلر خارجی
 const MODULE_ORDER = [
@@ -19,6 +22,7 @@ const MODULE_ORDER = [
   'src/core/utils.js',
   'src/ui/icons.js',
   'src/ui/baseCss.js',
+  'src/ui/fx.js',
   'src/db/d1.js',
   'src/subscription/converters.js',
   'src/subscription/generator.js',
@@ -69,6 +73,10 @@ function stripLocalImportsAndExports(code, isEntryPoint = false) {
   return out.join('\n');
 }
 
+function sha256(text) {
+  return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
+}
+
 async function buildAll() {
   console.log('⚡ [miliconfig] در حال ساخت و باندل کردن ماژول‌های پروژه...');
 
@@ -92,13 +100,14 @@ async function buildAll() {
   fs.mkdirSync(distDir, { recursive: true });
   fs.mkdirSync(publicDir, { recursive: true });
 
-  // ذخیره نسخه باندل‌شده خوانا جهت دیباگ و بررسی
-  fs.writeFileSync(path.join(distDir, 'worker.readable.js'), rawBundle, 'utf8');
-  fs.writeFileSync(path.join(ROOT_DIR, '明文源吗'), rawBundle, 'utf8');
+  // اجرای مبهم‌سازی پیشرفته + تزریق کد مرده بدون خطای 1101
+  console.log('🔒 [miliconfig] در حال اعمال مبهم‌سازی پیشرفته + تزریق کد مرده (Advanced Obfuscation + Dead Code)...');
+  const { code: obfuscatedCode, meta: obfuscationMeta, injectedCode } = await obfuscateWorkerBundle(rawBundle);
 
-  // اجرای مبهم‌سازی پیشرفته بدون خطای 1101
-  console.log('🔒 [miliconfig] در حال اعمال مبهم‌سازی پیشرفته (Advanced Obfuscation)...');
-  const obfuscatedCode = await obfuscateWorkerBundle(rawBundle);
+  // نسخه خوانا = دقیقاً همان کدی که مبهم‌سازی می‌شود (شامل بلوک‌های کد مرده تزریق‌شده)
+  const readableBundle = injectedCode || rawBundle;
+  fs.writeFileSync(path.join(distDir, 'worker.readable.js'), readableBundle, 'utf8');
+  fs.writeFileSync(path.join(ROOT_DIR, '明文源吗'), readableBundle, 'utf8');
 
   // نوشتن خروجی‌های نهایی برای Cloudflare Workers و Cloudflare Pages
   fs.writeFileSync(path.join(distDir, '_worker.js'), obfuscatedCode, 'utf8');
@@ -127,6 +136,35 @@ BRAND = "miliconfig"
   }
 
   console.log(`✅ [miliconfig] بیلد و مبهم‌سازی با موفقیت کامل شد! حجم باندل مبهم‌شده: ${(obfuscatedCode.length / 1024).toFixed(1)} KB`);
+  console.log(`🧩 [miliconfig] تزریق کد مرده: ${obfuscationMeta.deadCodeBlocks} بلوک | موتور مبهم‌سازی: ${obfuscationMeta.obfuscator}`);
+  console.log('🚀 [miliconfig] خروجی آماده استقرار روی هر دو بستر بدون سکرت: Cloudflare Pages (پوشه dist) و Cloudflare Worker (src/index.js).');
+
+  // مانیفست بیلد: مبنای بررسی خودکار تست‌ها و گزارش استقرار
+  const artifactPaths = ['dist/_worker.js', 'public/_worker.js', '_worker.js'];
+  const artifactSha = sha256(obfuscatedCode);
+  const manifest = {
+    brand: 'miliconfig',
+    version: pkgVersion,
+    builtAt: new Date().toISOString(),
+    targets: ['cloudflare-pages-advanced-mode', 'cloudflare-worker'],
+    requiresSecrets: false,
+    pagesOutputDir: 'dist',
+    workerEntry: 'src/index.js',
+    obfuscation: obfuscationMeta,
+    obfuscatedBytes: Buffer.byteLength(obfuscatedCode, 'utf8'),
+    readableBundle: {
+      path: 'dist/worker.readable.js',
+      bytes: Buffer.byteLength(readableBundle, 'utf8'),
+      deadCodeMarker: DEAD_CODE_MARKER,
+      deadCodeOccurrences: readableBundle.split(DEAD_CODE_MARKER).length - 1
+    },
+    artifacts: artifactPaths.map(rel => ({
+      path: rel,
+      bytes: Buffer.byteLength(obfuscatedCode, 'utf8'),
+      sha256: artifactSha
+    }))
+  };
+  fs.writeFileSync(path.join(distDir, 'build-info.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 }
 
 buildAll().catch(err => {

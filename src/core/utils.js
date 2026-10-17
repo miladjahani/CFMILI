@@ -308,3 +308,36 @@ export function formatBytes(bytes = 0) {
   const val = b / Math.pow(1024, i);
   return `${val >= 100 || i === 0 ? Math.round(val) : val.toFixed(2)} ${units[i]}`;
 }
+
+// ============================================================================
+// امن‌سازی خروجی: جلوگیری از تزریق HTML/JS توسط نام کاربری، شناسه‌ها و لینک‌ها
+// (قبلاً نام کاربری مستقیماً داخل HTML قرار می‌گرفت و امکان XSS داشت)
+// ============================================================================
+export function escapeHtml(value) {
+  return String(value === undefined || value === null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// امن‌سازی مقدار برای قرار گرفتن داخل رشته جاوااسکریپت درون HTML (مثل onclick="...")
+export function escapeJsString(value) {
+  return escapeHtml(
+    String(value === undefined || value === null ? '' : value)
+      .replace(/\\/g, '\\\\')
+      .replace(/\r?\n/g, '\\n')
+      .replace(/'/g, "\\'")
+      .replace(/"/g, '\\"')
+  );
+}
+
+// امن‌سازی داده JSON جهت درج داخل <script> بدون بستن تگ یا اجرای کد
+export function safeJsonForScript(value) {
+  return JSON.stringify(value === undefined ? null : value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}

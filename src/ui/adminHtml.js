@@ -12,20 +12,23 @@ import {
   VERSION
 } from '../config/defaults.js';
 import { USER_PRESETS } from '../config/presets.js';
-import { CLOUD_LOGO_SVG, FAVICON_DATA_URI, SHIELD_LOGO_SVG } from './icons.js';
+import { SHIELD_LOGO_SVG, FAVICON_DATA_URI } from './icons.js';
+import { escapeHtml, safeJsonForScript } from '../core/utils.js';
 import { BASE_UI_CSS, THEME_COLOR_META, VIEWPORT_META } from './baseCss.js';
+import { FX_CSS, FX_MARKUP, FX_RUNTIME_JS } from './fx.js';
 
 export function renderAdminDashboardHtml(initialData = {}) {
-  const safeInitialJson = JSON.stringify({
+  const safeInitialJson = safeJsonForScript({
     brand: BRAND_NAME,
     version: VERSION,
     defaults: CONFIG_DEFAULTS,
     presets: USER_PRESETS,
+    supportUrl: SUPPORT_CHANNEL_URL,
     config: initialData.config || CONFIG_DEFAULTS,
     users: initialData.users || [],
     diagnostics: initialData.diagnostics || {},
     adminPath: initialData.adminPath || ''
-  }).replace(/</g, '\\u003c');
+  });
 
   return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -509,16 +512,14 @@ export function renderAdminDashboardHtml(initialData = {}) {
       padding: 14px 0;
     }
     .donut-ring {
-      width: 142px;
-      height: 142px;
-      border-radius: 50%;
-      border: 14px solid var(--neon);
-      box-shadow: 0 0 28px rgba(181, 255, 77, 0.25);
+      width: 150px;
+      height: 150px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
+    .donut-ring > * { position: relative; z-index: 1; }
 
     /* بخش کاربران مطابق تصویر 1000050137.jpg */
     .preset-grid {
@@ -815,22 +816,35 @@ export function renderAdminDashboardHtml(initialData = {}) {
     .view-section { display: none; }
     .view-section.active { display: flex; flex-direction: column; gap: 14px; }
 
-    .toast-box {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #102110;
-      border: 1px solid var(--neon);
-      color: var(--neon);
-      padding: 10px 22px;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 800;
-      z-index: 200;
-      display: none;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
+    /* ==================
+       انیمیشن‌های اختصاصی پنل مدیریت
+       ================== */
+    .view-section.active { animation: fxFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .metric-card:hover .metric-value { color: var(--neon); }
+    .metric-value { transition: color 0.3s ease; }
+    .uc-actions .btn-ghost { flex: 1 1 auto; justify-content: center; }
+    .modal-backdrop { opacity: 0; transition: opacity 0.28s ease; }
+    .modal-backdrop.open { opacity: 1; }
+    .modal-box {
+      transform: translate3d(0, 20px, 0) scale(0.98);
+      opacity: 0.55;
+      transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.44s ease;
     }
+    .modal-backdrop.open .modal-box { transform: none; opacity: 1; }
+    .sidebar { transition: box-shadow 0.3s ease; }
+    @media (max-width: 1024px) {
+      .sidebar.drawer-open { animation: fxFadeUp 0.44s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    }
+    .sync-pill.syncing .dot-online { animation: fxLive 0.65s ease-in-out infinite; }
+    .empty-state {
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+    }
+    .quick-bar > .btn-neon { flex: 0 0 auto; }
 
     /* ==================
        بهینه‌سازی رابط برای گوشی همراه و ویندوز
@@ -937,11 +951,12 @@ export function renderAdminDashboardHtml(initialData = {}) {
       .modal-actions { flex-direction: column-reverse; }
       .modal-actions > button { width: 100%; justify-content: center; }
     }
+${FX_CSS}
 ${BASE_UI_CSS}
   </style>
 </head>
 <body>
-  <div id="toastBox" class="toast-box"></div>
+  ${FX_MARKUP}
 
   <div class="app-shell">
     <!-- سایدبار سمت راست دسکتاپ -->
@@ -1093,7 +1108,7 @@ ${BASE_UI_CSS}
               </div>
             </div>
             <div class="donut-wrap">
-              <div class="donut-ring">
+              <div class="donut-ring fx-ring fx-ring-pulse" id="donutRing" style="--fx-p:0.35">
                 <div style="font-size:1.3rem;font-weight:900;color:#fff;" id="donutCenterCount">31</div>
                 <div style="font-size:0.72rem;color:var(--muted);">نود در کاتالوگ</div>
               </div>
@@ -1626,6 +1641,9 @@ ${BASE_UI_CSS}
   </div>
 
   <script>
+${FX_RUNTIME_JS}
+  </script>
+  <script>
     var STATE = ${safeInitialJson};
     var SELECTED_PRESET = 'iran-fast';
     var USER_FILTER_STATUS = 'all';
@@ -1635,15 +1653,30 @@ ${BASE_UI_CSS}
       return p || '';
     }
 
+    function esc(v) {
+      return window.MiliFx ? MiliFx.esc(v) : String(v === undefined || v === null ? '' : v);
+    }
+
     function showToast(msg) {
-      var box = document.getElementById('toastBox');
-      if (!box) return;
-      box.textContent = msg;
-      box.style.display = 'block';
-      clearTimeout(window._tTimer);
-      window._tTimer = setTimeout(function() {
-        box.style.display = 'none';
-      }, 2800);
+      if (window.MiliFx) MiliFx.toast(msg);
+    }
+
+    function setText(id, value) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    // فراخوانی امن API با پیام خطای خوانا (به‌جای شکست بی‌صدا)
+    async function apiRequest(path, options) {
+      var res = await fetch(getApiBase() + path, options);
+      var data = null;
+      try { data = await res.json(); } catch (_e) { data = null; }
+      if (!res.ok) {
+        var message = (data && (data.message || data.error)) || ('خطای سرور (' + res.status + ')');
+        throw new Error(message);
+      }
+      if (!data) throw new Error('پاسخ نامعتبر از سرور');
+      return data;
     }
 
     function formatBytesJs(bytes) {
@@ -1680,10 +1713,16 @@ ${BASE_UI_CSS}
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeSidebarDrawer();
+      if (e.key !== 'Escape') return;
+      var openModal = document.getElementById('userModalBackdrop');
+      if (openModal && openModal.classList.contains('open')) {
+        closeUserModal();
+        return;
+      }
+      closeSidebarDrawer();
     });
 
-    function switchView(viewName) {
+    function switchView(viewName, fromHash) {
       var titles = {
         dashboard: 'داشبورد',
         users: 'کاربران',
@@ -1692,13 +1731,27 @@ ${BASE_UI_CSS}
         panel: 'پنل و ظاهر',
         system: 'تنظیمات و دیتابیس D1'
       };
-      document.getElementById('topPageTitle').textContent = titles[viewName] || 'داشبورد';
+      var target = document.getElementById('view-' + viewName);
+      if (!target) viewName = 'dashboard';
+      setText('topPageTitle', titles[viewName] || 'داشبورد');
       document.querySelectorAll('.view-section').forEach(function(s) {
-        s.classList.toggle('active', s.id === 'view-' + viewName);
+        var isActive = s.id === 'view-' + viewName;
+        s.classList.toggle('active', isActive);
+        if (isActive && window.MiliFx && !fromHash) {
+          s.style.animation = 'none';
+          void s.offsetWidth;
+          s.style.animation = '';
+          MiliFx.reveal(s);
+        }
       });
       document.querySelectorAll('.sb-item').forEach(function(b) {
         b.classList.toggle('active', b.getAttribute('data-view') === viewName);
       });
+      try {
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', '#' + viewName);
+        }
+      } catch (_e) {}
       closeSidebarDrawer();
     }
 
@@ -1735,36 +1788,39 @@ ${BASE_UI_CSS}
     function renderUsersGrid() {
       var container = document.getElementById('usersGridContainer');
       if (!container) return;
-      var q = (document.getElementById('userSearchInput')?.value || '').trim().toLowerCase();
+      var searchEl = document.getElementById('userSearchInput');
+      var q = (searchEl && searchEl.value ? searchEl.value : '').trim().toLowerCase();
       var list = (STATE.users || []).filter(function(u) {
         if (USER_FILTER_STATUS === 'active' && !u.enabled) return false;
         if (USER_FILTER_STATUS === 'disabled' && u.enabled) return false;
-        if (q && !u.username.toLowerCase().includes(q) && !u.uuid.toLowerCase().includes(q)) return false;
-        return true;
+        if (!q) return true;
+        var name = String(u.username || '').toLowerCase();
+        var ident = String(u.uuid || '').toLowerCase();
+        return name.indexOf(q) !== -1 || ident.indexOf(q) !== -1;
       });
 
-      document.getElementById('sbUserCount').textContent = String((STATE.users || []).length);
+      setText('sbUserCount', String((STATE.users || []).length));
 
       if (list.length === 0) {
-        container.innerHTML = '<div style="padding:24px;color:var(--muted);">هیچ کاربری با این فیلتر یافت نشد.</div>';
+        container.innerHTML = '<div class="empty-state">هیچ کاربری با این فیلتر یافت نشد. با دکمهٔ «+ کاربر جدید» اولین کاربر را بسازید.</div>';
         return;
       }
 
       var baseOrigin = window.location.origin;
       var html = '';
-      list.forEach(function(u) {
-        var statusUrl = baseOrigin + '/status/' + encodeURIComponent(u.id);
+      list.forEach(function(u, cardIdx) {
+        var statusUrl = baseOrigin + '/status/' + encodeURIComponent(u.id || '');
         var subToken = (u.config && u.config.d && u.config.d.trim()) ? u.config.d.trim().replace(/^\\/+|\\/+$/g, '') : u.uuid;
         var subUrl = baseOrigin + '/' + subToken + '/sub';
         var nodeCount = u.subNodeCount || (u.config && u.config.subNodeCount) || 50;
         var gaugeText = u.dataLimitGb > 0 ? (u.dataLimitGb + ' GB') : '∞ بی‌نهایت';
         var expText = u.expireDays > 0 ? (u.expireDays + ' روز') : 'بدون انقضا';
 
-        html += '<div class="user-card">' +
+        html += '<div class="user-card fx-card fx-reveal" style="--fx-i:' + Math.min(cardIdx, 6) + '">' +
           '<div class="uc-top">' +
             '<span class="top-pill ' + (u.enabled ? 'live' : '') + '">' + (u.enabled ? 'شروع با اولین اتصال' : 'غیرفعال') + '</span>' +
             '<div class="uc-id-box">' +
-              '<div style="text-align:left;"><div class="uc-name">' + u.username + '</div><div class="uc-uuid">' + u.uuid.slice(0, 18) + '...</div></div>' +
+              '<div style="text-align:left;"><div class="uc-name">' + esc(u.username) + '</div><div class="uc-uuid">' + esc(String(u.uuid || '').slice(0, 18)) + (String(u.uuid || '').length > 18 ? '...' : '') + '</div></div>' +
               '<div class="uc-avatar">M</div>' +
             '</div>' +
           '</div>' +
@@ -1774,7 +1830,7 @@ ${BASE_UI_CSS}
               '<div class="uc-stat-line"><span>عمر کل</span><strong>' + formatBytesJs(u.lifetimeBytes) + '</strong></div>' +
               '<div class="uc-stat-line"><span>درخواست‌ها</span><strong>' + (u.requestCount || 0) + '</strong></div>' +
               '<div class="uc-stat-line"><span>انقضا</span><strong>' + expText + '</strong></div>' +
-              '<div class="uc-stat-line"><span>تعداد نود در ساب</span><strong>' + nodeCount + ' نود (' + STATE.brand + ')</strong></div>' +
+              '<div class="uc-stat-line"><span>تعداد نود در ساب</span><strong>' + nodeCount + ' نود (' + esc(STATE.brand) + ')</strong></div>' +
             '</div>' +
             '<div class="uc-gauge"><strong>' + gaugeText + '</strong></div>' +
           '</div>' +
@@ -1790,6 +1846,7 @@ ${BASE_UI_CSS}
         '</div>';
       });
       container.innerHTML = html;
+      if (window.MiliFx) MiliFx.reveal(container);
     }
 
     function applyConfigToForm(cfg) {
@@ -1828,15 +1885,21 @@ ${BASE_UI_CSS}
       var activeCount = users.filter(function(u) { return u.enabled; }).length;
       var disCount = users.length - activeCount;
 
-      document.getElementById('mTotalUsers').textContent = String(users.length);
-      document.getElementById('mUsersSub').textContent = activeCount + ' فعال · ' + disCount + ' غیرفعال';
-      document.getElementById('mTotalTraffic').textContent = formatBytesJs(diag.totalUsedBytes || 0);
-      document.getElementById('mLifetimeTraffic').textContent = 'مجموع عمر: ' + formatBytesJs(diag.totalLifetimeBytes || 0);
-      document.getElementById('mActiveNodes').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('mHealthyIps').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('mTotalReqs').textContent = String(diag.totalRequests || 0);
-      document.getElementById('sbNodeCount').textContent = String(diag.healthyCfIps || 31);
-      document.getElementById('donutCenterCount').textContent = String(diag.healthyCfIps || 31);
+      var nodeCount = Number(diag.healthyCfIps || 31);
+      var totalReqs = Number(diag.totalRequests || 0);
+      setText('mTotalUsers', String(users.length));
+      setText('mUsersSub', activeCount + ' فعال · ' + disCount + ' غیرفعال');
+      setText('mActiveNodes', String(nodeCount));
+      setText('mHealthyIps', String(nodeCount));
+      setText('donutCenterCount', String(nodeCount));
+      setText('sbNodeCount', String(nodeCount));
+      if (window.MiliFx) {
+        MiliFx.countUp(document.getElementById('mTotalTraffic'), Number(diag.totalUsedBytes || 0), function (v) { return formatBytesJs(v); });
+        MiliFx.countUp(document.getElementById('mLifetimeTraffic'), Number(diag.totalLifetimeBytes || 0), function (v) { return 'مجموع عمر: ' + formatBytesJs(v); });
+        MiliFx.countUp(document.getElementById('mTotalReqs'), totalReqs, function (v) { return String(Math.round(v)); });
+        MiliFx.countUp(document.getElementById('hbReqs'), totalReqs, function (v) { return '⚡ ' + Math.round(v) + ' درخواست ثبت‌شده'; });
+        MiliFx.ring(document.getElementById('donutRing'), nodeCount > 0 ? Math.min(100, Math.round((users.length / nodeCount) * 100)) : 100);
+      }
 
       var upMin = Math.max(1, Math.floor((diag.uptimeMs || 60000) / 60000));
       document.getElementById('hbUsers').textContent = '👥 ' + users.length + ' کاربر · ' + activeCount + ' فعال';
@@ -1856,7 +1919,7 @@ ${BASE_UI_CSS}
       if (topBox) {
         var sorted = users.slice().sort(function(a, b) { return (b.usedBytes || 0) - (a.usedBytes || 0); }).slice(0, 4);
         topBox.innerHTML = sorted.map(function(u) {
-          return '<div class="kv-row"><span class="kv-key">' + u.username + ' (' + (u.subNodeCount || 50) + ' نود)</span><span class="kv-val">' + formatBytesJs(u.usedBytes || 0) + '</span></div>';
+          return '<div class="kv-row"><span class="kv-key">' + esc(u.username) + ' (' + (u.subNodeCount || 50) + ' نود)</span><span class="kv-val">' + formatBytesJs(u.usedBytes || 0) + '</span></div>';
         }).join('') || '<div style="color:var(--muted);font-size:0.8rem;">هنوز کاربری ثبت نشده است</div>';
       }
 
@@ -1865,15 +1928,16 @@ ${BASE_UI_CSS}
       if (logBox) {
         var logs = diag.recentLogs || [];
         logBox.innerHTML = logs.slice(0, 5).map(function(l) {
-          return '<div class="kv-row"><span class="kv-key">' + l.action + '</span><span class="kv-val">' + l.detail + '</span></div>';
+          return '<div class="kv-row"><span class="kv-key">' + esc(l.action) + '</span><span class="kv-val">' + esc(l.detail) + '</span></div>';
         }).join('') || '<div style="color:var(--muted);font-size:0.8rem;">رویدادی ثبت نشده است</div>';
       }
     }
 
     async function refreshAllData() {
+      var pill = document.querySelector('.top-pill.live');
+      if (pill) pill.classList.add('syncing');
       try {
-        var res = await fetch(getApiBase() + '/api/stats');
-        var data = await res.json();
+        var data = await apiRequest('/api/stats', { method: 'GET' });
         if (data && data.success) {
           STATE.config = data.config || STATE.config;
           STATE.users = data.users || STATE.users;
@@ -1881,16 +1945,28 @@ ${BASE_UI_CSS}
           applyConfigToForm(STATE.config);
           renderUsersGrid();
           updateDashboardWidgets();
+          showToast('اطلاعات پنل به‌روزرسانی شد');
+        } else {
+          showToast('دریافت اطلاعات پنل ناموفق بود');
         }
-      } catch (_e) {}
+      } catch (err) {
+        showToast('خطا در دریافت اطلاعات: ' + (err && err.message ? err.message : 'نامشخص'));
+      } finally {
+        if (pill) pill.classList.remove('syncing');
+      }
     }
 
     async function quickCreateUser() {
-      var username = document.getElementById('quickUsername').value.trim();
-      var subNodeCount = parseInt(document.getElementById('quickSubNodeCount').value, 10) || 50;
+      var username = (document.getElementById('quickUsername').value || '').trim();
+      var rawCount = parseInt(document.getElementById('quickSubNodeCount').value, 10);
+      var subNodeCount = Number.isFinite(rawCount) ? Math.min(500, Math.max(0, rawCount)) : 50;
       var usePanelDefaults = document.getElementById('quickUsePanelDefaults').checked;
+      if (username.length > 64) {
+        showToast('نام کاربری حداکثر ۶۴ کاراکتر می‌تواند باشد');
+        return;
+      }
       try {
-        var res = await fetch(getApiBase() + '/api/users', {
+        var data = await apiRequest('/api/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1900,7 +1976,6 @@ ${BASE_UI_CSS}
             usePanelDefaults: usePanelDefaults
           })
         });
-        var data = await res.json();
         if (data.success) {
           document.getElementById('quickUsername').value = '';
           showToast(data.message || 'کاربر جدید ساخته شد');
@@ -1954,6 +2029,9 @@ ${BASE_UI_CSS}
       });
 
       modal.classList.add('open');
+      if (window.MiliFx) MiliFx.reveal(modal);
+      var firstField = document.getElementById('um_username');
+      if (firstField) window.setTimeout(function () { firstField.focus(); }, 240);
     }
 
     function closeUserModal() {
@@ -1987,15 +2065,25 @@ ${BASE_UI_CSS}
         if (el) payload.config[k] = el.checked ? 'yes' : 'no';
       });
       payload.config.subNodeCount = payload.subNodeCount;
+      if (!payload.username) {
+        showToast('نام کاربری را وارد کنید');
+        return;
+      }
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.uuid)) {
+        showToast('UUID معتبر نیست؛ با دکمه 🎲 یک UUID استاندارد بسازید');
+        return;
+      }
 
       var method = id ? 'PUT' : 'POST';
-      var res = await fetch(getApiBase() + '/api/users', {
+      var data = await apiRequest('/api/users', {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
+      }).catch(function (err) {
+        showToast('خطا در ذخیره کاربر: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
-      if (data.success) {
+      if (data && data.success) {
         closeUserModal();
         showToast(data.message || 'ذخیره شد');
         await refreshAllData();
@@ -2015,6 +2103,7 @@ ${BASE_UI_CSS}
     }
 
     async function resetUserTraffic(id) {
+      if (!window.confirm('مصرف این کاربر صفر شود؟')) return;
       await fetch(getApiBase() + '/api/users', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -2025,6 +2114,7 @@ ${BASE_UI_CSS}
     }
 
     async function removeUser(id) {
+      if (!window.confirm('این کاربر و تمام تنظیماتش حذف شود؟ این کار قابل بازگشت نیست.')) return;
       await fetch(getApiBase() + '/api/users?id=' + encodeURIComponent(id), {
         method: 'DELETE'
       });
@@ -2034,12 +2124,15 @@ ${BASE_UI_CSS}
 
     async function savePanelSettings() {
       var cfg = collectFormConfig();
-      var res = await fetch(getApiBase() + '/api/config', {
+      var data = await apiRequest('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cfg)
+      }).catch(function (err) {
+        showToast('خطا در ذخیره تنظیمات: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
+      if (!data) return;
       if (data.success) {
         showToast(data.message || 'تنظیمات پنل ذخیره شد');
         await refreshAllData();
@@ -2049,12 +2142,15 @@ ${BASE_UI_CSS}
     }
 
     async function resetAllPanelSettings() {
-      var res = await fetch(getApiBase() + '/api/config', {
+      var data = await apiRequest('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ _reset: true })
+      }).catch(function (err) {
+        showToast('بازنشانی تنظیمات ناموفق بود: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
       });
-      var data = await res.json();
+      if (!data) return;
       if (data.success) {
         showToast(data.message);
         await refreshAllData();
@@ -2062,8 +2158,11 @@ ${BASE_UI_CSS}
     }
 
     async function initD1Database() {
-      var res = await fetch(getApiBase() + '/api/d1-init', { method: 'POST' });
-      var data = await res.json();
+      var data = await apiRequest('/api/d1-init', { method: 'POST' }).catch(function (err) {
+        showToast('بررسی D1 ناموفق بود: ' + (err && err.message ? err.message : 'نامشخص'));
+        return { success: false, message: 'ارتباط با سرور ناموفق بود' };
+      });
+      if (!data) return;
       showToast(data.message || 'بررسی D1 انجام شد');
       await refreshAllData();
     }
@@ -2088,19 +2187,23 @@ ${BASE_UI_CSS}
     }
 
     function generateRandomCfIps() {
-      var cidrs = ['104.16.0.0/20', '104.24.0.0/20', '172.67.0.0/20', '162.159.0.0/20'];
       var box = document.getElementById('pingResultsBox');
+      if (!box) return;
+      // رنج /20 هر شبکه کلودفلر واقعاً رعایت می‌شود (قبا IP خارج از رنج ساخته می‌شد)
+      var networks = ['104.16.0.0', '104.24.0.0', '172.67.0.0', '162.159.0.0'];
       var generated = [];
       for (var i = 0; i < 10; i++) {
-        var c = cidrs[i % cidrs.length].split('/')[0].split('.');
-        var ip = c[0] + '.' + c[1] + '.' + (Math.floor(Math.random() * 15)) + '.' + (Math.floor(Math.random() * 250) + 2);
-        generated.push(ip + ':443#CF-Fast-' + (i + 1));
+        var octets = networks[i % networks.length].split('.');
+        var third = (parseInt(octets[2], 10) + Math.floor(Math.random() * 16)) % 256;
+        var fourth = Math.floor(Math.random() * 254) + 1;
+        generated.push(octets[0] + '.' + octets[1] + '.' + third + '.' + fourth + ':443#CF-Fast-' + (i + 1));
       }
       box.innerHTML = '<div class="kv-row"><span class="kv-key">۱۰ آی‌پی پیشنهادی تولید شد</span><button type="button" class="btn-ghost" onclick="appendGeneratedIps(\\'' + generated.join(',') + '\\')">+ افزودن به لیست ترجیحی (yx)</button></div>';
     }
 
     function appendGeneratedIps(str) {
       var el = document.getElementById('cfg_yx');
+      if (!el) return;
       el.value = el.value.trim() ? (el.value.trim() + ',' + str) : str;
       savePanelSettings();
     }
@@ -2133,11 +2236,47 @@ ${BASE_UI_CSS}
       }
     });
 
+    // خطاهای پردازش‌نشده شبکه دیگر بی‌صدا نمی‌مانند
+    window.addEventListener('unhandledrejection', function (event) {
+      var reason = event && event.reason ? event.reason : null;
+      showToast('خطا در ارتباط با سرور: ' + (reason && reason.message ? reason.message : 'درخواست ناموفق بود'));
+    });
+
+    // افزودن IPهای تولیدشده با واگذاری رویداد (بدون inline onclick)
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest ? event.target.closest('[data-add-ips]') : null;
+      if (btn) appendGeneratedIps(btn.getAttribute('data-add-ips') || '');
+    });
+
+    // بستن مودال با کلیک روی پس‌زمینه و کلید Escape
+    var modalBackdrop = document.getElementById('userModalBackdrop');
+    if (modalBackdrop) {
+      modalBackdrop.addEventListener('click', function (event) {
+        if (event.target === modalBackdrop) closeUserModal();
+      });
+    }
+
     // مقداردهی اولیه
     renderPresets();
     applyConfigToForm(STATE.config);
     renderUsersGrid();
     updateDashboardWidgets();
+
+    // جلوه‌های نرم روی کارت‌های پنل
+    document.querySelectorAll('.metric-card, .panel-card, .hero-card, .stat-box, .kv-row').forEach(function (el, idx) {
+      el.classList.add('fx-card');
+      if (el.classList.contains('panel-card') || el.classList.contains('metric-card')) el.classList.add('fx-reveal');
+      if (!el.style.getPropertyValue('--fx-i')) el.style.setProperty('--fx-i', String(Math.min(idx, 8)));
+    });
+    if (window.MiliFx) MiliFx.reveal(document);
+
+    // بازیابی نمای انتخاب‌شده از آدرس
+    var hashView = String(window.location.hash || '').replace('#', '');
+    if (hashView && document.getElementById('view-' + hashView)) switchView(hashView, true);
+    window.addEventListener('hashchange', function () {
+      var v = String(window.location.hash || '').replace('#', '');
+      if (v && document.getElementById('view-' + v)) switchView(v, true);
+    });
   </script>
 </body>
 </html>`;

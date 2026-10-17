@@ -6,6 +6,7 @@ import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FX_RUNTIME_JS } from '../src/ui/fx.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -240,9 +241,175 @@ async function runTests() {
     const statusHtml = await statusResp.text();
     assert.ok(statusHtml.includes('reza-vip'), 'صفحه وضعیت باید نام کاربر را نمایش دهد');
     assert.ok(statusHtml.includes('v2rayNG') && statusHtml.includes('Exclusive') && statusHtml.includes('Amnezia VPN'), 'صفحه وضعیت باید شامل تمام کلاینت‌های تصویر ارسالی باشد');
+    assert.ok(statusHtml.includes('t.me/miliconfig'), 'صفحه وضعیت باید لینک کانال پشتیبانی miliconfig را داشته باشد');
+    assert.ok(!/t\.me\/\+/.test(statusHtml), 'هیچ لینک دعوت منقضی در صفحه وضعیت نباید باشد');
     console.log('  ✓ تست ۶ (صفحه وضعیت اختصاصی کاربر برای ارسال به مشتری): موفق');
 
     console.log('\n🎉 تمام تست‌های عملکردی، دیتابیس D1، رابط کاربری و مبهم‌سازی با موفقیت ۱۰۰٪ پاس شدند!');
+    // ========================================================================
+    // تست‌های جدید: رابط کاربری بازطراحی‌شده، جلوه‌های بصری، امن‌سازی، کد مرده و استقرار دوگانه
+    // ========================================================================
+    const pages = [
+      ['ورود', rootHtml],
+      ['مدیریت', adminHtml],
+      ['وضعیت کاربر', statusHtml]
+    ];
+
+    // تست ۷: لایه جلوه‌های بصری (پس‌زمینه زنده + انیمیشن‌های روان) در هر سه صفحه
+    const fxNeedles = [
+      'fxCanvas',
+      'fx-aurora',
+      'fx-grid',
+      'fx-toast-host',
+      'fx-reveal',
+      'fx-ring',
+      'prefers-reduced-motion',
+      'window.MiliFx'
+    ];
+    for (const [label, html] of pages) {
+      for (const needle of fxNeedles) {
+        assert.ok(html.includes(needle), `صفحه ${label} باید شامل جلوه بصری «${needle}» باشد`);
+      }
+    }
+    assert.ok(rootHtml.includes('btn-support') && rootHtml.includes('modeAdmin'), 'صفحه ورود باید دکمه پشتیبانی و انتخاب حالت داشته باشد');
+    assert.ok(statusHtml.includes('usage-ring') && statusHtml.includes('nodeSearch'), 'صفحه وضعیت باید حلقه مصرف و جستجوی نود داشته باشد');
+    assert.ok(adminHtml.includes('donutRing') && adminHtml.includes('fx-ring'), 'داشبورد باید حلقه گرافیکی متحرک داشته باشد');
+    assert.ok(adminHtml.includes('id="fxProgressFill"'), 'داشبورد باید نوار پیشرفت اسکرول داشته باشد');
+    console.log('  ✓ تست ۷ (پس‌زمینه زنده و انیمیشن‌های روان در هر سه صفحه UI): موفق');
+
+    // تست ۸: تمام اسکریپت‌های درون‌صفحه‌ای باید از نظر نحوی معتبر باشند
+    for (const [label, html] of pages) {
+      const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+      assert.ok(blocks.length > 0, `صفحه ${label} باید اسکریپت درون‌صفحه‌ای داشته باشد`);
+      blocks.forEach((src, idx) => {
+        assert.doesNotThrow(() => { new Function(src); }, `اسکریپت شماره ${idx} صفحه ${label} خطای نحوی دارد`);
+      });
+    }
+    console.log('  ✓ تست ۸ (اعتبار نحوی تمام اسکریپت‌های درون‌صفحه‌ای): موفق');
+
+    // تست ۹: امن‌سازی خروجی؛ نام کاربری مخرب نباید به HTML/JS خام نشت کند (رفع باگ XSS)
+    const xssPayload = '<img src=x onerror=alert(1)>';
+    const xssResp = await worker.fetch(
+      new Request(`https://mili.example.com/${adminUuid}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: xssPayload, subNodeCount: 3 })
+      }),
+      d1Env,
+      {}
+    );
+    assert.strictEqual(xssResp.status, 200, 'ساخت کاربر با نام خاص باید موفق باشد');
+    const xssUser = (await xssResp.json()).user;
+    assert.ok(xssUser && xssUser.id, 'کاربر تست امنیت باید ساخته شود');
+
+    const xssStatusHtml = await (await worker.fetch(
+      new Request(`https://mili.example.com/status/${xssUser.id}`),
+      d1Env,
+      {}
+    )).text();
+    assert.ok(!xssStatusHtml.includes('<img src=x onerror='), 'صفحه وضعیت نباید تگ خام نام کاربری را رندر کند');
+    if (xssUser.username === xssPayload) {
+      assert.ok(xssStatusHtml.includes('&lt;img'), 'نام کاربری باید escape شده باشد');
+    }
+
+    const xssAdminHtml = await (await worker.fetch(
+      new Request(`https://mili.example.com/${adminUuid}`),
+      d1Env,
+      {}
+    )).text();
+    assert.ok(!xssAdminHtml.includes('<img src=x onerror='), 'داشبورد نباید تگ خام نام کاربری را رندر کند');
+    assert.ok(xssAdminHtml.includes('function esc('), 'داشبورد باید تابع امن‌سازی esc داشته باشد');
+    console.log('  ✓ تست ۹ (امن‌سازی نام کاربری و رفع باگ XSS): موفق');
+
+    // تست ۱۰: تزریق کد مرده (Dead Code Injection) در زنجیره بیلد
+    const manifestPath = path.join(ROOT_DIR, 'dist', 'build-info.json');
+    assert.ok(fs.existsSync(manifestPath), 'مانیفست بیلد dist/build-info.json باید ساخته شود');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    assert.strictEqual(manifest.obfuscation.deadCode, true, 'کد مرده باید فعال باشد');
+    assert.ok(manifest.obfuscation.deadCodeBlocks > 0, 'حداقل یک بلوک کد مرده باید تزریق شود');
+    assert.ok(manifest.readableBundle.deadCodeOccurrences > 0, 'نشانگر کد مرده باید در باندل خوانا وجود داشته باشد');
+
+    const readableBundle = fs.readFileSync(path.join(ROOT_DIR, 'dist', 'worker.readable.js'), 'utf8');
+    assert.ok(readableBundle.includes('__milicfg_deadcode_v3_1__'), 'نشانگر کد مرده در باندل خوانا یافت نشد');
+    assert.ok(readableBundle.includes('_0xMDC.tap('), 'بلوک‌های محمول مبهم (opaque predicate) در باندل تزریق نشده‌اند');
+    assert.notStrictEqual(readableBundle, rawObf, 'خروجی نهایی باید مبهم‌سازی‌شده و متفاوت از باندل خوانا باشد');
+    console.log(`  ✓ تست ۱۰ (تزریق کد مرده: ${manifest.obfuscation.deadCodeBlocks} بلوک با محمول مبهم): موفق`);
+
+    // تست ۱۱: آماده استقرار روی هر دو بستر (Cloudflare Pages + Workers) بدون هیچ سکرت
+    const distWorkerCode = fs.readFileSync(path.join(ROOT_DIR, 'dist', '_worker.js'), 'utf8');
+    const publicWorkerCode = fs.readFileSync(path.join(ROOT_DIR, 'public', '_worker.js'), 'utf8');
+    const rootWorkerCode = fs.readFileSync(path.join(ROOT_DIR, '_worker.js'), 'utf8');
+    assert.strictEqual(distWorkerCode, publicWorkerCode, 'خروجی Pages و Worker باید یکسان باشد');
+    assert.strictEqual(distWorkerCode, rootWorkerCode, 'خروجی ریشه مخزن باید با dist یکسان باشد');
+    assert.ok(distWorkerCode.startsWith("import { connect as cfConnect } from 'cloudflare:sockets';"), 'خروجی باید با ایمپورت sockets شروع شود');
+    assert.ok(distWorkerCode.trimEnd().endsWith('export default __MILI_WORKER_EXPORT__;'), 'خروجی باید Worker معتبر (export default) باشد');
+    assert.deepStrictEqual(manifest.targets, ['cloudflare-pages-advanced-mode', 'cloudflare-worker'], 'مانیفست باید هر دو بستر استقرار را اعلام کند');
+    assert.strictEqual(manifest.requiresSecrets, false, 'استقرار نباید به سکرت نیاز داشته باشد');
+    assert.strictEqual(manifest.pagesOutputDir, 'dist', 'پوشه خروجی Pages باید dist باشد');
+    assert.ok(manifest.artifacts.every(a => a.sha256 === manifest.artifacts[0].sha256), 'همه خروجی‌های استقرار باید هم‌محتوای یکسان داشته باشند');
+    assert.ok(!/CLOUDFLARE_API_TOKEN|cfat_[A-Za-z0-9]{8}/.test(distWorkerCode), 'هیچ توکن/سکرتی نباید داخل باندل باشد');
+
+    const wranglerConfig = fs.readFileSync(path.join(ROOT_DIR, 'wrangler.toml'), 'utf8');
+    const wranglerActiveLines = wranglerConfig.split('\n').filter(l => !l.trim().startsWith('#')).join('\n');
+    assert.ok(/^main\s*=\s*"src\/index\.js"/m.test(wranglerActiveLines), 'wrangler.toml باید ورودی Worker را تعریف کند');
+    assert.ok(!/token|secret|password/i.test(wranglerActiveLines), 'wrangler.toml نباید شامل هیچ سکرت/توکنی باشد');
+    assert.ok(fs.existsSync(path.join(ROOT_DIR, 'dist', 'worker.readable.js')), 'نسخه خوانا باندل باید برای دیباگ موجود باشد');
+    console.log('  ✓ تست ۱۱ (خروجی دوگانه Pages + Worker آماده استقرار بدون سکرت): موفق');
+
+    // تست ۱۲: اجرای واقعی موتور جلوه‌های بصری روی یک DOM شبیه‌سازی‌شده (کشف خطاهای زمان اجرا)
+    const fxWindow = {
+      innerWidth: 1280,
+      innerHeight: 800,
+      devicePixelRatio: 1,
+      location: { hash: '', origin: 'https://mili.example.com', host: 'mili.example.com', pathname: '/x', href: 'https://mili.example.com/x', reload() {} },
+      requestAnimationFrame(cb) { void cb; return 1; },
+      cancelAnimationFrame() {},
+      setTimeout() { return 1; },
+      clearTimeout() {},
+      addEventListener() {},
+      removeEventListener() {},
+      matchMedia() { return { matches: false, addEventListener() {} }; },
+      confirm() { return true; },
+      open() {},
+      history: { replaceState() {} }
+    };
+    const makeFxElement = () => ({
+      style: { setProperty() {}, getPropertyValue() { return ''; } },
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      children: [], childNodes: [], dataset: {},
+      appendChild() {}, removeChild() {}, remove() {},
+      addEventListener() {}, removeEventListener() {},
+      setAttribute() {}, getAttribute() { return null; },
+      getBoundingClientRect() { return { left: 0, top: 0, width: 12, height: 12 }; },
+      querySelectorAll() { return []; }, querySelector() { return null; },
+      closest() { return null; }, focus() {}, select() {}, offsetWidth: 10, scrollHeight: 120, textContent: '', value: ''
+    });
+    const fxHost = makeFxElement();
+    const fxDocument = {
+      readyState: 'complete',
+      hidden: false,
+      documentElement: { scrollHeight: 1200 },
+      body: makeFxElement(),
+      addEventListener() {}, removeEventListener() {},
+      getElementById(id) { return id === 'fxToastHost' ? fxHost : null; },
+      querySelector() { return null; },
+      querySelectorAll() { return []; },
+      createElement() { return makeFxElement(); },
+      execCommand() { return true; }
+    };
+    const fxNavigator = { clipboard: { writeText() { return Promise.resolve(); } } };
+    assert.doesNotThrow(() => {
+      const runFx = new Function('window', 'document', 'navigator', FX_RUNTIME_JS);
+      runFx(fxWindow, fxDocument, fxNavigator);
+    }, 'موتور جلوه‌های بصری نباید در زمان راه‌اندازی خطا بدهد');
+    assert.ok(fxWindow.MiliFx && typeof fxWindow.MiliFx.toast === 'function', 'MiliFx باید API عمومی خود را بسازد');
+    assert.strictEqual(fxWindow.MiliFx.esc('<b>"x"</b>'), '&lt;b&gt;&quot;x&quot;&lt;/b&gt;', 'تابع escape باید HTML را امن کند');
+    assert.ok(!fxWindow.MiliFx.jsStr("a'b").includes("'") || fxWindow.MiliFx.jsStr("a'b").includes('&#39;'), 'تابع jsStr باید کوتیشن را امن کند');
+    assert.doesNotThrow(() => fxWindow.MiliFx.toast('تست توست', 'success'), 'توست نباید خطا بدهد');
+    assert.doesNotThrow(() => fxWindow.MiliFx.countUp(makeFxElement(), 1234, v => String(v)), 'شمارنده عددی نباید خطا بدهد');
+    assert.doesNotThrow(() => fxWindow.MiliFx.ring(makeFxElement(), 42), 'حلقه مصرف نباید خطا بدهد');
+    assert.doesNotThrow(() => fxWindow.MiliFx.reveal(fxDocument), 'تابع نمایش نرم نباید خطا بدهد');
+    console.log('  ✓ تست ۱۲ (اجرای واقعی موتور انیمیشن و پس‌زمینه زنده روی DOM شبیه‌سازی‌شده): موفق');
   } finally {
     if (fs.existsSync(tmpTestFile)) fs.unlinkSync(tmpTestFile);
   }

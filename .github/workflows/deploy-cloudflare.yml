@@ -1,15 +1,24 @@
 # ============================================================================
-# miliconfig v3.1 - دپلوی خودکار روی Cloudflare با هر پوش روی main
+# miliconfig v3.1 - بیلد همیشگی + دپلوی اختیاری روی Cloudflare Pages و Workers
 # ----------------------------------------------------------------------------
-# این ورک‌فلو مستقل از اتصال گیتِ پنل کلودفلر کار می‌کند و خروجی بیلد را
-# مستقیماً با wrangler روی پروژه Cloudflare Pages آپلود می‌کند، پس اگر
-# اتصال خودکار پنل کلودفلر کار نکند یا بلاک شده باشد، دپلوی شما انجام می‌شود.
+# این ورک‌فلو «بدون سکرت» هم سبز می‌ماند:
+#   ۱. جاب build همیشه اجرا می‌شود: بیلد + مبهم‌سازی + تزریق کد مرده + تست‌ها
+#      و بسته آماده استقرار دستی (Pages.zip) را به‌عنوان artifact آپلود می‌کند.
+#   ۲. جاب deploy فقط اگر Secretهای کلودفلر در مخزن تنظیم شده باشند اجرا می‌شود؛
+#      در غیر این صورت با پیام راهنما رد (skip) می‌شود، نه شکست قرمز.
 #
-# پیش‌نیاز (یک‌بار): در مخزن → Settings → Secrets and variables → Actions
-#   ۱) Secret به نام CLOUDFLARE_API_TOKEN  (توکن با دسترسی Cloudflare Pages: Edit)
-#   ۲) Secret به نام CLOUDFLARE_ACCOUNT_ID (شناسه حساب کلودفلر)
-# نام پروژه Pages به‌صورت خودکار از حساب کلودفلر تشخیص داده می‌شود.
-# اگر چند پروژه دارید، با Variable به نام CF_PAGES_PROJECT نام موردنظر را تعیین کنید.
+# مسیرهای استقرار بدون هیچ سکرت (پیشنهادی):
+#   • Pages  : پنل کلودفلر → Workers & Pages → Create → Pages → Connect to Git
+#              Build command: npm run build     Output directory: dist
+#   • Workers: پنل کلودفلر → Workers & Pages → Create → Workers → Import a repository
+#              Deploy command: npx wrangler deploy
+#   • دستی   : فایل _worker.js (یا Pages.zip این ورک‌فلو) را در پنل آپلود کنید.
+#
+# مسیر اختیاری با سکرت (دپلوی از داخل گیت‌هاب):
+#   Settings → Secrets and variables → Actions:
+#     ۱) Secret  CLOUDFLARE_API_TOKEN  (دسترسی Cloudflare Pages/Workers: Edit)
+#     ۲) Secret  CLOUDFLARE_ACCOUNT_ID
+#   اختیاری: Variable به نام CF_PAGES_PROJECT برای تعیین نام پروژه Pages.
 # ============================================================================
 
 name: Deploy to Cloudflare
@@ -47,7 +56,72 @@ permissions:
   contents: read
 
 jobs:
+  # --------------------------------------------------------------------------
+  # ۱) بیلد همیشگی (بدون نیاز به هیچ سکرتی)
+  # --------------------------------------------------------------------------
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      has_credentials: ${{ steps.creds.outputs.has_credentials }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-save acorn javascript-obfuscator terser
+
+      - name: Build, obfuscate & inject dead code
+        run: npm run build
+
+      - name: Run verification test suite
+        run: npm test
+
+      - name: Package manual (secret-free) deploy bundles
+        run: |
+          mkdir -p deploy/pages
+          cp -f _worker.js deploy/pages/_worker.js
+          cp -f schema.sql deploy/pages/schema.sql 2>/dev/null || true
+          cp -f wrangler.toml deploy/pages/wrangler.toml 2>/dev/null || true
+          (cd deploy/pages && zip -r ../Pages.zip . >/dev/null)
+          cp -f dist/_worker.js deploy/_worker.js
+          ls -la deploy deploy/pages
+
+      - name: Upload deployable artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: miliconfig-cloudflare-bundles
+          path: |
+            deploy/Pages.zip
+            deploy/_worker.js
+            dist/build-info.json
+          if-no-files-found: error
+
+      - name: Detect Cloudflare credentials
+        id: creds
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo "has_credentials=true" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ سکرت‌های کلودفلر یافت شد؛ دپلوی خودکار اجرا می‌شود."
+          else
+            echo "has_credentials=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::بدون سکرت اجرا شد: بیلد و تست کامل انجام شد و بسته آماده استقرار (Pages.zip) آپلود شد."
+            echo "::notice::برای دپلوی خودکار از گیت‌هاب، Secretهای CLOUDFLARE_API_TOKEN و CLOUDFLARE_ACCOUNT_ID را تنظیم کنید؛ یا از اتصال Git پنل کلودفلر/آپلود دستی استفاده کنید (بدون سکرت)."
+          fi
+
+  # --------------------------------------------------------------------------
+  # ۲) دپلوی اختیاری (فقط وقتی سکرت‌ها موجود باشند)
+  # --------------------------------------------------------------------------
   deploy:
+    needs: build
+    if: needs.build.outputs.has_credentials == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -59,24 +133,10 @@ jobs:
           node-version: '22'
 
       - name: Install build & deploy tooling
-        run: npm install --no-save javascript-obfuscator terser wrangler
+        run: npm install --no-save acorn javascript-obfuscator terser wrangler
 
       - name: Build & obfuscate bundles
         run: npm run build
-
-      - name: Run verification test suite
-        run: npm test
-
-      - name: Check Cloudflare credentials
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::CLOUDFLARE_API_TOKEN و CLOUDFLARE_ACCOUNT_ID در Secrets مخزن تنظیم نشده‌اند."
-            echo "::error::مسیر: Settings → Secrets and variables → Actions → New repository secret"
-            exit 1
-          fi
 
       - name: Deploy to Cloudflare Pages
         id: deploy
